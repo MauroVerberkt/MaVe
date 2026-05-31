@@ -36,4 +36,89 @@ public abstract partial record BusinessParty
         rating = default!;
         return false;
     }
+
+    public __MatchBuilder_0 Match() => new __MatchBuilder_0(this);
+
+    public readonly struct __MatchBuilder_0
+    {
+        private readonly BusinessParty _value;
+
+        internal __MatchBuilder_0(BusinessParty value)
+        {
+            _value = value;
+        }
+
+        public __MatchBuilder_1<TResult> Customer<TResult>(global::System.Func<string, TResult> handler)
+        {
+            return new __MatchBuilder_1<TResult>(_value, handler);
+        }
+    }
+
+    public readonly struct __MatchBuilder_1<TResult>
+    {
+        private readonly BusinessParty _value;
+        private readonly global::System.Func<string, TResult> _handler0;
+
+        internal __MatchBuilder_1(BusinessParty value, global::System.Func<string, TResult> handler0)
+        {
+            _value = value;
+            _handler0 = handler0;
+        }
+
+        public __MatchBuilder_2<TResult> Supplier(global::System.Func<string, int, TResult> handler)
+        {
+            return new __MatchBuilder_2<TResult>(_value, _handler0, handler);
+        }
+    }
+
+    public readonly struct __MatchBuilder_2<TResult>
+    {
+        private readonly BusinessParty _value;
+        private readonly global::System.Func<string, TResult> _handler0;
+        private readonly global::System.Func<string, int, TResult> _handler1;
+
+        internal __MatchBuilder_2(BusinessParty value, global::System.Func<string, TResult> handler0, global::System.Func<string, int, TResult> handler1)
+        {
+            _value = value;
+            _handler0 = handler0;
+            _handler1 = handler1;
+        }
+
+        public __MatchBuilder_3<TResult> Prospect(global::System.Func<TResult> handler)
+        {
+            return new __MatchBuilder_3<TResult>(_value, _handler0, _handler1, handler);
+        }
+
+        public __MatchBuilder_3<TResult> Prospect(TResult value)
+        {
+            return Prospect(() => value);
+        }
+    }
+
+    public readonly struct __MatchBuilder_3<TResult>
+    {
+        private readonly BusinessParty _value;
+        private readonly global::System.Func<string, TResult> _handler0;
+        private readonly global::System.Func<string, int, TResult> _handler1;
+        private readonly global::System.Func<TResult> _handler2;
+
+        internal __MatchBuilder_3(BusinessParty value, global::System.Func<string, TResult> handler0, global::System.Func<string, int, TResult> handler1, global::System.Func<TResult> handler2)
+        {
+            _value = value;
+            _handler0 = handler0;
+            _handler1 = handler1;
+            _handler2 = handler2;
+        }
+
+        public TResult Result()
+        {
+            return _value switch
+            {
+                Customer variant => _handler0(variant.Name),
+                Supplier variant => _handler1(variant.CompanyName, variant.Rating),
+                Prospect _ => _handler2(),
+                _ => throw new global::System.InvalidOperationException("Unrecognized union variant.")
+            };
+        }
+    }
 }

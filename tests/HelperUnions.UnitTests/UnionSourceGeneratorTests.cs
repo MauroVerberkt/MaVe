@@ -91,4 +91,31 @@ public class UnionSourceGeneratorTests
 
         Assert.That(result.GeneratedTrees, Is.Empty);
     }
+
+    [Test]
+    public void FirstZeroPayloadVariant_DoesNotGenerateValueOverload()
+    {
+        const string source = """
+            using HelperUnions;
+
+            namespace Demo;
+
+            [Union]
+            public partial record Outcome
+            {
+                public sealed record Empty() : Outcome;
+
+                public sealed record Data(string Value) : Outcome;
+            }
+            """;
+
+        var result = CreateDriver()
+            .RunGenerators(CreateCompilation(source))
+            .GetRunResult();
+
+        var generatedSource = result.GeneratedTrees.Single().ToString();
+
+        Assert.That(generatedSource, Does.Contain("public __MatchBuilder_1<TResult> Empty<TResult>(global::System.Func<TResult> handler)"));
+        Assert.That(generatedSource, Does.Not.Contain("public __MatchBuilder_1<TResult> Empty<TResult>(TResult value)"));
+    }
 }
