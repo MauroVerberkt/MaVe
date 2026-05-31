@@ -149,6 +149,38 @@ public class NonExhaustiveUnionMatchAnalyzerTests
     }
 
     [Test]
+    public async Task SwitchExpression_WithTypePatternForZeroPayloadVariant_DoesNotReportDiagnostic()
+    {
+        const string source = """
+            using HelperUnions;
+
+            namespace Demo;
+
+            [Union]
+            public partial record BusinessParty
+            {
+                public sealed record Customer(string Name) : BusinessParty;
+                public sealed record Prospect() : BusinessParty;
+            }
+
+            public static class UseCase
+            {
+                public static string Handle(BusinessParty party)
+                {
+                    return party switch
+                    {
+                        BusinessParty.Customer c => c.Name,
+                        BusinessParty.Prospect => string.Empty,
+                    };
+                }
+            }
+            """;
+
+        await CSharpAnalyzerVerifier<HelperUnionsAnalyzer.NonExhaustiveUnionMatchAnalyzer>
+            .VerifyAnalyzerAsync(source);
+    }
+
+    [Test]
     public async Task SwitchStatement_AllVariantsCovered_DoesNotReportDiagnostic()
     {
         const string source = """

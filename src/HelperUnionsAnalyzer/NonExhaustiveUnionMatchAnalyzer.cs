@@ -15,6 +15,7 @@ public sealed class NonExhaustiveUnionMatchAnalyzer : DiagnosticAnalyzer
     private const string DiagnosticId = "DNHU0001";
     private const string Category = "Usage";
     private const string UnionAttributeFullyQualifiedName = "HelperUnions.UnionAttribute";
+    private const string MissingVariantsPropertyName = "MissingVariants";
 
     private static readonly DiagnosticDescriptor Rule = new(
         DiagnosticId,
@@ -167,7 +168,8 @@ public sealed class NonExhaustiveUnionMatchAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        context.ReportDiagnostic(Diagnostic.Create(Rule, location, string.Join(", ", missing)));
+        var properties = ImmutableDictionary<string, string?>.Empty.Add(MissingVariantsPropertyName, string.Join(",", missing));
+        context.ReportDiagnostic(Diagnostic.Create(Rule, location, properties, string.Join(", ", missing)));
     }
 
     private static bool HasUnionAttribute(INamedTypeSymbol typeSymbol, INamedTypeSymbol unionAttributeSymbol)
@@ -181,6 +183,10 @@ public sealed class NonExhaustiveUnionMatchAnalyzer : DiagnosticAnalyzer
         return pattern switch
         {
             DeclarationPatternSyntax declarationPattern => semanticModel.GetTypeInfo(declarationPattern.Type, cancellationToken).Type,
+            TypePatternSyntax typePattern => semanticModel.GetTypeInfo(typePattern.Type, cancellationToken).Type,
+            ConstantPatternSyntax constantPattern
+                when semanticModel.GetSymbolInfo(constantPattern.Expression, cancellationToken).Symbol is INamedTypeSymbol namedTypeSymbol
+                => namedTypeSymbol,
             RecursivePatternSyntax recursivePattern when recursivePattern.Type is not null
                 => semanticModel.GetTypeInfo(recursivePattern.Type, cancellationToken).Type,
             _ => null
