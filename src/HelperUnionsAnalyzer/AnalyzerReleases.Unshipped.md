@@ -5,3 +5,4 @@
 
 Rule ID | Category | Severity | Notes
 --------|----------|----------|------
+DNHU0003 | Usage    | Error    | [Union] may only be applied to partial record declarations.
