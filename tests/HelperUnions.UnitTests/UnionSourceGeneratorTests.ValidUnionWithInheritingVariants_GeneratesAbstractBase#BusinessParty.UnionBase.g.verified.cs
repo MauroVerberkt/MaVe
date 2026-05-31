@@ -121,4 +121,91 @@ public abstract partial record BusinessParty
             };
         }
     }
+
+    public __SwitchBuilder_0 Switch() => new __SwitchBuilder_0(this);
+
+    public readonly struct __SwitchBuilder_0
+    {
+        private readonly BusinessParty _value;
+
+        internal __SwitchBuilder_0(BusinessParty value)
+        {
+            _value = value;
+        }
+
+        public __SwitchBuilder_1 Customer(global::System.Action<string> handler)
+        {
+            return new __SwitchBuilder_1(_value, handler);
+        }
+    }
+
+    public readonly struct __SwitchBuilder_1
+    {
+        private readonly BusinessParty _value;
+        private readonly global::System.Action<string> _handler0;
+
+        internal __SwitchBuilder_1(BusinessParty value, global::System.Action<string> handler0)
+        {
+            _value = value;
+            _handler0 = handler0;
+        }
+
+        public __SwitchBuilder_2 Supplier(global::System.Action<string, int> handler)
+        {
+            return new __SwitchBuilder_2(_value, _handler0, handler);
+        }
+    }
+
+    public readonly struct __SwitchBuilder_2
+    {
+        private readonly BusinessParty _value;
+        private readonly global::System.Action<string> _handler0;
+        private readonly global::System.Action<string, int> _handler1;
+
+        internal __SwitchBuilder_2(BusinessParty value, global::System.Action<string> handler0, global::System.Action<string, int> handler1)
+        {
+            _value = value;
+            _handler0 = handler0;
+            _handler1 = handler1;
+        }
+
+        public __SwitchBuilder_3 Prospect(global::System.Action handler)
+        {
+            return new __SwitchBuilder_3(_value, _handler0, _handler1, handler);
+        }
+    }
+
+    public readonly struct __SwitchBuilder_3
+    {
+        private readonly BusinessParty _value;
+        private readonly global::System.Action<string> _handler0;
+        private readonly global::System.Action<string, int> _handler1;
+        private readonly global::System.Action _handler2;
+
+        internal __SwitchBuilder_3(BusinessParty value, global::System.Action<string> handler0, global::System.Action<string, int> handler1, global::System.Action handler2)
+        {
+            _value = value;
+            _handler0 = handler0;
+            _handler1 = handler1;
+            _handler2 = handler2;
+        }
+
+        public void Execute()
+        {
+            switch (_value)
+            {
+                case Customer variant:
+                    _handler0(variant.Name);
+                    break;
+                case Supplier variant:
+                    _handler1(variant.CompanyName, variant.Rating);
+                    break;
+                case Prospect _:
+                    _handler2();
+                    break;
+                default:
+                    throw new global::System.InvalidOperationException("Unrecognized union variant.");
+            }
+        }
+    }
 }

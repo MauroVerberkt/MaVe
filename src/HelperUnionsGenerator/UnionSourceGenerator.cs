@@ -117,6 +117,8 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         AppendTryGetMethods(sourceBuilder, candidate.Variants);
         sourceBuilder.AppendLine();
         AppendMatchBuilder(sourceBuilder, ExtractRecordName(candidate.Declaration), candidate.Variants);
+        sourceBuilder.AppendLine();
+        AppendSwitchBuilder(sourceBuilder, ExtractRecordName(candidate.Declaration), candidate.Variants);
         sourceBuilder.AppendLine("}");
 
         for (var i = candidate.ContainingTypeChain.Count - 1; i >= 0; i--)
@@ -309,6 +311,135 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         }
 
         return $"global::System.Func<{string.Join(", ", parameterTypes)}>";
+    }
+
+    private static void AppendSwitchBuilder(StringBuilder sourceBuilder, string unionName, IReadOnlyList<UnionVariant> variants)
+    {
+        sourceBuilder.AppendLine("    public __SwitchBuilder_0 Switch() => new __SwitchBuilder_0(this);");
+        sourceBuilder.AppendLine();
+
+        for (var stage = 0; stage < variants.Count; stage++)
+        {
+            AppendSwitchBuilderStage(sourceBuilder, unionName, stage, variants);
+            sourceBuilder.AppendLine();
+        }
+
+        AppendSwitchBuilderFinalStage(sourceBuilder, variants, unionName);
+    }
+
+    private static void AppendSwitchBuilderStage(StringBuilder sourceBuilder, string unionName, int stage, IReadOnlyList<UnionVariant> variants)
+    {
+        var currentVariant = variants[stage];
+        var builderName = $"__SwitchBuilder_{stage}";
+        var nextBuilderName = $"__SwitchBuilder_{stage + 1}";
+
+        sourceBuilder.AppendLine($"    public readonly struct {builderName}");
+        sourceBuilder.AppendLine("    {");
+        sourceBuilder.AppendLine("        private readonly " + unionName + " _value;");
+
+        for (var i = 0; i < stage; i++)
+        {
+            sourceBuilder.AppendLine($"        private readonly {GetSwitchHandlerType(variants[i])} _handler{i};");
+        }
+
+        sourceBuilder.AppendLine();
+
+        var constructorParameters = new List<string> { unionName + " value" };
+        for (var i = 0; i < stage; i++)
+        {
+            constructorParameters.Add($"{GetSwitchHandlerType(variants[i])} handler{i}");
+        }
+
+        sourceBuilder.AppendLine($"        internal {builderName}({string.Join(", ", constructorParameters)})");
+        sourceBuilder.AppendLine("        {");
+        sourceBuilder.AppendLine("            _value = value;");
+        for (var i = 0; i < stage; i++)
+        {
+            sourceBuilder.AppendLine($"            _handler{i} = handler{i};");
+        }
+        sourceBuilder.AppendLine("        }");
+        sourceBuilder.AppendLine();
+
+        sourceBuilder.AppendLine($"        public {nextBuilderName} {currentVariant.Name}({GetSwitchHandlerType(currentVariant)} handler)");
+        sourceBuilder.AppendLine("        {");
+
+        var nextConstructorArgs = new List<string> { "_value" };
+        for (var i = 0; i < stage; i++)
+        {
+            nextConstructorArgs.Add($"_handler{i}");
+        }
+        nextConstructorArgs.Add("handler");
+
+        sourceBuilder.AppendLine($"            return new {nextBuilderName}({string.Join(", ", nextConstructorArgs)});");
+        sourceBuilder.AppendLine("        }");
+
+        sourceBuilder.AppendLine("    }");
+    }
+
+    private static void AppendSwitchBuilderFinalStage(StringBuilder sourceBuilder, IReadOnlyList<UnionVariant> variants, string unionName)
+    {
+        var finalBuilderName = $"__SwitchBuilder_{variants.Count}";
+        sourceBuilder.AppendLine($"    public readonly struct {finalBuilderName}");
+        sourceBuilder.AppendLine("    {");
+        sourceBuilder.AppendLine($"        private readonly {unionName} _value;");
+        for (var i = 0; i < variants.Count; i++)
+        {
+            sourceBuilder.AppendLine($"        private readonly {GetSwitchHandlerType(variants[i])} _handler{i};");
+        }
+        sourceBuilder.AppendLine();
+
+        var constructorParameters = new List<string> { unionName + " value" };
+        for (var i = 0; i < variants.Count; i++)
+        {
+            constructorParameters.Add($"{GetSwitchHandlerType(variants[i])} handler{i}");
+        }
+
+        sourceBuilder.AppendLine($"        internal {finalBuilderName}({string.Join(", ", constructorParameters)})");
+        sourceBuilder.AppendLine("        {");
+        sourceBuilder.AppendLine("            _value = value;");
+        for (var i = 0; i < variants.Count; i++)
+        {
+            sourceBuilder.AppendLine($"            _handler{i} = handler{i};");
+        }
+        sourceBuilder.AppendLine("        }");
+        sourceBuilder.AppendLine();
+
+        sourceBuilder.AppendLine("        public void Execute()");
+        sourceBuilder.AppendLine("        {");
+        sourceBuilder.AppendLine("            switch (_value)");
+        sourceBuilder.AppendLine("            {");
+
+        for (var i = 0; i < variants.Count; i++)
+        {
+            var variant = variants[i];
+            var invoke = variant.Parameters.Count == 0
+                ? $"_handler{i}()"
+                : $"_handler{i}({string.Join(", ", variant.Parameters.Select(parameter => "variant." + parameter.PropertyName))})";
+
+            var pattern = variant.Parameters.Count == 0
+                ? $"{variant.Name} _"
+                : $"{variant.Name} variant";
+
+            sourceBuilder.AppendLine($"                case {pattern}:");
+            sourceBuilder.AppendLine($"                    {invoke};");
+            sourceBuilder.AppendLine("                    break;");
+        }
+
+        sourceBuilder.AppendLine("                default:");
+        sourceBuilder.AppendLine("                    throw new global::System.InvalidOperationException(\"Unrecognized union variant.\");");
+        sourceBuilder.AppendLine("            }");
+        sourceBuilder.AppendLine("        }");
+        sourceBuilder.AppendLine("    }");
+    }
+
+    private static string GetSwitchHandlerType(UnionVariant variant)
+    {
+        if (variant.Parameters.Count == 0)
+        {
+            return "global::System.Action";
+        }
+
+        return $"global::System.Action<{string.Join(", ", variant.Parameters.Select(parameter => parameter.TypeName))}>";
     }
 
     private static UnionVariant CreateVariant(INamedTypeSymbol variantSymbol)
