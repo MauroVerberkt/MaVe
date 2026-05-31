@@ -119,6 +119,10 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         AppendMatchBuilder(sourceBuilder, ExtractRecordName(candidate.Declaration), candidate.Variants);
         sourceBuilder.AppendLine();
         AppendSwitchBuilder(sourceBuilder, ExtractRecordName(candidate.Declaration), candidate.Variants);
+        sourceBuilder.AppendLine();
+        AppendMatchAsyncBuilder(sourceBuilder, ExtractRecordName(candidate.Declaration), candidate.Variants);
+        sourceBuilder.AppendLine();
+        AppendSwitchAsyncBuilder(sourceBuilder, ExtractRecordName(candidate.Declaration), candidate.Variants);
         sourceBuilder.AppendLine("}");
 
         for (var i = candidate.ContainingTypeChain.Count - 1; i >= 0; i--)
@@ -313,6 +317,145 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         return $"global::System.Func<{string.Join(", ", parameterTypes)}>";
     }
 
+    private static void AppendMatchAsyncBuilder(StringBuilder sourceBuilder, string unionName, IReadOnlyList<UnionVariant> variants)
+    {
+        sourceBuilder.AppendLine("    public __MatchAsyncBuilder_0 MatchAsync() => new __MatchAsyncBuilder_0(this);");
+        sourceBuilder.AppendLine();
+
+        for (var stage = 0; stage < variants.Count; stage++)
+        {
+            AppendMatchAsyncBuilderStage(sourceBuilder, unionName, stage, variants);
+            sourceBuilder.AppendLine();
+        }
+
+        AppendMatchAsyncBuilderFinalStage(sourceBuilder, variants, unionName);
+    }
+
+    private static void AppendMatchAsyncBuilderStage(StringBuilder sourceBuilder, string unionName, int stage, IReadOnlyList<UnionVariant> variants)
+    {
+        var currentVariant = variants[stage];
+        var builderName = $"__MatchAsyncBuilder_{stage}";
+        var nextBuilderName = $"__MatchAsyncBuilder_{stage + 1}";
+        var isFirstStage = stage == 0;
+        var genericSuffix = isFirstStage ? string.Empty : "<TResult>";
+
+        sourceBuilder.AppendLine($"    public readonly struct {builderName}{genericSuffix}");
+        sourceBuilder.AppendLine("    {");
+        sourceBuilder.AppendLine("        private readonly " + unionName + " _value;");
+
+        for (var i = 0; i < stage; i++)
+        {
+            sourceBuilder.AppendLine($"        private readonly {GetMatchAsyncHandlerType(variants[i], includeResultType: true)} _handler{i};");
+        }
+
+        sourceBuilder.AppendLine();
+
+        var constructorParameters = new List<string> { unionName + " value" };
+        for (var i = 0; i < stage; i++)
+        {
+            constructorParameters.Add($"{GetMatchAsyncHandlerType(variants[i], includeResultType: true)} handler{i}");
+        }
+
+        sourceBuilder.AppendLine($"        internal {builderName}({string.Join(", ", constructorParameters)})");
+        sourceBuilder.AppendLine("        {");
+        sourceBuilder.AppendLine("            _value = value;");
+        for (var i = 0; i < stage; i++)
+        {
+            sourceBuilder.AppendLine($"            _handler{i} = handler{i};");
+        }
+        sourceBuilder.AppendLine("        }");
+        sourceBuilder.AppendLine();
+
+        var methodResultType = stage == 0 ? "<TResult>" : string.Empty;
+        sourceBuilder.AppendLine($"        public {nextBuilderName}<TResult> {currentVariant.Name}{methodResultType}({GetMatchAsyncHandlerType(currentVariant, includeResultType: true)} handler)");
+        sourceBuilder.AppendLine("        {");
+
+        var nextConstructorArgs = new List<string> { "_value" };
+        for (var i = 0; i < stage; i++)
+        {
+            nextConstructorArgs.Add($"_handler{i}");
+        }
+        nextConstructorArgs.Add("handler");
+
+        sourceBuilder.AppendLine($"            return new {nextBuilderName}<TResult>({string.Join(", ", nextConstructorArgs)});");
+        sourceBuilder.AppendLine("        }");
+
+        if (currentVariant.Parameters.Count == 0 && stage > 0)
+        {
+            sourceBuilder.AppendLine();
+            sourceBuilder.AppendLine($"        public {nextBuilderName}<TResult> {currentVariant.Name}{methodResultType}(TResult value)");
+            sourceBuilder.AppendLine("        {");
+            sourceBuilder.AppendLine($"            return {currentVariant.Name}{methodResultType}(() => global::System.Threading.Tasks.Task.FromResult(value));");
+            sourceBuilder.AppendLine("        }");
+        }
+
+        sourceBuilder.AppendLine("    }");
+    }
+
+    private static void AppendMatchAsyncBuilderFinalStage(StringBuilder sourceBuilder, IReadOnlyList<UnionVariant> variants, string unionName)
+    {
+        var finalBuilderName = $"__MatchAsyncBuilder_{variants.Count}";
+        sourceBuilder.AppendLine($"    public readonly struct {finalBuilderName}<TResult>");
+        sourceBuilder.AppendLine("    {");
+        sourceBuilder.AppendLine($"        private readonly {unionName} _value;");
+        for (var i = 0; i < variants.Count; i++)
+        {
+            sourceBuilder.AppendLine($"        private readonly {GetMatchAsyncHandlerType(variants[i], includeResultType: true)} _handler{i};");
+        }
+        sourceBuilder.AppendLine();
+
+        var constructorParameters = new List<string> { unionName + " value" };
+        for (var i = 0; i < variants.Count; i++)
+        {
+            constructorParameters.Add($"{GetMatchAsyncHandlerType(variants[i], includeResultType: true)} handler{i}");
+        }
+
+        sourceBuilder.AppendLine($"        internal {finalBuilderName}({string.Join(", ", constructorParameters)})");
+        sourceBuilder.AppendLine("        {");
+        sourceBuilder.AppendLine("            _value = value;");
+        for (var i = 0; i < variants.Count; i++)
+        {
+            sourceBuilder.AppendLine($"            _handler{i} = handler{i};");
+        }
+        sourceBuilder.AppendLine("        }");
+        sourceBuilder.AppendLine();
+
+        sourceBuilder.AppendLine("        public global::System.Threading.Tasks.Task<TResult> ResultAsync()");
+        sourceBuilder.AppendLine("        {");
+        sourceBuilder.AppendLine("            return _value switch");
+        sourceBuilder.AppendLine("            {");
+
+        for (var i = 0; i < variants.Count; i++)
+        {
+            var variant = variants[i];
+            var invoke = variant.Parameters.Count == 0
+                ? $"_handler{i}()"
+                : $"_handler{i}({string.Join(", ", variant.Parameters.Select(parameter => "variant." + parameter.PropertyName))})";
+
+            var pattern = variant.Parameters.Count == 0
+                ? $"{variant.Name} _"
+                : $"{variant.Name} variant";
+
+            sourceBuilder.AppendLine($"                {pattern} => {invoke},");
+        }
+
+        sourceBuilder.AppendLine("                _ => throw new global::System.InvalidOperationException(\"Unrecognized union variant.\")");
+        sourceBuilder.AppendLine("            };");
+        sourceBuilder.AppendLine("        }");
+        sourceBuilder.AppendLine("    }");
+    }
+
+    private static string GetMatchAsyncHandlerType(UnionVariant variant, bool includeResultType)
+    {
+        var parameterTypes = variant.Parameters.Select(parameter => parameter.TypeName).ToList();
+        if (includeResultType)
+        {
+            parameterTypes.Add("global::System.Threading.Tasks.Task<TResult>");
+        }
+
+        return $"global::System.Func<{string.Join(", ", parameterTypes)}>";
+    }
+
     private static void AppendSwitchBuilder(StringBuilder sourceBuilder, string unionName, IReadOnlyList<UnionVariant> variants)
     {
         sourceBuilder.AppendLine("    public __SwitchBuilder_0 Switch() => new __SwitchBuilder_0(this);");
@@ -440,6 +583,130 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         }
 
         return $"global::System.Action<{string.Join(", ", variant.Parameters.Select(parameter => parameter.TypeName))}>";
+    }
+
+    private static void AppendSwitchAsyncBuilder(StringBuilder sourceBuilder, string unionName, IReadOnlyList<UnionVariant> variants)
+    {
+        sourceBuilder.AppendLine("    public __SwitchAsyncBuilder_0 SwitchAsync() => new __SwitchAsyncBuilder_0(this);");
+        sourceBuilder.AppendLine();
+
+        for (var stage = 0; stage < variants.Count; stage++)
+        {
+            AppendSwitchAsyncBuilderStage(sourceBuilder, unionName, stage, variants);
+            sourceBuilder.AppendLine();
+        }
+
+        AppendSwitchAsyncBuilderFinalStage(sourceBuilder, variants, unionName);
+    }
+
+    private static void AppendSwitchAsyncBuilderStage(StringBuilder sourceBuilder, string unionName, int stage, IReadOnlyList<UnionVariant> variants)
+    {
+        var currentVariant = variants[stage];
+        var builderName = $"__SwitchAsyncBuilder_{stage}";
+        var nextBuilderName = $"__SwitchAsyncBuilder_{stage + 1}";
+
+        sourceBuilder.AppendLine($"    public readonly struct {builderName}");
+        sourceBuilder.AppendLine("    {");
+        sourceBuilder.AppendLine("        private readonly " + unionName + " _value;");
+
+        for (var i = 0; i < stage; i++)
+        {
+            sourceBuilder.AppendLine($"        private readonly {GetSwitchAsyncHandlerType(variants[i])} _handler{i};");
+        }
+
+        sourceBuilder.AppendLine();
+
+        var constructorParameters = new List<string> { unionName + " value" };
+        for (var i = 0; i < stage; i++)
+        {
+            constructorParameters.Add($"{GetSwitchAsyncHandlerType(variants[i])} handler{i}");
+        }
+
+        sourceBuilder.AppendLine($"        internal {builderName}({string.Join(", ", constructorParameters)})");
+        sourceBuilder.AppendLine("        {");
+        sourceBuilder.AppendLine("            _value = value;");
+        for (var i = 0; i < stage; i++)
+        {
+            sourceBuilder.AppendLine($"            _handler{i} = handler{i};");
+        }
+        sourceBuilder.AppendLine("        }");
+        sourceBuilder.AppendLine();
+
+        sourceBuilder.AppendLine($"        public {nextBuilderName} {currentVariant.Name}({GetSwitchAsyncHandlerType(currentVariant)} handler)");
+        sourceBuilder.AppendLine("        {");
+
+        var nextConstructorArgs = new List<string> { "_value" };
+        for (var i = 0; i < stage; i++)
+        {
+            nextConstructorArgs.Add($"_handler{i}");
+        }
+        nextConstructorArgs.Add("handler");
+
+        sourceBuilder.AppendLine($"            return new {nextBuilderName}({string.Join(", ", nextConstructorArgs)});");
+        sourceBuilder.AppendLine("        }");
+
+        sourceBuilder.AppendLine("    }");
+    }
+
+    private static void AppendSwitchAsyncBuilderFinalStage(StringBuilder sourceBuilder, IReadOnlyList<UnionVariant> variants, string unionName)
+    {
+        var finalBuilderName = $"__SwitchAsyncBuilder_{variants.Count}";
+        sourceBuilder.AppendLine($"    public readonly struct {finalBuilderName}");
+        sourceBuilder.AppendLine("    {");
+        sourceBuilder.AppendLine($"        private readonly {unionName} _value;");
+        for (var i = 0; i < variants.Count; i++)
+        {
+            sourceBuilder.AppendLine($"        private readonly {GetSwitchAsyncHandlerType(variants[i])} _handler{i};");
+        }
+        sourceBuilder.AppendLine();
+
+        var constructorParameters = new List<string> { unionName + " value" };
+        for (var i = 0; i < variants.Count; i++)
+        {
+            constructorParameters.Add($"{GetSwitchAsyncHandlerType(variants[i])} handler{i}");
+        }
+
+        sourceBuilder.AppendLine($"        internal {finalBuilderName}({string.Join(", ", constructorParameters)})");
+        sourceBuilder.AppendLine("        {");
+        sourceBuilder.AppendLine("            _value = value;");
+        for (var i = 0; i < variants.Count; i++)
+        {
+            sourceBuilder.AppendLine($"            _handler{i} = handler{i};");
+        }
+        sourceBuilder.AppendLine("        }");
+        sourceBuilder.AppendLine();
+
+        sourceBuilder.AppendLine("        public global::System.Threading.Tasks.Task ExecuteAsync()");
+        sourceBuilder.AppendLine("        {");
+        sourceBuilder.AppendLine("            return _value switch");
+        sourceBuilder.AppendLine("            {");
+
+        for (var i = 0; i < variants.Count; i++)
+        {
+            var variant = variants[i];
+            var invoke = variant.Parameters.Count == 0
+                ? $"_handler{i}()"
+                : $"_handler{i}({string.Join(", ", variant.Parameters.Select(parameter => "variant." + parameter.PropertyName))})";
+
+            var pattern = variant.Parameters.Count == 0
+                ? $"{variant.Name} _"
+                : $"{variant.Name} variant";
+
+            sourceBuilder.AppendLine($"                {pattern} => {invoke},");
+        }
+
+        sourceBuilder.AppendLine("                _ => throw new global::System.InvalidOperationException(\"Unrecognized union variant.\")");
+        sourceBuilder.AppendLine("            };");
+        sourceBuilder.AppendLine("        }");
+        sourceBuilder.AppendLine("    }");
+    }
+
+    private static string GetSwitchAsyncHandlerType(UnionVariant variant)
+    {
+        var parameterTypes = variant.Parameters.Select(parameter => parameter.TypeName).ToList();
+        parameterTypes.Add("global::System.Threading.Tasks.Task");
+
+        return $"global::System.Func<{string.Join(", ", parameterTypes)}>";
     }
 
     private static UnionVariant CreateVariant(INamedTypeSymbol variantSymbol)

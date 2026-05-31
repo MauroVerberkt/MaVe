@@ -208,4 +208,169 @@ public abstract partial record BusinessParty
             }
         }
     }
+
+    public __MatchAsyncBuilder_0 MatchAsync() => new __MatchAsyncBuilder_0(this);
+
+    public readonly struct __MatchAsyncBuilder_0
+    {
+        private readonly BusinessParty _value;
+
+        internal __MatchAsyncBuilder_0(BusinessParty value)
+        {
+            _value = value;
+        }
+
+        public __MatchAsyncBuilder_1<TResult> Customer<TResult>(global::System.Func<string, global::System.Threading.Tasks.Task<TResult>> handler)
+        {
+            return new __MatchAsyncBuilder_1<TResult>(_value, handler);
+        }
+    }
+
+    public readonly struct __MatchAsyncBuilder_1<TResult>
+    {
+        private readonly BusinessParty _value;
+        private readonly global::System.Func<string, global::System.Threading.Tasks.Task<TResult>> _handler0;
+
+        internal __MatchAsyncBuilder_1(BusinessParty value, global::System.Func<string, global::System.Threading.Tasks.Task<TResult>> handler0)
+        {
+            _value = value;
+            _handler0 = handler0;
+        }
+
+        public __MatchAsyncBuilder_2<TResult> Supplier(global::System.Func<string, int, global::System.Threading.Tasks.Task<TResult>> handler)
+        {
+            return new __MatchAsyncBuilder_2<TResult>(_value, _handler0, handler);
+        }
+    }
+
+    public readonly struct __MatchAsyncBuilder_2<TResult>
+    {
+        private readonly BusinessParty _value;
+        private readonly global::System.Func<string, global::System.Threading.Tasks.Task<TResult>> _handler0;
+        private readonly global::System.Func<string, int, global::System.Threading.Tasks.Task<TResult>> _handler1;
+
+        internal __MatchAsyncBuilder_2(BusinessParty value, global::System.Func<string, global::System.Threading.Tasks.Task<TResult>> handler0, global::System.Func<string, int, global::System.Threading.Tasks.Task<TResult>> handler1)
+        {
+            _value = value;
+            _handler0 = handler0;
+            _handler1 = handler1;
+        }
+
+        public __MatchAsyncBuilder_3<TResult> Prospect(global::System.Func<global::System.Threading.Tasks.Task<TResult>> handler)
+        {
+            return new __MatchAsyncBuilder_3<TResult>(_value, _handler0, _handler1, handler);
+        }
+
+        public __MatchAsyncBuilder_3<TResult> Prospect(TResult value)
+        {
+            return Prospect(() => global::System.Threading.Tasks.Task.FromResult(value));
+        }
+    }
+
+    public readonly struct __MatchAsyncBuilder_3<TResult>
+    {
+        private readonly BusinessParty _value;
+        private readonly global::System.Func<string, global::System.Threading.Tasks.Task<TResult>> _handler0;
+        private readonly global::System.Func<string, int, global::System.Threading.Tasks.Task<TResult>> _handler1;
+        private readonly global::System.Func<global::System.Threading.Tasks.Task<TResult>> _handler2;
+
+        internal __MatchAsyncBuilder_3(BusinessParty value, global::System.Func<string, global::System.Threading.Tasks.Task<TResult>> handler0, global::System.Func<string, int, global::System.Threading.Tasks.Task<TResult>> handler1, global::System.Func<global::System.Threading.Tasks.Task<TResult>> handler2)
+        {
+            _value = value;
+            _handler0 = handler0;
+            _handler1 = handler1;
+            _handler2 = handler2;
+        }
+
+        public global::System.Threading.Tasks.Task<TResult> ResultAsync()
+        {
+            return _value switch
+            {
+                Customer variant => _handler0(variant.Name),
+                Supplier variant => _handler1(variant.CompanyName, variant.Rating),
+                Prospect _ => _handler2(),
+                _ => throw new global::System.InvalidOperationException("Unrecognized union variant.")
+            };
+        }
+    }
+
+    public __SwitchAsyncBuilder_0 SwitchAsync() => new __SwitchAsyncBuilder_0(this);
+
+    public readonly struct __SwitchAsyncBuilder_0
+    {
+        private readonly BusinessParty _value;
+
+        internal __SwitchAsyncBuilder_0(BusinessParty value)
+        {
+            _value = value;
+        }
+
+        public __SwitchAsyncBuilder_1 Customer(global::System.Func<string, global::System.Threading.Tasks.Task> handler)
+        {
+            return new __SwitchAsyncBuilder_1(_value, handler);
+        }
+    }
+
+    public readonly struct __SwitchAsyncBuilder_1
+    {
+        private readonly BusinessParty _value;
+        private readonly global::System.Func<string, global::System.Threading.Tasks.Task> _handler0;
+
+        internal __SwitchAsyncBuilder_1(BusinessParty value, global::System.Func<string, global::System.Threading.Tasks.Task> handler0)
+        {
+            _value = value;
+            _handler0 = handler0;
+        }
+
+        public __SwitchAsyncBuilder_2 Supplier(global::System.Func<string, int, global::System.Threading.Tasks.Task> handler)
+        {
+            return new __SwitchAsyncBuilder_2(_value, _handler0, handler);
+        }
+    }
+
+    public readonly struct __SwitchAsyncBuilder_2
+    {
+        private readonly BusinessParty _value;
+        private readonly global::System.Func<string, global::System.Threading.Tasks.Task> _handler0;
+        private readonly global::System.Func<string, int, global::System.Threading.Tasks.Task> _handler1;
+
+        internal __SwitchAsyncBuilder_2(BusinessParty value, global::System.Func<string, global::System.Threading.Tasks.Task> handler0, global::System.Func<string, int, global::System.Threading.Tasks.Task> handler1)
+        {
+            _value = value;
+            _handler0 = handler0;
+            _handler1 = handler1;
+        }
+
+        public __SwitchAsyncBuilder_3 Prospect(global::System.Func<global::System.Threading.Tasks.Task> handler)
+        {
+            return new __SwitchAsyncBuilder_3(_value, _handler0, _handler1, handler);
+        }
+    }
+
+    public readonly struct __SwitchAsyncBuilder_3
+    {
+        private readonly BusinessParty _value;
+        private readonly global::System.Func<string, global::System.Threading.Tasks.Task> _handler0;
+        private readonly global::System.Func<string, int, global::System.Threading.Tasks.Task> _handler1;
+        private readonly global::System.Func<global::System.Threading.Tasks.Task> _handler2;
+
+        internal __SwitchAsyncBuilder_3(BusinessParty value, global::System.Func<string, global::System.Threading.Tasks.Task> handler0, global::System.Func<string, int, global::System.Threading.Tasks.Task> handler1, global::System.Func<global::System.Threading.Tasks.Task> handler2)
+        {
+            _value = value;
+            _handler0 = handler0;
+            _handler1 = handler1;
+            _handler2 = handler2;
+        }
+
+        public global::System.Threading.Tasks.Task ExecuteAsync()
+        {
+            return _value switch
+            {
+                Customer variant => _handler0(variant.Name),
+                Supplier variant => _handler1(variant.CompanyName, variant.Rating),
+                Prospect _ => _handler2(),
+                _ => throw new global::System.InvalidOperationException("Unrecognized union variant.")
+            };
+        }
+    }
 }

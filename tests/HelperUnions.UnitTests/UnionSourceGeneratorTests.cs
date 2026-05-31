@@ -151,4 +151,71 @@ public class UnionSourceGeneratorTests
         Assert.That(generatedSource, Does.Contain("public __SwitchBuilder_2 Retry(global::System.Action<int, string> handler)"));
         Assert.That(generatedSource, Does.Contain("public __SwitchBuilder_3 Cancelled(global::System.Action handler)"));
     }
+
+    [Test]
+    public void ValidUnion_GeneratesMatchAsyncBuilder()
+    {
+        const string source = """
+            using HelperUnions;
+
+            namespace Demo;
+
+            [Union]
+            public partial record Outcome
+            {
+                public sealed record Success(string Message) : Outcome;
+
+                public sealed record Retry(int Count, string Reason) : Outcome;
+
+                public sealed record Cancelled() : Outcome;
+            }
+            """;
+
+        var result = CreateDriver()
+            .RunGenerators(CreateCompilation(source))
+            .GetRunResult();
+
+        var generatedSource = result.GeneratedTrees.Single().ToString();
+
+        Assert.That(generatedSource, Does.Contain("public __MatchAsyncBuilder_0 MatchAsync() => new __MatchAsyncBuilder_0(this);"));
+        Assert.That(generatedSource, Does.Contain("public readonly struct __MatchAsyncBuilder_3<TResult>"));
+        Assert.That(generatedSource, Does.Contain("public global::System.Threading.Tasks.Task<TResult> ResultAsync()"));
+        Assert.That(generatedSource, Does.Contain("public __MatchAsyncBuilder_1<TResult> Success<TResult>(global::System.Func<string, global::System.Threading.Tasks.Task<TResult>> handler)"));
+        Assert.That(generatedSource, Does.Contain("public __MatchAsyncBuilder_2<TResult> Retry(global::System.Func<int, string, global::System.Threading.Tasks.Task<TResult>> handler)"));
+        Assert.That(generatedSource, Does.Contain("public __MatchAsyncBuilder_3<TResult> Cancelled(global::System.Func<global::System.Threading.Tasks.Task<TResult>> handler)"));
+        Assert.That(generatedSource, Does.Contain("public __MatchAsyncBuilder_3<TResult> Cancelled(TResult value)"));
+    }
+
+    [Test]
+    public void ValidUnion_GeneratesSwitchAsyncBuilder()
+    {
+        const string source = """
+            using HelperUnions;
+
+            namespace Demo;
+
+            [Union]
+            public partial record Outcome
+            {
+                public sealed record Success(string Message) : Outcome;
+
+                public sealed record Retry(int Count, string Reason) : Outcome;
+
+                public sealed record Cancelled() : Outcome;
+            }
+            """;
+
+        var result = CreateDriver()
+            .RunGenerators(CreateCompilation(source))
+            .GetRunResult();
+
+        var generatedSource = result.GeneratedTrees.Single().ToString();
+
+        Assert.That(generatedSource, Does.Contain("public __SwitchAsyncBuilder_0 SwitchAsync() => new __SwitchAsyncBuilder_0(this);"));
+        Assert.That(generatedSource, Does.Contain("public readonly struct __SwitchAsyncBuilder_3"));
+        Assert.That(generatedSource, Does.Contain("public global::System.Threading.Tasks.Task ExecuteAsync()"));
+        Assert.That(generatedSource, Does.Contain("public __SwitchAsyncBuilder_1 Success(global::System.Func<string, global::System.Threading.Tasks.Task> handler)"));
+        Assert.That(generatedSource, Does.Contain("public __SwitchAsyncBuilder_2 Retry(global::System.Func<int, string, global::System.Threading.Tasks.Task> handler)"));
+        Assert.That(generatedSource, Does.Contain("public __SwitchAsyncBuilder_3 Cancelled(global::System.Func<global::System.Threading.Tasks.Task> handler)"));
+    }
 }
