@@ -1,4 +1,3 @@
-using HelperUnions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -24,7 +23,7 @@ public static class CSharpAnalyzerVerifier<TAnalyzer>
     }
 
     public static DiagnosticResult Diagnostic(string diagnosticId)
-        => Microsoft.CodeAnalysis.CSharp.Testing.CSharpAnalyzerVerifier<TAnalyzer, DefaultVerifier>.Diagnostic(diagnosticId);
+        => CSharpAnalyzerVerifier<TAnalyzer, DefaultVerifier>.Diagnostic(diagnosticId);
 
     public static async Task VerifyAnalyzerAsync(string source, params DiagnosticResult[] expected)
     {

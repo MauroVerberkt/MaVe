@@ -104,28 +104,23 @@ public sealed class NonExhaustiveUnionMatchAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var unionType = UnwrapNullable(switchedType) as INamedTypeSymbol;
-        if (unionType is null)
+        if (!HasUnionAttribute(switchedType, unionAttributeSymbol))
         {
             return;
         }
 
-        if (!HasUnionAttribute(unionType, unionAttributeSymbol))
+        var orArms = labelsOrArms as TNode[] ?? labelsOrArms.ToArray();
+        if (orArms.Any(isDefaultOrDiscard))
         {
             return;
         }
 
-        if (labelsOrArms.Any(isDefaultOrDiscard))
-        {
-            return;
-        }
-
-        var variants = unionType
+        var variants = switchedType
             .GetTypeMembers()
             .Where(typeMember =>
                 typeMember.IsRecord &&
                 typeMember.IsSealed &&
-                SymbolEqualityComparer.Default.Equals(typeMember.BaseType, unionType))
+                SymbolEqualityComparer.Default.Equals(typeMember.BaseType, switchedType))
             .ToImmutableArray();
 
         if (variants.Length == 0)
@@ -135,7 +130,7 @@ public sealed class NonExhaustiveUnionMatchAnalyzer : DiagnosticAnalyzer
 
         var covered = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
 
-        foreach (var node in labelsOrArms)
+        foreach (var node in orArms)
         {
             var pattern = getPattern(node);
             if (pattern is null)
@@ -149,7 +144,7 @@ public sealed class NonExhaustiveUnionMatchAnalyzer : DiagnosticAnalyzer
                 continue;
             }
 
-            var matchedNamedType = UnwrapNullable(matchedType) as INamedTypeSymbol;
+            var matchedNamedType = matchedType as INamedTypeSymbol;
             if (matchedNamedType is null)
             {
                 continue;
@@ -202,15 +197,4 @@ public sealed class NonExhaustiveUnionMatchAnalyzer : DiagnosticAnalyzer
         };
     }
 
-    private static ITypeSymbol UnwrapNullable(ITypeSymbol typeSymbol)
-    {
-        if (typeSymbol is INamedTypeSymbol namedTypeSymbol
-            && namedTypeSymbol.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T
-            && namedTypeSymbol.TypeArguments.Length == 1)
-        {
-            return namedTypeSymbol.TypeArguments[0];
-        }
-
-        return typeSymbol;
-    }
 }
