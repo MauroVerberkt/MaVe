@@ -16,7 +16,7 @@ keywords:
 
 ## Overview
 
-DotnetHelpers ships as two primary NuGet packages, each with specific internal layouts to support runtime code, analyzers, and build integration.
+DotnetHelpers ships as three primary NuGet packages, each with specific internal layouts to support runtime code, analyzers, and build integration.
 
 ## HelperMonads Package
 
@@ -170,3 +170,53 @@ BusinessRules.ResultExtensions.nupkg       BusinessRules.Wcf.nupkg
 They declare package dependencies on their prerequisites:
 - `ResultExtensions` depends on: `HelperMonads`, `BusinessRulesManagement`
 - `Wcf` depends on: `BusinessRulesManagement`, `System.ServiceModel.Primitives`
+
+## HelperUnions Package
+
+Single package combining the attribute assembly, source generator, analyzer, and code fix provider. No private dependencies are bundled — unlike `BusinessRulesManagement`, the generator does not need `System.Text.Json`.
+
+```mermaid
+graph TD
+    subgraph "HelperUnions.nupkg"
+        subgraph "lib/"
+            L[net8.0/HelperUnions.dll]
+        end
+        subgraph "analyzers/dotnet/cs/"
+            A1[HelperUnionsGenerator.dll]
+            A2[HelperUnionsAnalyzer.dll]
+            A3[HelperUnionsFixProvider.dll]
+        end
+    end
+
+    style L fill:#7c3aed,color:#fff
+    style A1 fill:#c4b5fd,color:#333
+    style A2 fill:#c4b5fd,color:#333
+    style A3 fill:#c4b5fd,color:#333
+```
+
+### Layout Explanation
+
+| Path | Content | Purpose |
+|------|---------|---------|
+| `lib/net8.0/` | HelperUnions.dll | `[Union]` attribute consumed by user code |
+| `analyzers/dotnet/cs/` | Generator DLL | Emits union base, inspection API, and builder chains |
+| `analyzers/dotnet/cs/` | Analyzer DLL | DNHU0001 (non-exhaustive switch) + DNHU0003 (invalid declaration) |
+| `analyzers/dotnet/cs/` | FixProvider DLL | "Add missing union variant arms" code fix for DNHU0001 |
+
+### Packing Strategy
+
+`HelperUnions.csproj` uses the same analyzer-packing pattern as `BusinessRules.csproj`:
+
+```xml
+<ProjectReference Include="..\HelperUnionsGenerator\HelperUnionsGenerator.csproj"
+                  OutputItemType="Analyzer"
+                  ReferenceOutputAssembly="false" />
+
+<ProjectReference Include="..\HelperUnionsAnalyzer\HelperUnionsAnalyzer.csproj"
+                  OutputItemType="Analyzer"
+                  ReferenceOutputAssembly="false" />
+
+<ProjectReference Include="..\HelperUnionsFixProvider\HelperUnionsFixProvider.csproj"
+                  OutputItemType="Analyzer"
+                  ReferenceOutputAssembly="false" />
+```
