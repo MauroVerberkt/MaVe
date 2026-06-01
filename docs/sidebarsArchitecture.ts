@@ -18,6 +18,11 @@ const sidebars: SidebarsConfig = {
           id: 'by-project/business-rules',
           label: 'BusinessRules',
         },
+        {
+          type: 'doc',
+          id: 'by-project/helper-unions',
+          label: 'HelperUnions',
+        },
       ],
     },
     {

@@ -18,6 +18,7 @@ Add DotnetHelpers to your .NET project via NuGet or project references.
 ```bash
 dotnet add package HelperMonads
 dotnet add package BusinessRulesManagement
+dotnet add package HelperUnions
 ```
 
 ## Requirements
@@ -33,6 +34,7 @@ If you're working directly with the source code:
 <ItemGroup>
   <ProjectReference Include="..\HelperMonads\HelperMonads.csproj" />
   <ProjectReference Include="..\BusinessRules\BusinessRules.csproj" />
+  <ProjectReference Include="..\HelperUnions\HelperUnions.csproj" />
 </ItemGroup>
 ```
 
@@ -61,5 +63,11 @@ dotnet build
 :::tip
 
 The BusinessRules package includes Roslyn analyzers and a source generator. You'll get compile-time validation of business rule keys automatically.
+
+:::
+
+:::tip
+
+The HelperUnions package includes a source generator, Roslyn analyzers (DNHU0001, DNHU0003), and a code fix provider. You'll get exhaustive matching and compile-time union validation automatically.
 
 :::

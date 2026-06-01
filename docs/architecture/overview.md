@@ -31,6 +31,10 @@ graph TD
     BRF[BusinessRulesFixProvider<br/><i>netstandard2.0</i>]
     BRRE[BusinessRules.ResultExtensions<br/><i>net8.0</i>]
     BRW[BusinessRules.Wcf<br/><i>net8.0</i>]
+    HU[HelperUnions<br/><i>net8.0</i>]
+    HUG[HelperUnionsGenerator<br/><i>netstandard2.0</i>]
+    HUA[HelperUnionsAnalyzer<br/><i>netstandard2.0</i>]
+    HUF[HelperUnionsFixProvider<br/><i>netstandard2.0</i>]
 
     BR -->|packs as analyzer| BRG
     BR -->|packs as analyzer| BRA
@@ -39,14 +43,21 @@ graph TD
     BRRE --> HM
     BRW --> BR
     BRW -->|System.ServiceModel| WCF[System.ServiceModel.Primitives]
+    HU -->|packs as analyzer| HUG
+    HU -->|packs as analyzer| HUA
+    HU -->|packs as analyzer| HUF
 
     style HM fill:#7c3aed,color:#fff
     style BR fill:#7c3aed,color:#fff
+    style HU fill:#7c3aed,color:#fff
     style BRRE fill:#a78bfa,color:#fff
     style BRW fill:#a78bfa,color:#fff
     style BRG fill:#c4b5fd,color:#333
     style BRA fill:#c4b5fd,color:#333
     style BRF fill:#c4b5fd,color:#333
+    style HUG fill:#c4b5fd,color:#333
+    style HUA fill:#c4b5fd,color:#333
+    style HUF fill:#c4b5fd,color:#333
 ```
 
 ## Package Summary
@@ -60,6 +71,10 @@ graph TD
 | **BusinessRulesFixProvider** | netstandard2.0 | Code fix provider for analyzer diagnostics |
 | **BusinessRules.ResultExtensions** | net8.0 | Bridges BusinessRules + HelperMonads Result pattern |
 | **BusinessRules.Wcf** | net8.0 | WCF fault exception support (legacy systems) |
+| **HelperUnions** | net8.0 | `[Union]` attribute + generated builder API |
+| **HelperUnionsGenerator** | netstandard2.0 | Source generator: emits union base, inspection, and exhaustive builder chains |
+| **HelperUnionsAnalyzer** | netstandard2.0 | Roslyn analyzers (DNHU0001, DNHU0003) for compile-time union validation |
+| **HelperUnionsFixProvider** | netstandard2.0 | Code fix provider for DNHU0001 |
 
 ## Test Projects
 
@@ -70,6 +85,7 @@ graph TD
 | BusinessRules.IntegrationTests | End-to-end: JSON file to generated code to analyzer validation |
 | BusinessRules.ResultExtensions.UnitTests | Extension method behavior |
 | BusinessRules.Wcf.UnitTests | Fault exception creation |
+| HelperUnions.UnitTests | Generator snapshot tests, analyzer diagnostics, code fix verification |
 
 ## Key Architectural Decisions
 

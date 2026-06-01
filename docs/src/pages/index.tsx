@@ -131,6 +131,7 @@ function Approach() {
       <div className={styles.approachBody}>
         <p>
           Operations return Result&lt;T&gt; instead of throwing. Values use Option&lt;T&gt; instead of null.
+          Domain alternatives are modeled as source-generated discriminated unions with exhaustive matching.
           Business rules are defined in JSON and generated as strongly-typed C# classes at compile time.
           Roslyn analyzers catch violations before code runs. Source generators eliminate reflection.
         </p>
@@ -154,6 +155,10 @@ function Packages() {
         <div className={styles.packageItem}>
           <Heading as="h3">BusinessRules</Heading>
           <p>JSON-defined rules → source-generated C# classes + Roslyn analyzers for compile-time validation</p>
+        </div>
+        <div className={styles.packageItem}>
+          <Heading as="h3">HelperUnions</Heading>
+          <p>Source-generated discriminated unions with exhaustive Match/Switch builders and compile-time analyzer support</p>
         </div>
       </div>
       <div className={styles.packagesSecondary}>

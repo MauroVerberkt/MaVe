@@ -49,3 +49,6 @@ msbuild.wrn
 docs/node_modules/
 docs/build/
 docs/.docusaurus/
+
+# Verify snapshot testing
+*.received.*

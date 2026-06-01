@@ -16,7 +16,7 @@ keywords:
 
 ## Overview
 
-DotnetHelpers ships as two primary NuGet packages, each with specific internal layouts to support runtime code, analyzers, and build integration.
+DotnetHelpers ships as three primary NuGet packages, each with specific internal layouts to support runtime code, analyzers, and build integration.
 
 ## HelperMonads Package
 
@@ -170,3 +170,65 @@ BusinessRules.ResultExtensions.nupkg       BusinessRules.Wcf.nupkg
 They declare package dependencies on their prerequisites:
 - `ResultExtensions` depends on: `HelperMonads`, `BusinessRulesManagement`
 - `Wcf` depends on: `BusinessRulesManagement`, `System.ServiceModel.Primitives`
+
+## HelperUnions Package
+
+Single package combining the attribute assembly, source generator, analyzer, and code fix provider. No private dependencies are bundled — unlike `BusinessRulesManagement`, the generator does not need `System.Text.Json`.
+
+```mermaid
+graph TD
+    subgraph "HelperUnions.nupkg"
+        subgraph "lib/"
+            L[net8.0/HelperUnions.dll]
+        end
+        subgraph "analyzers/dotnet/cs/"
+            A1[HelperUnionsGenerator.dll]
+            A2[HelperUnionsAnalyzer.dll]
+            A3[HelperUnionsFixProvider.dll]
+        end
+    end
+
+    style L fill:#7c3aed,color:#fff
+    style A1 fill:#c4b5fd,color:#333
+    style A2 fill:#c4b5fd,color:#333
+    style A3 fill:#c4b5fd,color:#333
+```
+
+### Layout Explanation
+
+| Path | Content | Purpose |
+|------|---------|---------|
+| `lib/net8.0/` | HelperUnions.dll | `[Union]` attribute consumed by user code |
+| `analyzers/dotnet/cs/` | Generator DLL | Emits union base, inspection API, and builder chains |
+| `analyzers/dotnet/cs/` | Analyzer DLL | DNHU0001 (non-exhaustive switch) + DNHU0003 (invalid declaration) |
+| `analyzers/dotnet/cs/` | FixProvider DLL | "Add missing union variant arms" code fix for DNHU0001 |
+
+### Packing Strategy
+
+`HelperUnions.csproj` uses a different packing strategy than `BusinessRules.csproj`. The `ProjectReference` entries only carry `ReferenceOutputAssembly="false"` (build ordering); the DLLs are packed via explicit `None Include` items:
+
+```xml
+<ItemGroup>
+  <ProjectReference Include="..\HelperUnionsAnalyzer\HelperUnionsAnalyzer.csproj"
+                    ReferenceOutputAssembly="false" />
+  <ProjectReference Include="..\HelperUnionsFixProvider\HelperUnionsFixProvider.csproj"
+                    ReferenceOutputAssembly="false" />
+  <ProjectReference Include="..\HelperUnionsGenerator\HelperUnionsGenerator.csproj"
+                    ReferenceOutputAssembly="false" />
+</ItemGroup>
+
+<ItemGroup>
+  <None Include="..\HelperUnionsAnalyzer\bin\$(Configuration)\netstandard2.0\HelperUnionsAnalyzer.dll"
+        Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  <None Include="..\HelperUnionsFixProvider\bin\$(Configuration)\netstandard2.0\HelperUnionsFixProvider.dll"
+        Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  <None Include="..\HelperUnionsGenerator\bin\$(Configuration)\netstandard2.0\HelperUnionsGenerator.dll"
+        Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+</ItemGroup>
+```
+
+| Attribute | Effect |
+|-----------|--------|
+| `ReferenceOutputAssembly="false"` | Ensures tooling projects build before packing, without adding a compile reference to `HelperUnions.dll` |
+| `Pack="true" PackagePath="analyzers/dotnet/cs"` | Copies the built DLL directly into the correct analyzer slot in the package |
+| `Visible="false"` | Hides the item from Solution Explorer |

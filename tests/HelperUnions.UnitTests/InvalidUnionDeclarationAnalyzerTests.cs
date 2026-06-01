@@ -1,0 +1,136 @@
+using HelperUnions.UnitTests.Verifiers;
+using Microsoft.CodeAnalysis.Testing;
+
+namespace HelperUnions.UnitTests;
+
+[TestFixture]
+public class InvalidUnionDeclarationAnalyzerTests
+{
+    private const string DiagnosticId = "DNHU0003";
+
+    [Test]
+    public async Task UnionOnPartialClass_ReportsDiagnostic()
+    {
+        const string source = """
+            using HelperUnions;
+
+            namespace Demo;
+
+            [Union]
+            public partial class BusinessParty
+            {
+            }
+            """;
+
+        var expected = CSharpAnalyzerVerifier<HelperUnionsAnalyzer.InvalidUnionDeclarationAnalyzer>
+            .Diagnostic(DiagnosticId)
+            .WithSpan(5, 2, 5, 7);
+
+        await CSharpAnalyzerVerifier<HelperUnionsAnalyzer.InvalidUnionDeclarationAnalyzer>
+            .VerifyAnalyzerAsync(source, expected);
+    }
+
+    [Test]
+    public async Task UnionOnNonPartialRecord_ReportsDiagnostic()
+    {
+        const string source = """
+            using HelperUnions;
+
+            namespace Demo;
+
+            [Union]
+            public record BusinessParty
+            {
+            }
+            """;
+
+        var expected = CSharpAnalyzerVerifier<HelperUnionsAnalyzer.InvalidUnionDeclarationAnalyzer>
+            .Diagnostic(DiagnosticId)
+            .WithSpan(5, 2, 5, 7);
+
+        await CSharpAnalyzerVerifier<HelperUnionsAnalyzer.InvalidUnionDeclarationAnalyzer>
+            .VerifyAnalyzerAsync(source, expected);
+    }
+
+    [Test]
+    public async Task UnionOnNonPartialClass_ReportsDiagnostic()
+    {
+        const string source = """
+            using HelperUnions;
+
+            namespace Demo;
+
+            [Union]
+            public class BusinessParty
+            {
+            }
+            """;
+
+        var expected = CSharpAnalyzerVerifier<HelperUnionsAnalyzer.InvalidUnionDeclarationAnalyzer>
+            .Diagnostic(DiagnosticId)
+            .WithSpan(5, 2, 5, 7);
+
+        await CSharpAnalyzerVerifier<HelperUnionsAnalyzer.InvalidUnionDeclarationAnalyzer>
+            .VerifyAnalyzerAsync(source, expected);
+    }
+
+    [Test]
+    public async Task UnionOnPartialRecord_DoesNotReportDiagnostic()
+    {
+        const string source = """
+            using HelperUnions;
+
+            namespace Demo;
+
+            [Union]
+            public partial record BusinessParty
+            {
+            }
+            """;
+
+        await CSharpAnalyzerVerifier<HelperUnionsAnalyzer.InvalidUnionDeclarationAnalyzer>
+            .VerifyAnalyzerAsync(source);
+    }
+
+    [Test]
+    public async Task UnionOnPartialRecordStruct_ReportsDiagnostic()
+    {
+        const string source = """
+            using HelperUnions;
+
+            namespace Demo;
+
+            [Union]
+            public partial record struct BusinessParty
+            {
+            }
+            """;
+
+        var expected = CSharpAnalyzerVerifier<HelperUnionsAnalyzer.InvalidUnionDeclarationAnalyzer>
+            .Diagnostic(DiagnosticId)
+            .WithSpan(5, 2, 5, 7);
+
+        var expectedCompilerDiagnostic = DiagnosticResult
+            .CompilerError("CS0592")
+            .WithSpan(5, 2, 5, 7)
+            .WithArguments("Union", "class");
+
+        await CSharpAnalyzerVerifier<HelperUnionsAnalyzer.InvalidUnionDeclarationAnalyzer>
+            .VerifyAnalyzerAsync(source, expected, expectedCompilerDiagnostic);
+    }
+
+    [Test]
+    public async Task TypeWithoutUnionAttribute_DoesNotReportDiagnostic()
+    {
+        const string source = """
+            namespace Demo;
+
+            public partial class BusinessParty
+            {
+            }
+            """;
+
+        await CSharpAnalyzerVerifier<HelperUnionsAnalyzer.InvalidUnionDeclarationAnalyzer>
+            .VerifyAnalyzerAsync(source);
+    }
+}

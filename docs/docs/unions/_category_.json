@@ -1,0 +1,10 @@
+{
+  "label": "Unions",
+  "position": 3,
+  "collapsed": false,
+  "collapsible": true,
+  "link": {
+    "type": "generated-index",
+    "description": "Source-generated discriminated unions for C# with exhaustive matching and compile-time safety."
+  }
+}
