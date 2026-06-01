@@ -51,6 +51,8 @@ jobs:
   publish-github-packages:
     needs: [changes, build-and-test]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.build-and-test.result == 'success'
+    permissions:
+      packages: write
     uses: ./.github/workflows/_publish-packages.yml
     with:
       feed: github
