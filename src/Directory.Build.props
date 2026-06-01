@@ -12,8 +12,6 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <!-- TODO(packaging-bootstrap): remove RS0016/RS0017 downgrade once PublicAPI baselines are finalized -->
-    <WarningsNotAsErrors>$(WarningsNotAsErrors);RS0016;RS0017</WarningsNotAsErrors>
   </PropertyGroup>
 
   <!-- SourceLink: all TFMs for packable non-analyzer projects -->

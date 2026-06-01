@@ -27,6 +27,7 @@ jobs:
               - '*.sln'
               - '*.slnf'
               - 'Directory.Build.props'
+              - 'Directory.Packages.props'
               - 'tools/**'
               - '.github/workflows/**'
             docs:
@@ -45,6 +46,14 @@ jobs:
     needs: changes
     if: always() && (needs.changes.outputs.docs == 'true' || needs.changes.outputs.code == 'true' || github.event_name == 'push')
     uses: ./.github/workflows/_docs-validate.yml
+
+  # Publish prerelease packages from each main merge to GitHub Packages (dev feed by design).
+  publish-github-packages:
+    needs: [changes, build-and-test]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.build-and-test.result == 'success'
+    uses: ./.github/workflows/_publish-packages.yml
+    with:
+      feed: github
 
   # Verify that docs/ branches only contain documentation file changes.
   # Fails the PR if non-documentation files are modified on a docs/ branch.
@@ -73,7 +82,7 @@ jobs:
   # Always runs, aggregates results from conditional jobs.
   ci-gate:
     if: always()
-    needs: [build-and-test, docs-validate, docs-only-guard]
+    needs: [build-and-test, docs-validate, publish-github-packages, docs-only-guard]
     runs-on: ubuntu-latest
     steps:
       - name: Check results
@@ -82,4 +91,4 @@ jobs:
             echo "CI failed"
             exit 1
           fi
-          echo "CI passed (build-and-test: ${{ needs.build-and-test.result }}, docs-validate: ${{ needs.docs-validate.result }}, docs-only-guard: ${{ needs.docs-only-guard.result }})"
+          echo "CI passed (build-and-test: ${{ needs.build-and-test.result }}, docs-validate: ${{ needs.docs-validate.result }}, publish-github-packages: ${{ needs.publish-github-packages.result }}, docs-only-guard: ${{ needs.docs-only-guard.result }})"
