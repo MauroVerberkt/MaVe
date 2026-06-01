@@ -5,10 +5,15 @@
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>HelperUnions</PackageId>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <Title>Helper Unions</Title>
     <Description>Source-generated discriminated unions for C# with exhaustive matching support</Description>
     <PackageTags>union;discriminated-union;source-generator;analyzer;functional</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\HelperUnionsAnalyzer\HelperUnionsAnalyzer.csproj"
