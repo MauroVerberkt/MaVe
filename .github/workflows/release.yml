@@ -13,11 +13,17 @@ permissions:
 
 jobs:
   build-and-test:
+    permissions:
+      contents: read
     uses: ./.github/workflows/_build-and-test.yml
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   verify-tag-on-main:
     needs: [build-and-test]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -74,6 +80,8 @@ jobs:
 
   publish-nuget:
     needs: [verify-tag-on-main]
+    permissions:
+      contents: read
     uses: ./.github/workflows/_publish-packages.yml
     with:
       feed: nuget
