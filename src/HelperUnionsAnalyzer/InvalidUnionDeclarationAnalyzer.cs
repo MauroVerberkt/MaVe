@@ -9,7 +9,7 @@ namespace HelperUnionsAnalyzer;
 /// Reports DNHU0003 when <c>[Union]</c> is applied to anything other than a partial record declaration.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class InvalidUnionDeclarationAnalyzer : DiagnosticAnalyzer
+public sealed class InvalidUnionDeclarationAnalyzer : DiagnosticAnalyzer
 {
     internal const string DiagnosticId = "DNHU0003";
     private const string Category = "Usage";
