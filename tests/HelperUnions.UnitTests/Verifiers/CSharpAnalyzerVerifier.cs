@@ -12,7 +12,14 @@ public static class CSharpAnalyzerVerifier<TAnalyzer>
     {
         public Test()
         {
+#if NET9_0_OR_GREATER
+            ReferenceAssemblies = new ReferenceAssemblies(
+                "net9.0",
+                new PackageIdentity("Microsoft.NETCore.App.Ref", "9.0.0"),
+                Path.Combine("ref", "net9.0"));
+#else
             ReferenceAssemblies = ReferenceAssemblies.Net.Net80;
+#endif
 
             var helperUnionsReference = MetadataReference.CreateFromFile(typeof(UnionAttribute).Assembly.Location);
             if (TestState.AdditionalReferences.All(reference => reference.Display != helperUnionsReference.Display))

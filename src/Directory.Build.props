@@ -6,7 +6,23 @@
   </PropertyGroup>
 
   <!-- Packaging metadata for all packable src projects -->
-  <PropertyGroup Condition="'$(IsPackable)' == 'true'">
+  <PropertyGroup Condition="'$(IsPackable)' == 'true' and '$(IsRoslynComponent)' != 'true'">
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <!-- TODO(packaging-bootstrap): remove RS0016/RS0017 downgrade once PublicAPI baselines are finalized -->
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);RS0016;RS0017</WarningsNotAsErrors>
   </PropertyGroup>
+
+  <!-- SourceLink: all TFMs for packable non-analyzer projects -->
+  <ItemGroup Condition="'$(IsPackable)' == 'true' and '$(IsRoslynComponent)' != 'true'">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
+  </ItemGroup>
+
+  <!-- PublicApiAnalyzers: net8.0 only to avoid cross-TFM API file divergence -->
+  <ItemGroup Condition="'$(IsPackable)' == 'true' and '$(IsRoslynComponent)' != 'true' and '$(TargetFramework)' == 'net8.0'">
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="All" />
+  </ItemGroup>
 </Project>

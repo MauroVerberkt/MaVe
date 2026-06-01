@@ -1,6 +1,5 @@
 <Project>
   <PropertyGroup>
-    <Version>0.0.1</Version>
     <Authors>Mauro Verberkt</Authors>
     <Copyright>Copyright (c) Mauro Verberkt</Copyright>
     <RepositoryUrl>https://github.com/MauroVerberkt/DotnetHelpers</RepositoryUrl>
@@ -9,10 +8,13 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nerdbank.GitVersioning" PrivateAssets="all" />
+  </ItemGroup>
 </Project>
