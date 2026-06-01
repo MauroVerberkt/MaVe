@@ -40,7 +40,7 @@
 
   <ItemGroup>
     <None Include="schemas\businessrules-schema.json" Pack="true" PackagePath="schemas\" />
-    <None Include="packaging\BusinessRulesManagement.props" Pack="true" PackagePath="build\" />
+    <None Include="packaging/BusinessRulesManagement.props" Pack="true" PackagePath="build/$(PackageId).props" />
   </ItemGroup>
 
 </Project>
