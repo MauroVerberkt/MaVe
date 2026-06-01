@@ -1,4 +1,5 @@
 using System.Text;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
@@ -876,6 +877,10 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
             return Equals(obj as UnionCandidate);
         }
 
+        // Roslyn incremental generator caching uses Equals for state-table comparisons.
+        // This GetHashCode implementation exists to satisfy the Equals/GetHashCode contract,
+        // but is not invoked by the generator pipeline itself.
+        [ExcludeFromCodeCoverage]
         public override int GetHashCode()
         {
             unchecked
@@ -933,6 +938,10 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
             return Equals(obj as UnionVariant);
         }
 
+        // Roslyn incremental generator caching uses Equals for state-table comparisons.
+        // This GetHashCode implementation exists to satisfy the Equals/GetHashCode contract,
+        // but is not invoked by the generator pipeline itself.
+        [ExcludeFromCodeCoverage]
         public override int GetHashCode()
         {
             unchecked
@@ -986,6 +995,10 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
             return Equals(obj as UnionVariantParameter);
         }
 
+        // Roslyn incremental generator caching uses Equals for state-table comparisons.
+        // This GetHashCode implementation exists to satisfy the Equals/GetHashCode contract,
+        // but is not invoked by the generator pipeline itself.
+        [ExcludeFromCodeCoverage]
         public override int GetHashCode()
         {
             unchecked
