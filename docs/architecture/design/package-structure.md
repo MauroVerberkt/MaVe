@@ -205,18 +205,30 @@ graph TD
 
 ### Packing Strategy
 
-`HelperUnions.csproj` uses the same analyzer-packing pattern as `BusinessRules.csproj`:
+`HelperUnions.csproj` uses a different packing strategy than `BusinessRules.csproj`. The `ProjectReference` entries only carry `ReferenceOutputAssembly="false"` (build ordering); the DLLs are packed via explicit `None Include` items:
 
 ```xml
-<ProjectReference Include="..\HelperUnionsGenerator\HelperUnionsGenerator.csproj"
-                  OutputItemType="Analyzer"
-                  ReferenceOutputAssembly="false" />
+<ItemGroup>
+  <ProjectReference Include="..\HelperUnionsAnalyzer\HelperUnionsAnalyzer.csproj"
+                    ReferenceOutputAssembly="false" />
+  <ProjectReference Include="..\HelperUnionsFixProvider\HelperUnionsFixProvider.csproj"
+                    ReferenceOutputAssembly="false" />
+  <ProjectReference Include="..\HelperUnionsGenerator\HelperUnionsGenerator.csproj"
+                    ReferenceOutputAssembly="false" />
+</ItemGroup>
 
-<ProjectReference Include="..\HelperUnionsAnalyzer\HelperUnionsAnalyzer.csproj"
-                  OutputItemType="Analyzer"
-                  ReferenceOutputAssembly="false" />
-
-<ProjectReference Include="..\HelperUnionsFixProvider\HelperUnionsFixProvider.csproj"
-                  OutputItemType="Analyzer"
-                  ReferenceOutputAssembly="false" />
+<ItemGroup>
+  <None Include="..\HelperUnionsAnalyzer\bin\$(Configuration)\netstandard2.0\HelperUnionsAnalyzer.dll"
+        Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  <None Include="..\HelperUnionsFixProvider\bin\$(Configuration)\netstandard2.0\HelperUnionsFixProvider.dll"
+        Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  <None Include="..\HelperUnionsGenerator\bin\$(Configuration)\netstandard2.0\HelperUnionsGenerator.dll"
+        Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+</ItemGroup>
 ```
+
+| Attribute | Effect |
+|-----------|--------|
+| `ReferenceOutputAssembly="false"` | Ensures tooling projects build before packing, without adding a compile reference to `HelperUnions.dll` |
+| `Pack="true" PackagePath="analyzers/dotnet/cs"` | Copies the built DLL directly into the correct analyzer slot in the package |
+| `Visible="false"` | Hides the item from Solution Explorer |
