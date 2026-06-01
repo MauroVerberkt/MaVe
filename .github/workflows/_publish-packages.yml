@@ -1,0 +1,53 @@
+name: Publish Packages
+
+on:
+  workflow_call:
+    inputs:
+      feed:
+        description: "Target feed: github or nuget"
+        required: true
+        type: string
+    secrets:
+      NUGET_API_KEY:
+        required: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Download tested package artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: packages
+          path: ./artifacts
+
+      - name: Publish to GitHub Packages
+        if: inputs.feed == 'github'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          dotnet nuget push "./artifacts/*.nupkg" --api-key "$GITHUB_TOKEN" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --skip-duplicate
+          if ls ./artifacts/*.snupkg 1>/dev/null 2>&1; then
+            dotnet nuget push "./artifacts/*.snupkg" --api-key "$GITHUB_TOKEN" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --skip-duplicate
+          fi
+
+      - name: Publish to NuGet.org
+        if: inputs.feed == 'nuget'
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          if [ -z "$NUGET_API_KEY" ]; then
+            echo "NUGET_API_KEY is required for nuget feed"
+            exit 1
+          fi
+
+          dotnet nuget push "./artifacts/*.nupkg" --api-key "$NUGET_API_KEY" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+          if ls ./artifacts/*.snupkg 1>/dev/null 2>&1; then
+            dotnet nuget push "./artifacts/*.snupkg" --api-key "$NUGET_API_KEY" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+          fi

@@ -1,0 +1,98 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-test:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/_build-and-test.yml
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  verify-tag-on-main:
+    needs: [build-and-test]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify tag points to main lineage
+        run: |
+          git fetch origin main --depth=1
+          if ! git merge-base --is-ancestor "${{ github.sha }}" "origin/main"; then
+            echo "::error::Tag commit is not on main"
+            exit 1
+          fi
+      # Release safety check:
+      # Compare release tag version against the exact tested .nupkg artifacts
+      # produced by build-and-test. This guarantees stable publish uses the same
+      # package versions that passed CI, without recomputing versions here.
+      - name: Download tested package artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: packages
+          path: ./artifacts
+      - name: Verify tag matches built package versions
+        run: |
+          TAG_VERSION="${GITHUB_REF#refs/tags/v}"
+
+          mapfile -t PACKAGES < <(find ./artifacts -maxdepth 1 -type f -name '*.nupkg' ! -name '*.snupkg' | sort)
+
+          if [ "${#PACKAGES[@]}" -eq 0 ]; then
+            echo "::error::No .nupkg files found in artifacts."
+            exit 1
+          fi
+
+          MISMATCH=0
+
+          for PKG in "${PACKAGES[@]}"; do
+            FILE_NAME="$(basename "$PKG")"
+            PACKAGE_VERSION="$(echo "$FILE_NAME" | grep -oP '[0-9]+\.[0-9]+\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?(?=\.nupkg$)')"
+
+            if [ -z "$PACKAGE_VERSION" ]; then
+              echo "::error::Could not parse version from package filename: $FILE_NAME"
+              MISMATCH=1
+              continue
+            fi
+
+            if [ "$PACKAGE_VERSION" != "$TAG_VERSION" ]; then
+              echo "::error::Tag version ($TAG_VERSION) does not match package version ($PACKAGE_VERSION) in $FILE_NAME"
+              MISMATCH=1
+            fi
+          done
+
+          if [ "$MISMATCH" -ne 0 ]; then
+            echo "::error::Release tag must match all built package versions."
+            exit 1
+          fi
+
+  publish-nuget:
+    needs: [verify-tag-on-main]
+    permissions:
+      contents: read
+    uses: ./.github/workflows/_publish-packages.yml
+    with:
+      feed: nuget
+    secrets:
+      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+  create-github-release:
+    needs: [publish-nuget]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true

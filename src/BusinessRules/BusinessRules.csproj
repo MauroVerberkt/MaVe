@@ -5,10 +5,15 @@
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>BusinessRulesManagement</PackageId>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <Title>BusinessRules Management Framework</Title>
     <Description>A code generation-based framework for defining, managing, and enforcing business rules with Source Generators and Roslyn Analyzers</Description>
     <PackageTags>businessrules;validation;sourcegenerator;analyzer;codegen</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="BusinessRules.Wcf" />
@@ -35,7 +40,7 @@
 
   <ItemGroup>
     <None Include="schemas\businessrules-schema.json" Pack="true" PackagePath="schemas\" />
-    <None Include="build\BusinessRulesManagement.props" Pack="true" PackagePath="build\" />
+    <None Include="packaging/BusinessRulesManagement.props" Pack="true" PackagePath="build/$(PackageId).props" />
   </ItemGroup>
 
 </Project>

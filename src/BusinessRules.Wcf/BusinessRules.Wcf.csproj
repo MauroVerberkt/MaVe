@@ -4,10 +4,15 @@
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <IsPackable>true</IsPackable>
     <PackageId>BusinessRulesManagement.Wcf</PackageId>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <Title>BusinessRules WCF Extensions</Title>
     <Description>Integration library that bridges BusinessRules with WCF (Windows Communication Foundation) for structured fault exceptions</Description>
     <PackageTags>businessrules;wcf;faultexception;validation</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.ServiceModel.Primitives" />

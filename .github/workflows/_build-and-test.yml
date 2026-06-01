@@ -34,7 +34,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', 'Directory.Packages.props') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
 
@@ -50,13 +50,27 @@ jobs:
             --collect:"XPlat Code Coverage" \
             --results-directory ./test-results \
             --logger "junit;LogFilePath=${{ github.workspace }}/test-results/junit-{assembly}.xml" \
-            -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura,opencover
+            -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura
+
+      - name: Pack packages from tested build outputs
+        run: |
+          mkdir -p ./artifacts
+          dotnet pack ./src/HelperMonads/HelperMonads.csproj --configuration Release --no-build --output ./artifacts
+          dotnet pack ./src/BusinessRules/BusinessRules.csproj --configuration Release --no-build --output ./artifacts
+          dotnet pack ./src/BusinessRules.ResultExtensions/BusinessRules.ResultExtensions.csproj --configuration Release --no-build --output ./artifacts
+          dotnet pack ./src/BusinessRules.Wcf/BusinessRules.Wcf.csproj --configuration Release --no-build --output ./artifacts
+          dotnet pack ./src/HelperUnions/HelperUnions.csproj --configuration Release --no-build --output ./artifacts
+
+      - name: Upload package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages
+          path: ./artifacts
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v6
         with:
           directory: ./test-results
-          files: "**/*cobertura*.xml"
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -97,7 +111,7 @@ jobs:
           {
             "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
             "commit": "${{ github.sha }}",
-            "branch": "main",
+            "branch": "${{ github.ref_name }}",
             "coverage_percent": $AVG_COVERAGE,
             "test_projects": $FILE_COUNT,
             "status": "pass"

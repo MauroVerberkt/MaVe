@@ -5,10 +5,15 @@
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>BusinessRulesManagement.ResultExtensions</PackageId>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <Title>BusinessRules Result Monad Extensions</Title>
     <Description>Integration library that bridges BusinessRules with the Result monad pattern for functional error handling</Description>
     <PackageTags>businessrules;result;monad;validation;functional</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BusinessRules\BusinessRules.csproj" />
