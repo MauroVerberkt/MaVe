@@ -1,0 +1,3 @@
+#nullable enable
+HelperUnions.UnionAttribute
+HelperUnions.UnionAttribute.UnionAttribute() -> void

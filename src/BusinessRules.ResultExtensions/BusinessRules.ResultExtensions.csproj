@@ -1,7 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>BusinessRulesManagement.ResultExtensions</PackageId>
     <Title>BusinessRules Result Monad Extensions</Title>
     <Description>Integration library that bridges BusinessRules with the Result monad pattern for functional error handling</Description>

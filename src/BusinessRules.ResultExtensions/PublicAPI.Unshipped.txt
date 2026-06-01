@@ -1,0 +1,14 @@
+#nullable enable
+BusinessRules.ResultExtensions.BusinessRuleResultExtensions
+static BusinessRules.ResultExtensions.BusinessRuleResultExtensions.EnsureBusinessRule<T>(this T value, System.Func<T, bool>! predicate, BusinessRules.BusinessRuleBase! rule, string! errorMessage) -> HelperMonads.Result<T>!
+static BusinessRules.ResultExtensions.BusinessRuleResultExtensions.EnsureBusinessRule<T>(this T value, System.Func<T, bool>! predicate, BusinessRules.BusinessRuleBase! rule) -> HelperMonads.Result<T>!
+static BusinessRules.ResultExtensions.BusinessRuleResultExtensions.FromViolation(BusinessRules.BusinessRuleViolationException! exception) -> HelperMonads.Error!
+static BusinessRules.ResultExtensions.BusinessRuleResultExtensions.ToBusinessRuleException<T>(this HelperMonads.Result<T>! result, BusinessRules.BusinessRuleBase! rule) -> BusinessRules.BusinessRuleViolationException!
+static BusinessRules.ResultExtensions.BusinessRuleResultExtensions.ToResult<T>(this BusinessRules.BusinessRuleViolationException! exception) -> HelperMonads.Result<T>!
+static BusinessRules.ResultExtensions.BusinessRuleResultExtensions.ToResult<TRule, TData>(this BusinessRules.BusinessRule<TRule!>! rule, System.Exception! error) -> HelperMonads.Result<TData>!
+static BusinessRules.ResultExtensions.BusinessRuleResultExtensions.ValidateAll<T>(this T value, params (System.Func<T, bool>! predicate, BusinessRules.BusinessRuleBase! rule, string! errorMessage)[]! validations) -> HelperMonads.Result<T>!
+static BusinessRules.ResultExtensions.BusinessRuleResultExtensions.ValidateAll<T>(this T value, params (System.Func<T, bool>! predicate, BusinessRules.BusinessRuleBase! rule)[]! validations) -> HelperMonads.Result<T>!
+static BusinessRules.ResultExtensions.BusinessRuleResultExtensions.ValidateAndReturn<T>(System.Func<T>! operation, BusinessRules.BusinessRuleBase! rule) -> HelperMonads.Result<T>!
+static BusinessRules.ResultExtensions.BusinessRuleResultExtensions.ValidateAndReturn<T>(System.Func<T>! operation) -> HelperMonads.Result<T>!
+static BusinessRules.ResultExtensions.BusinessRuleResultExtensions.ValidateAndReturnAsync<T>(System.Func<System.Threading.Tasks.Task<T>!>! operation, BusinessRules.BusinessRuleBase! rule) -> System.Threading.Tasks.Task<HelperMonads.Result<T>!>!
+static BusinessRules.ResultExtensions.BusinessRuleResultExtensions.ValidateAndReturnAsync<T>(System.Func<System.Threading.Tasks.Task<T>!>! operation) -> System.Threading.Tasks.Task<HelperMonads.Result<T>!>!
