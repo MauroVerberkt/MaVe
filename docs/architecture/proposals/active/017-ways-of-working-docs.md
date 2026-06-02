@@ -140,8 +140,7 @@ repo-root-discoverable on GitHub. No content is removed from it.
 Add a single forward-reference line at the bottom of `CONTRIBUTING.md`:
 
 > For detailed reference on the CI pipeline, versioning model, and release
-> process, see the [Ways of Working](/architecture/ways-of-working/ci-pipeline)
-> section in the documentation site.
+> process, see the Ways of Working section in the documentation site.
 
 The Docusaurus pages go deeper and add diagrams and cross-links. They do not
 duplicate the quick-start content.
