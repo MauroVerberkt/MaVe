@@ -1,5 +1,5 @@
 <Project>
-  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))"/>
 
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -16,11 +16,15 @@
 
   <!-- SourceLink: all TFMs for packable non-analyzer projects -->
   <ItemGroup Condition="'$(IsPackable)' == 'true' and '$(IsRoslynComponent)' != 'true'">
-    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
   </ItemGroup>
 
   <!-- PublicApiAnalyzers: net8.0 only to avoid cross-TFM API file divergence -->
   <ItemGroup Condition="'$(IsPackable)' == 'true' and '$(IsRoslynComponent)' != 'true' and '$(TargetFramework)' == 'net8.0'">
-    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="All"/>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IsRoslynComponent)' == 'true'">
+    <GlobalAnalyzerConfigFiles Include="$(MSBuildThisFileDirectory)roslyn-components.globalconfig"/>
   </ItemGroup>
 </Project>
