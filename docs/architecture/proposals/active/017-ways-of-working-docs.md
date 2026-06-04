@@ -6,7 +6,7 @@ tags: [docs]
 
 # PROP-017: Ways of Working Docs in Docusaurus
 
-**Status:** exploring  
+**Status:** ready  
 **Size:** small  
 **Created:** 2026-06-02  
 
@@ -98,13 +98,11 @@ docs/architecture/
 - Per-layer additions: nullable annotations, XML doc generation, SourceLink,
   PublicApiAnalyzers, test framework references
 - `.editorconfig` conventions: indentation, line endings, file encoding, and
-  language-specific rules (prerequisite: `.editorconfig` must be added to the
-  repo as part of implementing this proposal)
+  language-specific rules (see `.editorconfig` added in `chore/editorconfig`)
 - Local pack scripts (`tools/build-*.ps1`) and when to use them vs CI
 - Analyzer packaging model: why Roslyn components are packaged separately from
   library packages
 - Source: `Directory.Build.props` (×3), `tools/build-*.ps1`, `.editorconfig`
-  (to be created)
 
 **`versioning-and-releases.md` — Versioning and Releases**
 
@@ -164,9 +162,8 @@ All resolved:
 2. **Docs deployment page** — Yes, document `deploy-docs.yml` as its own page. It is
    not too meta; understanding when and how the site publishes is useful
    operational knowledge.
-3. **`.editorconfig`** — Yes, create one as a prerequisite. The
-   `build-and-packaging.md` page will reference it. Creating the `.editorconfig`
-   is a separate `chore/` branch, not part of the docs pages themselves.
+3. **`.editorconfig`** — ✅ Done via `chore/editorconfig`. The
+   `build-and-packaging.md` page will reference it.
 
 ## Prior Art / References
 
