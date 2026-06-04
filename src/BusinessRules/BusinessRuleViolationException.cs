@@ -2,15 +2,10 @@ namespace BusinessRules;
 
 /// <summary>
 /// Exception thrown when a business rule is violated.
-/// Carries the associated <see cref="BusinessRuleBase"/> for inspection by callers.
+/// Carries the associated <see cref="BusinessRuleBase" /> for inspection by callers.
 /// </summary>
 public class BusinessRuleViolationException : Exception
 {
-    /// <summary>
-    /// The business rule that was violated.
-    /// </summary>
-    public BusinessRuleBase BusinessRule { get; }
-
     /// <summary>
     /// Initializes a new instance using the requirement text as the exception message.
     /// </summary>
@@ -37,6 +32,11 @@ public class BusinessRuleViolationException : Exception
     {
         BusinessRule = businessRule;
     }
+
+    /// <summary>
+    /// The business rule that was violated.
+    /// </summary>
+    public BusinessRuleBase BusinessRule { get; }
 
     /// <summary>
     /// The unique key identifying the violated rule.

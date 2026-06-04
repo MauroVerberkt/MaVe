@@ -6,7 +6,8 @@ namespace HelperMonads.UnitTests;
 /// Tests for the <see cref="Option{TValue}" /> class, which represents an optional value that may or may not be present.
 /// <para>
 /// These tests cover various methods of the <see cref="Option{TValue}" /> class, including handling of
-/// <see cref="Some{TValue}" /> and <see cref="None{TValue}" /> values, async and sync match operations, implicit conversion,
+/// <see cref="Some{TValue}" /> and <see cref="None{TValue}" /> values, async and sync match operations, implicit
+/// conversion,
 /// and string representation.
 /// </para>
 /// </summary>
@@ -55,7 +56,8 @@ public class OptionTests
     }
 
     /// <summary>
-    /// Tests that the <see cref="Option{TValue}.Match{TResult}(Func{TValue,TResult}, Func{TResult})" /> method returns the correct
+    /// Tests that the <see cref="Option{TValue}.Match{TResult}(Func{TValue,TResult}, Func{TResult})" /> method returns the
+    /// correct
     /// value when the option contains a value (Some).
     /// </summary>
     [Test]
@@ -72,7 +74,8 @@ public class OptionTests
     }
 
     /// <summary>
-    /// Tests that the <see cref="Option{TValue}.Match{TResult}(Func{TValue, TResult}, Func{TResult})" /> method returns the correct
+    /// Tests that the <see cref="Option{TValue}.Match{TResult}(Func{TValue, TResult}, Func{TResult})" /> method returns the
+    /// correct
     /// value when the option does not contain a value
     /// (None).
     /// </summary>
@@ -90,7 +93,8 @@ public class OptionTests
     }
 
     /// <summary>
-    /// Tests that the <see cref="Option{TValue}.MatchAsync{TResult}(Func{TValue, Task{TResult}}, Func{Task{TResult}})" /> method
+    /// Tests that the <see cref="Option{TValue}.MatchAsync{TResult}(Func{TValue, Task{TResult}}, Func{Task{TResult}})" />
+    /// method
     /// asynchronously returns the correct value when the option
     /// contains
     /// a value (Some).
@@ -109,7 +113,8 @@ public class OptionTests
     }
 
     /// <summary>
-    /// Tests that the <see cref="Option{TValue}.MatchAsync{TResult}(Func{TValue, Task{TResult}}, Func{Task{TResult}})" /> method
+    /// Tests that the <see cref="Option{TValue}.MatchAsync{TResult}(Func{TValue, Task{TResult}}, Func{Task{TResult}})" />
+    /// method
     /// asynchronously returns the correct value when the option does
     /// not
     /// contain a value (None).
@@ -152,7 +157,8 @@ public class OptionTests
     /// Tests that the
     /// <see
     ///     cref="Option{TValue}.MatchAsync{TResult}(Func{TValue, CancellationToken, Task{TResult}}, Func{CancellationToken, Task{TResult}}, CancellationToken)" />
-    /// method asynchronously returns the correct value when the option does not contain a value (None) with a cancellation token.
+    /// method asynchronously returns the correct value when the option does not contain a value (None) with a cancellation
+    /// token.
     /// </summary>
     [Test]
     public async Task MatchAsync_WithCancellation_ShouldReturnNone_WhenOptionIsNone()
@@ -168,7 +174,8 @@ public class OptionTests
     }
 
     /// <summary>
-    /// Tests that the <see cref="Option{TValue}.Match{TResult}(Func{TValue, TResult}, Func{TResult})" /> method throws an exception
+    /// Tests that the <see cref="Option{TValue}.Match{TResult}(Func{TValue, TResult}, Func{TResult})" /> method throws an
+    /// exception
     /// when the option is invalid.
     /// </summary>
     [Test]
@@ -241,7 +248,8 @@ public class OptionTests
     }
 
     /// <summary>
-    /// Tests that the <see cref="Option{TValue}.FromNullable" /> method returns a <see cref="Some{TValue}" /> when the value is not
+    /// Tests that the <see cref="Option{TValue}.FromNullable" /> method returns a <see cref="Some{TValue}" /> when the value
+    /// is not
     /// null.
     /// </summary>
     [Test]
@@ -259,7 +267,8 @@ public class OptionTests
     }
 
     /// <summary>
-    /// Tests that the <see cref="Option{TValue}.FromNullable" /> method returns a <see cref="None{TValue}" /> when the value is
+    /// Tests that the <see cref="Option{TValue}.FromNullable" /> method returns a <see cref="None{TValue}" /> when the value
+    /// is
     /// null.
     /// </summary>
     [Test]
@@ -292,7 +301,8 @@ public class OptionTests
     }
 
     /// <summary>
-    /// Tests that implicit conversion from a null value to an <see cref="Option{TValue}" /> creates a <see cref="None{TValue}" />.
+    /// Tests that implicit conversion from a null value to an <see cref="Option{TValue}" /> creates a
+    /// <see cref="None{TValue}" />.
     /// </summary>
     [Test]
     public void ImplicitConversion_ShouldReturnNone_WhenValueIsNull()
@@ -323,7 +333,8 @@ public class OptionTests
     }
 
     /// <summary>
-    /// Tests that the <see cref="Option{TValue}.ToString" /> method returns a correct string representation when the option does
+    /// Tests that the <see cref="Option{TValue}.ToString" /> method returns a correct string representation when the option
+    /// does
     /// not
     /// contain a value (None).
     /// </summary>

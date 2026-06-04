@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -11,20 +12,20 @@ namespace HelperUnionsAnalyzer;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class InvalidUnionDeclarationAnalyzer : DiagnosticAnalyzer
 {
-    internal const string DiagnosticId = "DNHU0003";
+    private const string DiagnosticId = "DNHU0003";
     private const string Category = "Usage";
     private const string UnionAttributeFullyQualifiedName = "HelperUnions.UnionAttribute";
 
-    private static readonly DiagnosticDescriptor Rule = new(
+    private static readonly DiagnosticDescriptor _rule = new(
         DiagnosticId,
         "Invalid union declaration",
         "[Union] may only be applied to partial record declarations",
         Category,
         DiagnosticSeverity.Error,
-        isEnabledByDefault: true);
+        true);
 
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [_rule];
 
     /// <inheritdoc />
     public override void Initialize(AnalysisContext context)
@@ -34,7 +35,8 @@ public sealed class InvalidUnionDeclarationAnalyzer : DiagnosticAnalyzer
 
         context.RegisterCompilationStartAction(compilationContext =>
         {
-            var unionAttributeSymbol = compilationContext.Compilation.GetTypeByMetadataName(UnionAttributeFullyQualifiedName);
+            var unionAttributeSymbol =
+                compilationContext.Compilation.GetTypeByMetadataName(UnionAttributeFullyQualifiedName);
             if (unionAttributeSymbol is null)
             {
                 return;
@@ -49,33 +51,34 @@ public sealed class InvalidUnionDeclarationAnalyzer : DiagnosticAnalyzer
 
                 var unionAttribute = namedTypeSymbol
                     .GetAttributes()
-                    .FirstOrDefault(attribute => SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, unionAttributeSymbol));
+                    .FirstOrDefault(attribute =>
+                        SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, unionAttributeSymbol));
 
                 if (unionAttribute is null)
                 {
                     return;
                 }
 
-                var isPartialRecord = namedTypeSymbol.IsRecord
-                                      && !namedTypeSymbol.IsValueType
+                var isPartialRecord = namedTypeSymbol is { IsRecord: true, IsValueType: false }
                                       && namedTypeSymbol.DeclaringSyntaxReferences
                                           .Select(reference => reference.GetSyntax(symbolContext.CancellationToken))
                                           .OfType<RecordDeclarationSyntax>()
                                           .Any(recordDeclaration =>
                                               recordDeclaration.Modifiers.Any(modifier =>
-                                                  modifier.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PartialKeyword)));
+                                                  modifier.IsKind(SyntaxKind.PartialKeyword)));
 
                 if (isPartialRecord)
                 {
                     return;
                 }
 
-                var location = unionAttribute.ApplicationSyntaxReference?.GetSyntax(symbolContext.CancellationToken).GetLocation()
+                var location = unionAttribute.ApplicationSyntaxReference?.GetSyntax(symbolContext.CancellationToken)
+                                   .GetLocation()
                                ?? namedTypeSymbol.Locations.FirstOrDefault();
 
                 if (location is not null)
                 {
-                    symbolContext.ReportDiagnostic(Diagnostic.Create(Rule, location));
+                    symbolContext.ReportDiagnostic(Diagnostic.Create(_rule, location));
                 }
             }, SymbolKind.NamedType);
         });

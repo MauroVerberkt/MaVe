@@ -1,5 +1,5 @@
-using BusinessRulesAnalyzer;
 using BusinessRules.UnitTests.Verifiers;
+using BusinessRulesAnalyzer;
 
 namespace BusinessRules.UnitTests.Analyzers;
 
@@ -7,76 +7,70 @@ namespace BusinessRules.UnitTests.Analyzers;
 public class BusinessRuleKeyExistsAnalyzerTests
 {
     private const string BusinessRulesJson = """
-        {
-          "businessRules": [
-            {
-              "key": "USER_AUTH",
-              "description": "User must be authenticated"
-            },
-            {
-              "key": "USER_ADMIN",
-              "description": "User must be admin"
-            }
-          ]
-        }
-        """;
+                                             {
+                                               "businessRules": [
+                                                 {
+                                                   "key": "USER_AUTH",
+                                                   "description": "User must be authenticated"
+                                                 },
+                                                 {
+                                                   "key": "USER_ADMIN",
+                                                   "description": "User must be admin"
+                                                 }
+                                               ]
+                                             }
+                                             """;
 
     [Test]
     public async Task ValidRuleKey_InBusinessRuleAttribute_NoDiagnostic()
     {
-        var test = """
-            using BusinessRules.Attributes;
+        const string test = """
+                            using BusinessRules.Attributes;
 
-            public class TestClass
-            {
-                [BusinessRule("USER_AUTH")]
-                public void TestMethod() { }
-            }
-            """;
+                            public class TestClass
+                            {
+                                [BusinessRule("USER_AUTH")]
+                                public void TestMethod() { }
+                            }
+                            """;
 
-        var verifier = new CSharpAnalyzerVerifier<BusinessRuleKeyExistsAnalyzer>.Test
-        {
-            TestCode = test
-        };
+        var verifier = new CSharpAnalyzerVerifier<BusinessRuleKeyExistsAnalyzer>.Test { TestCode = test };
         verifier.AddBusinessRulesJson(BusinessRulesJson);
-        
+
         await verifier.RunAsync();
     }
 
     [Test]
     public async Task ValidRuleKey_InImplementsBusinessRuleAttribute_NoDiagnostic()
     {
-        var test = """
-            using BusinessRules.Attributes;
+        const string test = """
+                            using BusinessRules.Attributes;
 
-            public class TestClass
-            {
-                [ImplementsBusinessRule("USER_AUTH")]
-                public void ValidateAuth() { }
-            }
-            """;
+                            public class TestClass
+                            {
+                                [ImplementsBusinessRule("USER_AUTH")]
+                                public void ValidateAuth() { }
+                            }
+                            """;
 
-        var verifier = new CSharpAnalyzerVerifier<BusinessRuleKeyExistsAnalyzer>.Test
-        {
-            TestCode = test
-        };
+        var verifier = new CSharpAnalyzerVerifier<BusinessRuleKeyExistsAnalyzer>.Test { TestCode = test };
         verifier.AddBusinessRulesJson(BusinessRulesJson);
-        
+
         await verifier.RunAsync();
     }
 
     [Test]
     public async Task InvalidRuleKey_InBusinessRuleAttribute_ReportsDiagnostic()
     {
-        var test = """
-            using BusinessRules.Attributes;
+        const string test = """
+                            using BusinessRules.Attributes;
 
-            public class TestClass
-            {
-                [BusinessRule({|#0:"INVALID_KEY"|})]
-                public void TestMethod() { }
-            }
-            """;
+                            public class TestClass
+                            {
+                                [BusinessRule({|#0:"INVALID_KEY"|})]
+                                public void TestMethod() { }
+                            }
+                            """;
 
         var expected = CSharpAnalyzerVerifier<BusinessRuleKeyExistsAnalyzer>
             .Diagnostic("BR001")
@@ -85,26 +79,25 @@ public class BusinessRuleKeyExistsAnalyzerTests
 
         var verifier = new CSharpAnalyzerVerifier<BusinessRuleKeyExistsAnalyzer>.Test
         {
-            TestCode = test,
-            ExpectedDiagnostics = { expected }
+            TestCode = test, ExpectedDiagnostics = { expected }
         };
         verifier.AddBusinessRulesJson(BusinessRulesJson);
-        
+
         await verifier.RunAsync();
     }
 
     [Test]
     public async Task InvalidRuleKey_InImplementsBusinessRuleAttribute_ReportsDiagnostic()
     {
-        var test = """
-            using BusinessRules.Attributes;
+        const string test = """
+                            using BusinessRules.Attributes;
 
-            public class TestClass
-            {
-                [ImplementsBusinessRule({|#0:"MISSING_RULE"|})]
-                public void ValidateRule() { }
-            }
-            """;
+                            public class TestClass
+                            {
+                                [ImplementsBusinessRule({|#0:"MISSING_RULE"|})]
+                                public void ValidateRule() { }
+                            }
+                            """;
 
         var expected = CSharpAnalyzerVerifier<BusinessRuleKeyExistsAnalyzer>
             .Diagnostic("BR001")
@@ -113,26 +106,25 @@ public class BusinessRuleKeyExistsAnalyzerTests
 
         var verifier = new CSharpAnalyzerVerifier<BusinessRuleKeyExistsAnalyzer>.Test
         {
-            TestCode = test,
-            ExpectedDiagnostics = { expected }
+            TestCode = test, ExpectedDiagnostics = { expected }
         };
         verifier.AddBusinessRulesJson(BusinessRulesJson);
-        
+
         await verifier.RunAsync();
     }
 
     [Test]
     public async Task InvalidRuleKey_OnClass_ReportsDiagnostic()
     {
-        var test = """
-            using BusinessRules.Attributes;
+        const string test = """
+                            using BusinessRules.Attributes;
 
-            [BusinessRule({|#0:"NONEXISTENT"|})]
-            public class TestClass
-            {
-                public void TestMethod() { }
-            }
-            """;
+                            [BusinessRule({|#0:"NONEXISTENT"|})]
+                            public class TestClass
+                            {
+                                public void TestMethod() { }
+                            }
+                            """;
 
         var expected = CSharpAnalyzerVerifier<BusinessRuleKeyExistsAnalyzer>
             .Diagnostic("BR001")
@@ -141,26 +133,25 @@ public class BusinessRuleKeyExistsAnalyzerTests
 
         var verifier = new CSharpAnalyzerVerifier<BusinessRuleKeyExistsAnalyzer>.Test
         {
-            TestCode = test,
-            ExpectedDiagnostics = { expected }
+            TestCode = test, ExpectedDiagnostics = { expected }
         };
         verifier.AddBusinessRulesJson(BusinessRulesJson);
-        
+
         await verifier.RunAsync();
     }
 
     [Test]
     public async Task NoBusinessRulesJson_ReportsDiagnosticForAllKeys()
     {
-        var test = """
-            using BusinessRules.Attributes;
+        const string test = """
+                            using BusinessRules.Attributes;
 
-            public class TestClass
-            {
-                [BusinessRule({|#0:"ANY_KEY"|})]
-                public void TestMethod() { }
-            }
-            """;
+                            public class TestClass
+                            {
+                                [BusinessRule({|#0:"ANY_KEY"|})]
+                                public void TestMethod() { }
+                            }
+                            """;
 
         var expected = CSharpAnalyzerVerifier<BusinessRuleKeyExistsAnalyzer>
             .Diagnostic("BR001")
@@ -169,11 +160,10 @@ public class BusinessRuleKeyExistsAnalyzerTests
 
         var verifier = new CSharpAnalyzerVerifier<BusinessRuleKeyExistsAnalyzer>.Test
         {
-            TestCode = test,
-            ExpectedDiagnostics = { expected }
+            TestCode = test, ExpectedDiagnostics = { expected }
         };
         // No JSON file added, so no keys are defined
-        
+
         await verifier.RunAsync();
     }
 }

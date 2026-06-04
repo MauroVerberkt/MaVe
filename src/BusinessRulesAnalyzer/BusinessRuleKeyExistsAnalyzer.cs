@@ -18,7 +18,7 @@ public class BusinessRuleKeyExistsAnalyzer : DiagnosticAnalyzer
     private const string DiagnosticId = "BR001";
     private const string Category = "Usage";
 
-    private static readonly DiagnosticDescriptor Rule = new(
+    private static readonly DiagnosticDescriptor _rule = new(
         DiagnosticId,
         "Business rule key not found",
         "Business rule with key '{0}' is not defined in BusinessRules.json",
@@ -30,7 +30,7 @@ public class BusinessRuleKeyExistsAnalyzer : DiagnosticAnalyzer
     );
 
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [_rule];
 
     /// <inheritdoc />
     public override void Initialize(AnalysisContext context)
@@ -48,13 +48,16 @@ public class BusinessRuleKeyExistsAnalyzer : DiagnosticAnalyzer
                     "BusinessRules.Attributes.BusinessRuleAttribute");
 
             if (validatesAttrSymbol == null || requiresAttrSymbol == null)
+            {
                 return;
+            }
 
             var definedRuleKeys = new ConcurrentDictionary<string, byte>(StringComparer.Ordinal);
             var reportedKeys = new ConcurrentDictionary<(FileLinePositionSpan, string), byte>();
 
             // --- READ BUSINESS RULES FROM JSON FILE ---
-            var jsonFile = compilationContext.Options.AdditionalFiles.FirstOrDefault(f => f.Path.EndsWith("BusinessRules.json", StringComparison.OrdinalIgnoreCase));
+            var jsonFile = compilationContext.Options.AdditionalFiles.FirstOrDefault(f =>
+                f.Path.EndsWith("BusinessRules.json", StringComparison.OrdinalIgnoreCase));
             if (jsonFile != null)
             {
                 var jsonText = jsonFile.GetText(compilationContext.CancellationToken);
@@ -87,28 +90,40 @@ public class BusinessRuleKeyExistsAnalyzer : DiagnosticAnalyzer
             compilationContext.RegisterSyntaxNodeAction(nodeContext =>
             {
                 if (nodeContext.Node is not AttributeSyntax attribute)
+                {
                     return;
+                }
 
                 if (nodeContext.SemanticModel.GetTypeInfo(attribute).Type is not INamedTypeSymbol attrType)
+                {
                     return;
+                }
 
                 if (!SymbolEqualityComparer.Default.Equals(attrType, validatesAttrSymbol) &&
                     !SymbolEqualityComparer.Default.Equals(attrType, requiresAttrSymbol))
+                {
                     return;
+                }
 
                 var firstArg = attribute.ArgumentList?.Arguments.FirstOrDefault();
                 if (firstArg == null)
+                {
                     return;
+                }
 
                 // Try to get the constant value (works for both literals and constants like UserMustBeAuthenticated.Key)
                 var constantValue = nodeContext.SemanticModel.GetConstantValue(firstArg.Expression);
                 if (!constantValue.HasValue || constantValue.Value is not string ruleKey)
+                {
                     return;
+                }
 
                 var locationSpan = firstArg.Expression.GetLocation().GetLineSpan();
                 if (!definedRuleKeys.ContainsKey(ruleKey) &&
                     reportedKeys.TryAdd((locationSpan, ruleKey), 0))
-                    nodeContext.ReportDiagnostic(Diagnostic.Create(Rule, firstArg.Expression.GetLocation(), ruleKey));
+                {
+                    nodeContext.ReportDiagnostic(Diagnostic.Create(_rule, firstArg.Expression.GetLocation(), ruleKey));
+                }
             }, SyntaxKind.Attribute);
         });
     }

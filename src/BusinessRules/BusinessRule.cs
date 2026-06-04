@@ -11,16 +11,19 @@ namespace BusinessRules;
 /// <typeparam name="T">The concrete business rule type (self-referencing).</typeparam>
 [DataContract]
 [SuppressMessage(
-    category: "Design",
-    checkId: "CA1000:Do not declare static members on generic types",
+    "Design",
+    "CA1000:Do not declare static members on generic types",
     Justification = "Intentional CRTP pattern: static members are per concrete BusinessRule type.")]
-public abstract class BusinessRule<T>(string key, string requirement, string description = "", string category = "") : BusinessRuleBase
+public abstract class BusinessRule<T>(string key, string requirement, string description = "", string category = "")
+    : BusinessRuleBase
     where T : BusinessRule<T>, new()
 {
-    [DataMember, Required]
+    [DataMember]
+    [Required]
     internal override string InternalKey { get; } = key;
 
-    [DataMember, Required]
+    [DataMember]
+    [Required]
     internal override string InternalRequirement { get; } = requirement;
 
     [DataMember]
@@ -30,7 +33,7 @@ public abstract class BusinessRule<T>(string key, string requirement, string des
     internal override string InternalCategory { get; } = category;
 
     /// <summary>
-    /// Creates a <see cref="BusinessRuleViolationException"/> for this rule using the requirement text as the message.
+    /// Creates a <see cref="BusinessRuleViolationException" /> for this rule using the requirement text as the message.
     /// </summary>
     public static BusinessRuleViolationException ToException()
     {
@@ -38,7 +41,7 @@ public abstract class BusinessRule<T>(string key, string requirement, string des
     }
 
     /// <summary>
-    /// Creates a <see cref="BusinessRuleViolationException"/> for this rule with a custom message.
+    /// Creates a <see cref="BusinessRuleViolationException" /> for this rule with a custom message.
     /// </summary>
     public static BusinessRuleViolationException ToException(string message)
     {

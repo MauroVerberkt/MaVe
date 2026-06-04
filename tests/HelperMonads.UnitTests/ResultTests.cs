@@ -1,11 +1,13 @@
 namespace HelperMonads.UnitTests;
 
 /// <summary>
-/// Contains unit tests for the <see cref="Result{TData}" /> class, which represents the result of an operation that may either
+/// Contains unit tests for the <see cref="Result{TData}" /> class, which represents the result of an operation that may
+/// either
 /// succeed or fail.
 /// <para>
 /// These tests cover various methods and functionalities of the <see cref="Result{TData}" /> class, including success and
-/// failure creation, data mapping (both synchronous and asynchronous), string representation, deconstruction, and behavior when
+/// failure creation, data mapping (both synchronous and asynchronous), string representation, deconstruction, and behavior
+/// when
 /// exceptions occur.
 /// </para>
 /// The tests ensure that the class behaves as expected in different scenarios, such as success, failure, cancellation, and
@@ -26,7 +28,7 @@ public class ResultTests
     public void Success_ShouldCreateSuccessResult_WithSuccessMessage()
     {
         // Act
-        var result =  Result.Success(SuccessMessage);
+        var result = Result.Success(SuccessMessage);
 
         Assert.Multiple(() =>
         {
@@ -56,7 +58,8 @@ public class ResultTests
     }
 
     /// <summary>
-    /// Tests that <see cref="Result{TData}.Success(TData)" /> throws an <see cref="ArgumentNullException" /> when the data is null.
+    /// Tests that <see cref="Result{TData}.Success(TData)" /> throws an <see cref="ArgumentNullException" /> when the data is
+    /// null.
     /// </summary>
     [Test]
     public void Constructor_ShouldThrowArgumentNullException_WhenSuccessAndDataIsNull()
@@ -67,7 +70,8 @@ public class ResultTests
     }
 
     /// <summary>
-    /// Tests that <see cref="Result{TData}.Success(TData)" /> throws an <see cref="ArgumentNullException" /> when the data is null.
+    /// Tests that <see cref="Result{TData}.Success(TData)" /> throws an <see cref="ArgumentNullException" /> when the data is
+    /// null.
     /// </summary>
     [Test]
     public void Constructor_ShouldThrowArgumentNullException_WhenFailureAndErrorIsNull()
@@ -76,7 +80,7 @@ public class ResultTests
         var ex = Assert.Throws<ArgumentNullException>(() => { _ = Result<string>.Failure(null!); });
         Assert.That(ex?.Message, Contains.Substring("Error must be provided for a failed result."));
     }
-    
+
     /// <summary>
     /// Tests that <see cref="Result{TData}.Map{TNewData}(Func{TData, TNewData})" /> correctly maps data when the result is a
     /// success.
@@ -99,7 +103,8 @@ public class ResultTests
     }
 
     /// <summary>
-    /// Tests that <see cref="Result{TData}.Map{TNewData}(Func{TData, TNewData})" /> returns a failure result when the result is a
+    /// Tests that <see cref="Result{TData}.Map{TNewData}(Func{TData, TNewData})" /> returns a failure result when the result
+    /// is a
     /// failure.
     /// </summary>
     [Test]
@@ -163,7 +168,8 @@ public class ResultTests
     }
 
     /// <summary>
-    /// Tests that <see cref="Result{TData}.ToString()" /> correctly returns a string representation when the result is a success.
+    /// Tests that <see cref="Result{TData}.ToString()" /> correctly returns a string representation when the result is a
+    /// success.
     /// </summary>
     [Test]
     public void ToString_ShouldReturnSuccess_WhenResultIsSuccess()
@@ -179,7 +185,8 @@ public class ResultTests
     }
 
     /// <summary>
-    /// Tests that <see cref="Result{TData}.ToString()" /> correctly returns a string representation when the result is a failure.
+    /// Tests that <see cref="Result{TData}.ToString()" /> correctly returns a string representation when the result is a
+    /// failure.
     /// </summary>
     [Test]
     public void ToString_ShouldReturnFailure_WhenResultIsFailure()
@@ -217,7 +224,8 @@ public class ResultTests
 
     /// <summary>
     /// Tests that
-    /// <see cref="Result{TData}.MapAsync{TNewData}(Func{TData, CancellationToken, Task{TNewData}}, CancellationToken)" /> returns a
+    /// <see cref="Result{TData}.MapAsync{TNewData}(Func{TData, CancellationToken, Task{TNewData}}, CancellationToken)" />
+    /// returns a
     /// failure result when the result is a failure and an asynchronous map operation is applied.
     /// </summary>
     [Test]
@@ -247,14 +255,15 @@ public class ResultTests
 
     /// <summary>
     /// Tests that
-    /// <see cref="Result{TData}.MapAsync{TNewData}(Func{TData, CancellationToken, Task{TNewData}}, CancellationToken)" /> returns a
+    /// <see cref="Result{TData}.MapAsync{TNewData}(Func{TData, CancellationToken, Task{TNewData}}, CancellationToken)" />
+    /// returns a
     /// success result when the result is a success and an asynchronous map operation is applied.
     /// </summary>
     [Test]
     public async Task MapAsync_ShouldReturnSuccess_WhenResultIsSuccess()
     {
         // Arrange
-        var  successResult = Result<string>.Success(SuccessMessage);
+        var successResult = Result<string>.Success(SuccessMessage);
 
         // Act
         var result = await successResult.MapAsync((Func<string, CancellationToken, Task<int>>)Transform,
@@ -277,14 +286,15 @@ public class ResultTests
 
     /// <summary>
     /// Tests that
-    /// <see cref="Result{TData}.MapAsync{TNewData}(Func{TData, CancellationToken, Task{TNewData}}, CancellationToken)" /> returns a
+    /// <see cref="Result{TData}.MapAsync{TNewData}(Func{TData, CancellationToken, Task{TNewData}}, CancellationToken)" />
+    /// returns a
     /// success result when the result is a success and a different type of mapped data is returned asynchronously.
     /// </summary>
     [Test]
     public async Task MapAsync_ShouldReturnSuccess_WhenResultIsSuccess_WithDifferentMappedType()
     {
         // Arrange
-        var  successResult = Result<string>.Success(SuccessMessage);
+        var successResult = Result<string>.Success(SuccessMessage);
 
         // Act
         var result = await successResult.MapAsync((Func<string, CancellationToken, Task<string>>)Transform,
@@ -307,14 +317,15 @@ public class ResultTests
 
     /// <summary>
     /// Tests that
-    /// <see cref="Result{TData}.MapAsync{TNewData}(Func{TData, CancellationToken, Task{TNewData}}, CancellationToken)" /> respects
+    /// <see cref="Result{TData}.MapAsync{TNewData}(Func{TData, CancellationToken, Task{TNewData}}, CancellationToken)" />
+    /// respects
     /// cancellation when the operation is cancelled.
     /// </summary>
     [Test]
     public void MapAsync_ShouldRespectCancellation_WhenCancelled()
     {
         // Arrange
-        var  successResult = Result<string>.Success(SuccessMessage);
+        var successResult = Result<string>.Success(SuccessMessage);
         using var cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Cancel();
         Func<string, CancellationToken, Task<int>> transform = async (data, token) =>
@@ -332,14 +343,15 @@ public class ResultTests
 
     /// <summary>
     /// Tests that
-    /// <see cref="Result{TData}.MapAsync{TNewData}(Func{TData, CancellationToken, Task{TNewData}}, CancellationToken)" /> correctly
+    /// <see cref="Result{TData}.MapAsync{TNewData}(Func{TData, CancellationToken, Task{TNewData}}, CancellationToken)" />
+    /// correctly
     /// applies multiple transformations asynchronously to the data.
     /// </summary>
     [Test]
     public async Task MapAsync_ShouldReturnMappedData_WhenMultipleTransformations()
     {
         // Arrange
-        var  successResult = Result<string>.Success(SuccessMessage);
+        var successResult = Result<string>.Success(SuccessMessage);
 
         // Act
         var result = await successResult.MapAsync((Func<string, CancellationToken, Task<string>>)Transform,
@@ -367,7 +379,7 @@ public class ResultTests
     public void OnSuccess_ShouldExecuteAction_WhenResultIsSuccess()
     {
         // Arrange
-        var  successResult = Result<string>.Success(SuccessMessage);
+        var successResult = Result<string>.Success(SuccessMessage);
         var actionExecuted = false;
 
         // Act
@@ -385,7 +397,8 @@ public class ResultTests
     }
 
     /// <summary>
-    /// Tests that <see cref="Result{TData}.OnSuccess(Action{TData})" /> does not execute the action when the result is a failure.
+    /// Tests that <see cref="Result{TData}.OnSuccess(Action{TData})" /> does not execute the action when the result is a
+    /// failure.
     /// </summary>
     [Test]
     public void OnSuccess_ShouldNotExecuteAction_WhenResultIsFailure()
@@ -406,7 +419,7 @@ public class ResultTests
             actionExecuted = true;
         }
     }
-    
+
     /// <summary>
     /// Tests that <see cref="Result{TData}.OnFailure(Action{Error})" /> executes the action when the result is a failure.
     /// </summary>
@@ -414,7 +427,7 @@ public class ResultTests
     public void OnFailure_ShouldExecuteAction_WhenResultIsFailure()
     {
         // Arrange
-        var  successResult = Result<string>.Failure(TestError);
+        var successResult = Result<string>.Failure(TestError);
         var actionExecuted = false;
 
         // Act
@@ -432,7 +445,8 @@ public class ResultTests
     }
 
     /// <summary>
-    /// Tests that <see cref="Result{TData}.OnFailure(Action{Error})" /> does not execute the action when the result is a success.
+    /// Tests that <see cref="Result{TData}.OnFailure(Action{Error})" /> does not execute the action when the result is a
+    /// success.
     /// </summary>
     [Test]
     public void OnFailure_ShouldNotExecuteAction_WhenResultIsSuccess()
@@ -453,7 +467,7 @@ public class ResultTests
             actionExecuted = true;
         }
     }
-    
+
     /// <summary>
     /// Tests that <see cref="Result{TData}.Tap(Action{Result{TData}})" /> executes the action when the result is a success.
     /// </summary>
@@ -523,8 +537,8 @@ public class ResultTests
     public void GetHashCode_ShouldReturnSameHashCodeForEqualResults()
     {
         // Arrange
-        var  successResult1 = Result<string>.Success(SuccessMessage);
-        var  successResult2 = Result<string>.Success(SuccessMessage);
+        var successResult1 = Result<string>.Success(SuccessMessage);
+        var successResult2 = Result<string>.Success(SuccessMessage);
 
         // Act
         var hashCode1 = successResult1.GetHashCode();
@@ -541,8 +555,8 @@ public class ResultTests
     public void GetHashCode_ShouldReturnDifferentHashCodesForDifferentResults()
     {
         // Arrange
-        var  successResult1 = Result<string>.Success(SuccessMessage);
-        var  successResult2 = Result<string>.Failure(TestError);
+        var successResult1 = Result<string>.Success(SuccessMessage);
+        var successResult2 = Result<string>.Failure(TestError);
 
         // Act
         var hashCode1 = successResult1.GetHashCode();

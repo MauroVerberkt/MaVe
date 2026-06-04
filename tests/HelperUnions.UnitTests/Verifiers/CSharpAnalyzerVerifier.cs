@@ -8,6 +8,18 @@ namespace HelperUnions.UnitTests.Verifiers;
 public static class CSharpAnalyzerVerifier<TAnalyzer>
     where TAnalyzer : DiagnosticAnalyzer, new()
 {
+    public static DiagnosticResult Diagnostic(string diagnosticId)
+    {
+        return CSharpAnalyzerVerifier<TAnalyzer, DefaultVerifier>.Diagnostic(diagnosticId);
+    }
+
+    public static async Task VerifyAnalyzerAsync(string source, params DiagnosticResult[] expected)
+    {
+        var test = new Test { TestCode = source };
+        test.ExpectedDiagnostics.AddRange(expected);
+        await test.RunAsync();
+    }
+
     public class Test : CSharpAnalyzerTest<TAnalyzer, DefaultVerifier>
     {
         public Test()
@@ -27,15 +39,5 @@ public static class CSharpAnalyzerVerifier<TAnalyzer>
                 TestState.AdditionalReferences.Add(helperUnionsReference);
             }
         }
-    }
-
-    public static DiagnosticResult Diagnostic(string diagnosticId)
-        => CSharpAnalyzerVerifier<TAnalyzer, DefaultVerifier>.Diagnostic(diagnosticId);
-
-    public static async Task VerifyAnalyzerAsync(string source, params DiagnosticResult[] expected)
-    {
-        var test = new Test { TestCode = source };
-        test.ExpectedDiagnostics.AddRange(expected);
-        await test.RunAsync();
     }
 }

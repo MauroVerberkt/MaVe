@@ -5,20 +5,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing.NUnit" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeFix.Testing.NUnit" />
-    <PackageReference Include="System.ServiceModel.Primitives" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing.NUnit"/>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeFix.Testing.NUnit"/>
+    <PackageReference Include="System.ServiceModel.Primitives"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\BusinessRulesAnalyzer\BusinessRulesAnalyzer.csproj" />
-    <ProjectReference Include="..\..\src\BusinessRulesFixProvider\BusinessRulesFixProvider.csproj" />
-    <ProjectReference Include="..\..\src\BusinessRulesGenerator\BusinessRulesGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-    <ProjectReference Include="..\..\src\BusinessRules\BusinessRules.csproj" />
+    <ProjectReference Include="..\..\src\BusinessRulesAnalyzer\BusinessRulesAnalyzer.csproj"/>
+    <ProjectReference Include="..\..\src\BusinessRulesFixProvider\BusinessRulesFixProvider.csproj"/>
+    <ProjectReference Include="..\..\src\BusinessRulesGenerator\BusinessRulesGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+    <ProjectReference Include="..\..\src\BusinessRules\BusinessRules.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="Test.BusinessRules.json" />
+    <AdditionalFiles Include="Test.BusinessRules.json"/>
   </ItemGroup>
 
 </Project>

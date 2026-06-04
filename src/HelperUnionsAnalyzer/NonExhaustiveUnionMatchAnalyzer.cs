@@ -17,16 +17,16 @@ public sealed class NonExhaustiveUnionMatchAnalyzer : DiagnosticAnalyzer
     private const string UnionAttributeFullyQualifiedName = "HelperUnions.UnionAttribute";
     private const string MissingVariantsPropertyName = "MissingVariants";
 
-    private static readonly DiagnosticDescriptor Rule = new(
+    private static readonly DiagnosticDescriptor _rule = new(
         DiagnosticId,
         "Non-exhaustive union match",
         "Non-exhaustive union match. Missing variants: {0}.",
         Category,
         DiagnosticSeverity.Warning,
-        isEnabledByDefault: true);
+        true);
 
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [_rule];
 
     /// <inheritdoc />
     public override void Initialize(AnalysisContext context)
@@ -36,7 +36,8 @@ public sealed class NonExhaustiveUnionMatchAnalyzer : DiagnosticAnalyzer
 
         context.RegisterCompilationStartAction(compilationContext =>
         {
-            var unionAttributeSymbol = compilationContext.Compilation.GetTypeByMetadataName(UnionAttributeFullyQualifiedName);
+            var unionAttributeSymbol =
+                compilationContext.Compilation.GetTypeByMetadataName(UnionAttributeFullyQualifiedName);
             if (unionAttributeSymbol is null)
             {
                 return;
@@ -73,7 +74,8 @@ public sealed class NonExhaustiveUnionMatchAnalyzer : DiagnosticAnalyzer
             label => label is DefaultSwitchLabelSyntax);
     }
 
-    private static void AnalyzeSwitchExpression(SyntaxNodeAnalysisContext context, INamedTypeSymbol unionAttributeSymbol)
+    private static void AnalyzeSwitchExpression(SyntaxNodeAnalysisContext context,
+        INamedTypeSymbol unionAttributeSymbol)
     {
         if (context.Node is not SwitchExpressionSyntax switchExpression)
         {
@@ -99,7 +101,8 @@ public sealed class NonExhaustiveUnionMatchAnalyzer : DiagnosticAnalyzer
         Func<TNode, PatternSyntax?> getPattern,
         Func<TNode, bool> isDefaultOrDiscard)
     {
-        var switchedType = context.SemanticModel.GetTypeInfo(switchExpression, context.CancellationToken).Type as INamedTypeSymbol;
+        var switchedType =
+            context.SemanticModel.GetTypeInfo(switchExpression, context.CancellationToken).Type as INamedTypeSymbol;
         if (switchedType is null)
         {
             return;
@@ -140,13 +143,8 @@ public sealed class NonExhaustiveUnionMatchAnalyzer : DiagnosticAnalyzer
             }
 
             var matchedType = GetMatchedType(context.SemanticModel, pattern, context.CancellationToken);
-            if (matchedType is null)
-            {
-                continue;
-            }
 
-            var matchedNamedType = matchedType as INamedTypeSymbol;
-            if (matchedNamedType is null)
+            if (matchedType is not INamedTypeSymbol matchedNamedType)
             {
                 continue;
             }
@@ -158,7 +156,8 @@ public sealed class NonExhaustiveUnionMatchAnalyzer : DiagnosticAnalyzer
         }
 
         var missing = variants
-            .Where(variant => !covered.Any(coveredVariant => SymbolEqualityComparer.Default.Equals(coveredVariant, variant)))
+            .Where(variant =>
+                !covered.Any(coveredVariant => SymbolEqualityComparer.Default.Equals(coveredVariant, variant)))
             .Select(variant => variant.Name)
             .OrderBy(name => name, StringComparer.Ordinal)
             .ToList();
@@ -168,8 +167,9 @@ public sealed class NonExhaustiveUnionMatchAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var properties = ImmutableDictionary<string, string?>.Empty.Add(MissingVariantsPropertyName, string.Join(",", missing));
-        context.ReportDiagnostic(Diagnostic.Create(Rule, location, properties, string.Join(", ", missing)));
+        var properties =
+            ImmutableDictionary<string, string?>.Empty.Add(MissingVariantsPropertyName, string.Join(",", missing));
+        context.ReportDiagnostic(Diagnostic.Create(_rule, location, properties, string.Join(", ", missing)));
     }
 
     private static bool HasUnionAttribute(INamedTypeSymbol typeSymbol, INamedTypeSymbol unionAttributeSymbol)
@@ -178,14 +178,17 @@ public sealed class NonExhaustiveUnionMatchAnalyzer : DiagnosticAnalyzer
             .Any(attribute => SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, unionAttributeSymbol));
     }
 
-    private static ITypeSymbol? GetMatchedType(SemanticModel semanticModel, PatternSyntax pattern, CancellationToken cancellationToken)
+    private static ITypeSymbol? GetMatchedType(SemanticModel semanticModel, PatternSyntax pattern,
+        CancellationToken cancellationToken)
     {
         return pattern switch
         {
-            DeclarationPatternSyntax declarationPattern => semanticModel.GetTypeInfo(declarationPattern.Type, cancellationToken).Type,
+            DeclarationPatternSyntax declarationPattern => semanticModel
+                .GetTypeInfo(declarationPattern.Type, cancellationToken).Type,
             TypePatternSyntax typePattern => semanticModel.GetTypeInfo(typePattern.Type, cancellationToken).Type,
             ConstantPatternSyntax constantPattern
-                when semanticModel.GetSymbolInfo(constantPattern.Expression, cancellationToken).Symbol is INamedTypeSymbol namedTypeSymbol
+                when semanticModel.GetSymbolInfo(constantPattern.Expression, cancellationToken).Symbol is
+                    INamedTypeSymbol namedTypeSymbol
                 => namedTypeSymbol,
             RecursivePatternSyntax recursivePattern when recursivePattern.Type is not null
                 => semanticModel.GetTypeInfo(recursivePattern.Type, cancellationToken).Type,
@@ -202,5 +205,4 @@ public sealed class NonExhaustiveUnionMatchAnalyzer : DiagnosticAnalyzer
             _ => false
         };
     }
-
 }

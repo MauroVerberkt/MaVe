@@ -11,12 +11,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp"/>
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="AnalyzerReleases.Shipped.md" />
-    <None Include="AnalyzerReleases.Unshipped.md" />
+    <None Include="AnalyzerReleases.Shipped.md"/>
+    <None Include="AnalyzerReleases.Unshipped.md"/>
   </ItemGroup>
 
   <PropertyGroup>

@@ -26,6 +26,28 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
     /// </summary>
     public abstract TValue Value { get; }
 
+    /// <inheritdoc />
+    [Pure]
+    public bool Equals(Option<TValue>? other)
+    {
+        if (other is null)
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
+        if (HasValue != other.HasValue)
+        {
+            return false;
+        }
+
+        return !HasValue || EqualityComparer<TValue>.Default.Equals(Value, other.Value);
+    }
+
     /// <summary>
     /// Applies a function to the value if present, otherwise applies a function for when no value is present.
     /// </summary>
@@ -47,7 +69,8 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
     }
 
     /// <summary>
-    /// Applies an asynchronous function to the value if present, otherwise applies an asynchronous function for when no value is
+    /// Applies an asynchronous function to the value if present, otherwise applies an asynchronous function for when no value
+    /// is
     /// present.
     /// </summary>
     /// <param name="some">The asynchronous function to apply if the option contains a value.</param>
@@ -67,7 +90,7 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
         };
     }
 
-    /// <inheritdoc cref="Option{TValue}.MatchAsync{TResult}(Func{TValue, Task{TResult}}, Func{Task{TResult}})"/>
+    /// <inheritdoc cref="Option{TValue}.MatchAsync{TResult}(Func{TValue, Task{TResult}}, Func{Task{TResult}})" />
     public async Task<TResult> MatchAsync<TResult>(
         Func<TValue, CancellationToken, Task<TResult>> some, Func<CancellationToken, Task<TResult>> none,
         CancellationToken cancellationToken)
@@ -78,17 +101,6 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
             None<TValue> => await none(cancellationToken),
             _ => throw new OptionNotPresentException()
         };
-    }
-
-    /// <inheritdoc />
-    [Pure]
-    public bool Equals(Option<TValue>? other)
-    {
-        if (other is null) return false;
-        if (ReferenceEquals(this, other)) return true;
-        if (HasValue != other.HasValue) return false;
-
-        return !HasValue || EqualityComparer<TValue>.Default.Equals(Value, other.Value);
     }
 
     /// <inheritdoc />

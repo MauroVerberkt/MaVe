@@ -1,3 +1,4 @@
+using HelperUnionsGenerator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -8,43 +9,42 @@ public class UnionSourceGeneratorTests
 {
     private static GeneratorDriver CreateDriver()
     {
-        var generator = new HelperUnionsGenerator.UnionSourceGenerator();
+        var generator = new UnionSourceGenerator();
         return CSharpGeneratorDriver.Create(generator);
     }
 
     private static CSharpCompilation CreateCompilation(string source)
     {
         return CSharpCompilation.Create(
-            assemblyName: "HelperUnions.Tests",
-            syntaxTrees: [CSharpSyntaxTree.ParseText(source)],
-            references:
+            "HelperUnions.Tests",
+            [CSharpSyntaxTree.ParseText(source)],
             [
                 MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Attribute).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(UnionAttribute).Assembly.Location)
             ],
-            options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
     }
 
     [Test]
     public Task ValidUnionWithInheritingVariants_GeneratesAbstractBase()
     {
         const string source = """
-            using HelperUnions;
+                              using HelperUnions;
 
-            namespace Demo;
+                              namespace Demo;
 
-            [Union]
-            public partial record BusinessParty
-            {
-                public sealed record Customer(string Name) : BusinessParty;
+                              [Union]
+                              public partial record BusinessParty
+                              {
+                                  public sealed record Customer(string Name) : BusinessParty;
 
-                public sealed record Supplier(string CompanyName, int Rating) : BusinessParty;
+                                  public sealed record Supplier(string CompanyName, int Rating) : BusinessParty;
 
-                public sealed record Prospect() : BusinessParty;
-            }
-            """;
+                                  public sealed record Prospect() : BusinessParty;
+                              }
+                              """;
 
         var driver = CreateDriver()
             .RunGenerators(CreateCompilation(source));
@@ -56,14 +56,14 @@ public class UnionSourceGeneratorTests
     public void UnionWithoutInheritingVariants_GeneratesNothing()
     {
         const string source = """
-            using HelperUnions;
+                              using HelperUnions;
 
-            [Union]
-            public partial record BusinessParty
-            {
-                public sealed record Customer(string Name);
-            }
-            """;
+                              [Union]
+                              public partial record BusinessParty
+                              {
+                                  public sealed record Customer(string Name);
+                              }
+                              """;
 
         var result = CreateDriver()
             .RunGenerators(CreateCompilation(source))
@@ -76,14 +76,14 @@ public class UnionSourceGeneratorTests
     public void UnionOnNonPartialRecord_GeneratesNothing()
     {
         const string source = """
-            using HelperUnions;
+                              using HelperUnions;
 
-            [Union]
-            public record BusinessParty
-            {
-                public sealed record Customer(string Name) : BusinessParty;
-            }
-            """;
+                              [Union]
+                              public record BusinessParty
+                              {
+                                  public sealed record Customer(string Name) : BusinessParty;
+                              }
+                              """;
 
         var result = CreateDriver()
             .RunGenerators(CreateCompilation(source))
@@ -96,18 +96,18 @@ public class UnionSourceGeneratorTests
     public void FirstZeroPayloadVariant_DoesNotGenerateValueOverload()
     {
         const string source = """
-            using HelperUnions;
+                              using HelperUnions;
 
-            namespace Demo;
+                              namespace Demo;
 
-            [Union]
-            public partial record Outcome
-            {
-                public sealed record Empty() : Outcome;
+                              [Union]
+                              public partial record Outcome
+                              {
+                                  public sealed record Empty() : Outcome;
 
-                public sealed record Data(string Value) : Outcome;
-            }
-            """;
+                                  public sealed record Data(string Value) : Outcome;
+                              }
+                              """;
 
         var result = CreateDriver()
             .RunGenerators(CreateCompilation(source))
@@ -115,28 +115,30 @@ public class UnionSourceGeneratorTests
 
         var generatedSource = result.GeneratedTrees.Single().ToString();
 
-        Assert.That(generatedSource, Does.Contain("public __MatchBuilder_1<TResult> Empty<TResult>(global::System.Func<TResult> handler)"));
-        Assert.That(generatedSource, Does.Not.Contain("public __MatchBuilder_1<TResult> Empty<TResult>(TResult value)"));
+        Assert.That(generatedSource,
+            Does.Contain("public __MatchBuilder_1<TResult> Empty<TResult>(global::System.Func<TResult> handler)"));
+        Assert.That(generatedSource,
+            Does.Not.Contain("public __MatchBuilder_1<TResult> Empty<TResult>(TResult value)"));
     }
 
     [Test]
     public void ValidUnion_GeneratesSwitchBuilder()
     {
         const string source = """
-            using HelperUnions;
+                              using HelperUnions;
 
-            namespace Demo;
+                              namespace Demo;
 
-            [Union]
-            public partial record Outcome
-            {
-                public sealed record Success(string Message) : Outcome;
+                              [Union]
+                              public partial record Outcome
+                              {
+                                  public sealed record Success(string Message) : Outcome;
 
-                public sealed record Retry(int Count, string Reason) : Outcome;
+                                  public sealed record Retry(int Count, string Reason) : Outcome;
 
-                public sealed record Cancelled() : Outcome;
-            }
-            """;
+                                  public sealed record Cancelled() : Outcome;
+                              }
+                              """;
 
         var result = CreateDriver()
             .RunGenerators(CreateCompilation(source))
@@ -147,8 +149,10 @@ public class UnionSourceGeneratorTests
         Assert.That(generatedSource, Does.Contain("public __SwitchBuilder_0 Switch() => new __SwitchBuilder_0(this);"));
         Assert.That(generatedSource, Does.Contain("public readonly struct __SwitchBuilder_3"));
         Assert.That(generatedSource, Does.Contain("public void Execute()"));
-        Assert.That(generatedSource, Does.Contain("public __SwitchBuilder_1 Success(global::System.Action<string> handler)"));
-        Assert.That(generatedSource, Does.Contain("public __SwitchBuilder_2 Retry(global::System.Action<int, string> handler)"));
+        Assert.That(generatedSource,
+            Does.Contain("public __SwitchBuilder_1 Success(global::System.Action<string> handler)"));
+        Assert.That(generatedSource,
+            Does.Contain("public __SwitchBuilder_2 Retry(global::System.Action<int, string> handler)"));
         Assert.That(generatedSource, Does.Contain("public __SwitchBuilder_3 Cancelled(global::System.Action handler)"));
     }
 
@@ -156,20 +160,20 @@ public class UnionSourceGeneratorTests
     public void ValidUnion_GeneratesMatchAsyncBuilder()
     {
         const string source = """
-            using HelperUnions;
+                              using HelperUnions;
 
-            namespace Demo;
+                              namespace Demo;
 
-            [Union]
-            public partial record Outcome
-            {
-                public sealed record Success(string Message) : Outcome;
+                              [Union]
+                              public partial record Outcome
+                              {
+                                  public sealed record Success(string Message) : Outcome;
 
-                public sealed record Retry(int Count, string Reason) : Outcome;
+                                  public sealed record Retry(int Count, string Reason) : Outcome;
 
-                public sealed record Cancelled() : Outcome;
-            }
-            """;
+                                  public sealed record Cancelled() : Outcome;
+                              }
+                              """;
 
         var result = CreateDriver()
             .RunGenerators(CreateCompilation(source))
@@ -177,12 +181,19 @@ public class UnionSourceGeneratorTests
 
         var generatedSource = result.GeneratedTrees.Single().ToString();
 
-        Assert.That(generatedSource, Does.Contain("public __MatchAsyncBuilder_0 MatchAsync() => new __MatchAsyncBuilder_0(this);"));
+        Assert.That(generatedSource,
+            Does.Contain("public __MatchAsyncBuilder_0 MatchAsync() => new __MatchAsyncBuilder_0(this);"));
         Assert.That(generatedSource, Does.Contain("public readonly struct __MatchAsyncBuilder_3<TResult>"));
         Assert.That(generatedSource, Does.Contain("public global::System.Threading.Tasks.Task<TResult> ResultAsync()"));
-        Assert.That(generatedSource, Does.Contain("public __MatchAsyncBuilder_1<TResult> Success<TResult>(global::System.Func<string, global::System.Threading.Tasks.Task<TResult>> handler)"));
-        Assert.That(generatedSource, Does.Contain("public __MatchAsyncBuilder_2<TResult> Retry(global::System.Func<int, string, global::System.Threading.Tasks.Task<TResult>> handler)"));
-        Assert.That(generatedSource, Does.Contain("public __MatchAsyncBuilder_3<TResult> Cancelled(global::System.Func<global::System.Threading.Tasks.Task<TResult>> handler)"));
+        Assert.That(generatedSource,
+            Does.Contain(
+                "public __MatchAsyncBuilder_1<TResult> Success<TResult>(global::System.Func<string, global::System.Threading.Tasks.Task<TResult>> handler)"));
+        Assert.That(generatedSource,
+            Does.Contain(
+                "public __MatchAsyncBuilder_2<TResult> Retry(global::System.Func<int, string, global::System.Threading.Tasks.Task<TResult>> handler)"));
+        Assert.That(generatedSource,
+            Does.Contain(
+                "public __MatchAsyncBuilder_3<TResult> Cancelled(global::System.Func<global::System.Threading.Tasks.Task<TResult>> handler)"));
         Assert.That(generatedSource, Does.Contain("public __MatchAsyncBuilder_3<TResult> Cancelled(TResult value)"));
     }
 
@@ -190,20 +201,20 @@ public class UnionSourceGeneratorTests
     public void ValidUnion_GeneratesSwitchAsyncBuilder()
     {
         const string source = """
-            using HelperUnions;
+                              using HelperUnions;
 
-            namespace Demo;
+                              namespace Demo;
 
-            [Union]
-            public partial record Outcome
-            {
-                public sealed record Success(string Message) : Outcome;
+                              [Union]
+                              public partial record Outcome
+                              {
+                                  public sealed record Success(string Message) : Outcome;
 
-                public sealed record Retry(int Count, string Reason) : Outcome;
+                                  public sealed record Retry(int Count, string Reason) : Outcome;
 
-                public sealed record Cancelled() : Outcome;
-            }
-            """;
+                                  public sealed record Cancelled() : Outcome;
+                              }
+                              """;
 
         var result = CreateDriver()
             .RunGenerators(CreateCompilation(source))
@@ -211,11 +222,18 @@ public class UnionSourceGeneratorTests
 
         var generatedSource = result.GeneratedTrees.Single().ToString();
 
-        Assert.That(generatedSource, Does.Contain("public __SwitchAsyncBuilder_0 SwitchAsync() => new __SwitchAsyncBuilder_0(this);"));
+        Assert.That(generatedSource,
+            Does.Contain("public __SwitchAsyncBuilder_0 SwitchAsync() => new __SwitchAsyncBuilder_0(this);"));
         Assert.That(generatedSource, Does.Contain("public readonly struct __SwitchAsyncBuilder_3"));
         Assert.That(generatedSource, Does.Contain("public global::System.Threading.Tasks.Task ExecuteAsync()"));
-        Assert.That(generatedSource, Does.Contain("public __SwitchAsyncBuilder_1 Success(global::System.Func<string, global::System.Threading.Tasks.Task> handler)"));
-        Assert.That(generatedSource, Does.Contain("public __SwitchAsyncBuilder_2 Retry(global::System.Func<int, string, global::System.Threading.Tasks.Task> handler)"));
-        Assert.That(generatedSource, Does.Contain("public __SwitchAsyncBuilder_3 Cancelled(global::System.Func<global::System.Threading.Tasks.Task> handler)"));
+        Assert.That(generatedSource,
+            Does.Contain(
+                "public __SwitchAsyncBuilder_1 Success(global::System.Func<string, global::System.Threading.Tasks.Task> handler)"));
+        Assert.That(generatedSource,
+            Does.Contain(
+                "public __SwitchAsyncBuilder_2 Retry(global::System.Func<int, string, global::System.Threading.Tasks.Task> handler)"));
+        Assert.That(generatedSource,
+            Does.Contain(
+                "public __SwitchAsyncBuilder_3 Cancelled(global::System.Func<global::System.Threading.Tasks.Task> handler)"));
     }
 }

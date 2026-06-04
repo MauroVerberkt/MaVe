@@ -5,9 +5,15 @@ namespace HelperMonads.UnitTests;
 /// <para>
 /// These tests validate the equality logic of <c>Result{T}</c> objects under different scenarios, including:
 /// <list type="bullet">
-/// <item><description>Equal results (success or failure with the same data or error)</description></item>
-/// <item><description>Different results (success vs. failure, different data or exceptions)</description></item>
-/// <item><description>Comparisons with objects of different types</description></item>
+///     <item>
+///         <description>Equal results (success or failure with the same data or error)</description>
+///     </item>
+///     <item>
+///         <description>Different results (success vs. failure, different data or exceptions)</description>
+///     </item>
+///     <item>
+///         <description>Comparisons with objects of different types</description>
+///     </item>
 /// </list>
 /// </para>
 /// <para>
@@ -58,7 +64,8 @@ public class ResultEqualsTests
     }
 
     /// <summary>
-    /// Tests that <see cref="Result{T}.Equals(object)" /> returns <c>true</c> when comparing an object to itself (same instance).
+    /// Tests that <see cref="Result{T}.Equals(object)" /> returns <c>true</c> when comparing an object to itself (same
+    /// instance).
     /// </summary>
     [Test]
     public void Equals_ShouldReturnTrue_WhenObjectsAreSameInstance()
@@ -74,7 +81,8 @@ public class ResultEqualsTests
     }
 
     /// <summary>
-    /// Tests that <see cref="Result{T}.Equals(object)" /> returns <c>false</c> when comparing with an object of a different type.
+    /// Tests that <see cref="Result{T}.Equals(object)" /> returns <c>false</c> when comparing with an object of a different
+    /// type.
     /// </summary>
     [Test]
     public void Equals_ShouldReturnFalse_WhenComparingWithDifferentType()

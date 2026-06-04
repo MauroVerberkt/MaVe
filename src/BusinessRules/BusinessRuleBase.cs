@@ -9,10 +9,12 @@ namespace BusinessRules;
 [DataContract]
 public abstract class BusinessRuleBase
 {
-    [DataMember, Required]
+    [DataMember]
+    [Required]
     internal abstract string InternalKey { get; }
 
-    [DataMember, Required]
+    [DataMember]
+    [Required]
     internal abstract string InternalRequirement { get; }
 
     [DataMember]

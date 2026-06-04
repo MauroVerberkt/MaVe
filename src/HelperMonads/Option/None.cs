@@ -21,6 +21,7 @@ public sealed class None<TValue> : Option<TValue> where TValue : notnull
     /// </exception>
     public override TValue Value
     {
-        [DoesNotReturn] get => throw new OptionIsNoneException(typeof(TValue).Name);
+        [DoesNotReturn]
+        get => throw new OptionIsNoneException(typeof(TValue).Name);
     }
 }

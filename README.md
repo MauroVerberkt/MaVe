@@ -5,19 +5,20 @@
 
 # DotnetHelpers
 
-Functional building blocks for .NET: explicit error handling with **Result\<T\>**, null-safe optionals with **Option\<T\>**, compile-time validated **Business Rules** powered by source generators and Roslyn analyzers, and source-generated **discriminated unions** with exhaustive matching.
+Functional building blocks for .NET: explicit error handling with **Result\<T\>**, null-safe optionals with **Option\<T\>**, compile-time validated **Business Rules** powered by source generators and Roslyn analyzers, and
+source-generated **discriminated unions** with exhaustive matching.
 
 No runtime reflection. No exceptions for control flow. Strong typing all the way down.
 
 ## Packages
 
-| Package | Description |
-|---------|-------------|
-| **HelperMonads** | `Result<T>` and `Option<T>` monadic types — Map, Bind, Match with full async and CancellationToken support |
-| **BusinessRulesManagement** | Define business rules in JSON, get strongly-typed classes at compile time via source generation |
-| **HelperUnions** | Source-generated discriminated unions with exhaustive Match/Switch builders and Roslyn analyzer support |
-| **BusinessRules.ResultExtensions** | Bridge between BusinessRules validation and the Result pattern |
-| **BusinessRules.Wcf** | WCF `FaultException` support for business rule violations |
+| Package                            | Description                                                                                                |
+|------------------------------------|------------------------------------------------------------------------------------------------------------|
+| **HelperMonads**                   | `Result<T>` and `Option<T>` monadic types — Map, Bind, Match with full async and CancellationToken support |
+| **BusinessRulesManagement**        | Define business rules in JSON, get strongly-typed classes at compile time via source generation            |
+| **HelperUnions**                   | Source-generated discriminated unions with exhaustive Match/Switch builders and Roslyn analyzer support    |
+| **BusinessRules.ResultExtensions** | Bridge between BusinessRules validation and the Result pattern                                             |
+| **BusinessRules.Wcf**              | WCF `FaultException` support for business rule violations                                                  |
 
 ## Getting Started
 

@@ -6,7 +6,8 @@ namespace HelperMonads.UnitTests;
 /// These tests validate the behavior of <c>Bind</c>, <c>BindWithData</c>, <c>BindWithDataAsync</c>, and <c>BindAsync</c>
 /// methods under different scenarios including success, failure, and cancellation.
 /// </para>
-/// The tests ensure that these methods handle the propagation of success and failure states correctly, as well as pass data and
+/// The tests ensure that these methods handle the propagation of success and failure states correctly, as well as pass
+/// data and
 /// respect cancellation tokens.
 /// </summary>
 [TestFixture]
@@ -39,7 +40,8 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the Bind method invokes the provided function and returns a success result when the initial result is successful.
+    /// Tests that the Bind method invokes the provided function and returns a success result when the initial result is
+    /// successful.
     /// </summary>
     [Test]
     public void Bind_ShouldInvokeFunction_WhenSuccess()
@@ -79,7 +81,8 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindWithData method invokes the provided function and returns a success result when the initial result is
+    /// Tests that the BindWithData method invokes the provided function and returns a success result when the initial result
+    /// is
     /// successful.
     /// </summary>
     [Test]
@@ -178,7 +181,8 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindWithDataAsync method returns a failure result when the initial result is a failure, and a cancellation
+    /// Tests that the BindWithDataAsync method returns a failure result when the initial result is a failure, and a
+    /// cancellation
     /// token is used.
     /// </summary>
     [Test]
@@ -206,7 +210,8 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindWithDataAsync method returns a success result when the initial result is a success, and a cancellation
+    /// Tests that the BindWithDataAsync method returns a success result when the initial result is a success, and a
+    /// cancellation
     /// token is used.
     /// </summary>
     [Test]
@@ -336,7 +341,8 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindAsync method returns a failure result when the initial result is a failure, and a cancellation token is
+    /// Tests that the BindAsync method returns a failure result when the initial result is a failure, and a cancellation token
+    /// is
     /// used.
     /// </summary>
     [Test]
@@ -365,7 +371,8 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindAsync method returns a success result when the initial result is a success, and a cancellation token is
+    /// Tests that the BindAsync method returns a success result when the initial result is a success, and a cancellation token
+    /// is
     /// used.
     /// </summary>
     [Test]
@@ -438,7 +445,8 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindAndTransform method invokes the provided function and returns a success result when the initial result is
+    /// Tests that the BindAndTransform method invokes the provided function and returns a success result when the initial
+    /// result is
     /// successful.
     /// </summary>
     [Test]
@@ -537,7 +545,8 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindAndTransformAsync method returns a failure result when the initial result is a failure, and a cancellation
+    /// Tests that the BindAndTransformAsync method returns a failure result when the initial result is a failure, and a
+    /// cancellation
     /// token is used.
     /// </summary>
     [Test]
@@ -565,7 +574,8 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindAndTransformAsync method returns a success result when the initial result is a success, and a cancellation
+    /// Tests that the BindAndTransformAsync method returns a success result when the initial result is a success, and a
+    /// cancellation
     /// token is used.
     /// </summary>
     [Test]

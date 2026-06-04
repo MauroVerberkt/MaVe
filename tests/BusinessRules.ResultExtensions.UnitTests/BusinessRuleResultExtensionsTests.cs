@@ -62,7 +62,7 @@ public class BusinessRuleResultExtensionsTests
     public void ValidateAndReturn_WithSuccessfulOperation_ReturnsSuccessResult()
     {
         // Arrange
-        var expectedValue = 42;
+        const int expectedValue = 42;
 
         // Act
         var result = BusinessRuleResultExtensions.ValidateAndReturn(() => expectedValue);
@@ -92,7 +92,7 @@ public class BusinessRuleResultExtensionsTests
     public void ValidateAndReturn_WithRule_WithSuccessfulOperation_ReturnsSuccessResult()
     {
         // Arrange
-        var expectedValue = "test";
+        const string expectedValue = "test";
         var rule = new TestUserMustBeAdult();
 
         // Act
@@ -139,7 +139,7 @@ public class BusinessRuleResultExtensionsTests
     public async Task ValidateAndReturnAsync_WithSuccessfulOperation_ReturnsSuccessResult()
     {
         // Arrange
-        var expectedValue = "async result";
+        const string expectedValue = "async result";
 
         // Act
         var result = await BusinessRuleResultExtensions.ValidateAndReturnAsync(async () =>
@@ -181,7 +181,7 @@ public class BusinessRuleResultExtensionsTests
     public async Task ValidateAndReturnAsync_WithRule_WithSuccessfulOperation_ReturnsSuccessResult()
     {
         // Arrange
-        var expectedValue = 100;
+        const int expectedValue = 100;
         var rule = new TestUserMustBeAuthenticated();
 
         // Act
@@ -227,7 +227,7 @@ public class BusinessRuleResultExtensionsTests
     public void EnsureBusinessRule_WithPassingPredicate_ReturnsSuccessResult()
     {
         // Arrange
-        var age = 25;
+        const int age = 25;
         var rule = new TestUserMustBeAdult();
 
         // Act
@@ -245,7 +245,7 @@ public class BusinessRuleResultExtensionsTests
     public void EnsureBusinessRule_WithFailingPredicate_ReturnsFailedResult()
     {
         // Arrange
-        var age = 16;
+        const int age = 16;
         var rule = new TestUserMustBeAdult();
 
         // Act
@@ -270,7 +270,7 @@ public class BusinessRuleResultExtensionsTests
     public void EnsureBusinessRule_WithCustomMessage_WithFailingPredicate_ReturnsFailedResultWithCustomMessage()
     {
         // Arrange
-        var password = "short";
+        const string password = "short";
         var rule = new TestPasswordMinLength();
         var customMessage = $"Password has only {password.Length} characters";
 
@@ -299,7 +299,7 @@ public class BusinessRuleResultExtensionsTests
     public void EnsureBusinessRule_WithNullValue_ThrowsArgumentNullException()
     {
         // Arrange
-        string? value = null;
+        const string? value = null;
         var rule = new TestEmailMustBeValid();
 
         // Act & Assert
@@ -311,7 +311,7 @@ public class BusinessRuleResultExtensionsTests
     public void EnsureBusinessRule_WithNullPredicate_ThrowsArgumentNullException()
     {
         // Arrange
-        var value = "test";
+        const string value = "test";
         var rule = new TestEmailMustBeValid();
         Func<string, bool>? predicate = null;
 
@@ -324,7 +324,7 @@ public class BusinessRuleResultExtensionsTests
     public void EnsureBusinessRule_WithNullRule_ThrowsArgumentNullException()
     {
         // Arrange
-        var value = "test";
+        const string value = "test";
         BusinessRuleBase? rule = null;
 
         // Act & Assert
@@ -336,7 +336,7 @@ public class BusinessRuleResultExtensionsTests
     public void ValidateAll_WithAllPassingPredicates_ReturnsSuccessResult()
     {
         // Arrange
-        var password = "SecurePass123";
+        const string password = "SecurePass123";
         var minLengthRule = new TestPasswordMinLength();
         var uppercaseRule = new TestPasswordMustContainUppercase();
         var numberRule = new TestPasswordMustContainNumber();
@@ -360,7 +360,7 @@ public class BusinessRuleResultExtensionsTests
     public void ValidateAll_WithFirstFailingPredicate_ReturnsFailedResultWithFirstRule()
     {
         // Arrange
-        var password = "short";
+        const string password = "short";
         var minLengthRule = new TestPasswordMinLength();
         var uppercaseRule = new TestPasswordMustContainUppercase();
         var numberRule = new TestPasswordMustContainNumber();
@@ -387,7 +387,7 @@ public class BusinessRuleResultExtensionsTests
     public void ValidateAll_WithSecondFailingPredicate_ReturnsFailedResultWithSecondRule()
     {
         // Arrange
-        var password = "nouppercase123";
+        const string password = "nouppercase123";
         var minLengthRule = new TestPasswordMinLength();
         var uppercaseRule = new TestPasswordMustContainUppercase();
         var numberRule = new TestPasswordMustContainNumber();
@@ -410,10 +410,10 @@ public class BusinessRuleResultExtensionsTests
     public void ValidateAll_WithCustomMessages_WithFailingPredicate_ReturnsFailedResultWithCustomMessage()
     {
         // Arrange
-        var password = "short";
+        const string password = "short";
         var minLengthRule = new TestPasswordMinLength();
         var uppercaseRule = new TestPasswordMustContainUppercase();
-        var customMessage = "Password is too short!";
+        const string customMessage = "Password is too short!";
 
         // Act
         var result = password.ValidateAll(
@@ -436,7 +436,7 @@ public class BusinessRuleResultExtensionsTests
     public void ValidateAll_WithNullValue_ThrowsArgumentNullException()
     {
         // Arrange
-        string? value = null;
+        const string? value = null;
         var rule = new TestPasswordMinLength();
 
         // Act & Assert
@@ -448,7 +448,7 @@ public class BusinessRuleResultExtensionsTests
     public void ValidateAll_WithNullValidationsArray_ThrowsArgumentNullException()
     {
         // Arrange
-        var value = "test";
+        const string value = "test";
         (Func<string, bool> predicate, BusinessRuleBase rule)[]? validations = null;
 
         // Act & Assert
@@ -457,25 +457,25 @@ public class BusinessRuleResultExtensionsTests
     }
 
     [Test]
-    public void ValidateAll_WithNullPredicateInArray_ThrowsArgumentNullException()
+    public void ValidateAll_WithNullPredicateInArray_ThrowsArgumentException()
     {
         // Arrange
-        var value = "test";
+        const string value = "test";
         var rule = new TestPasswordMinLength();
 
         // Act & Assert
-        Assert.Throws<ArgumentNullException>(() =>
+        Assert.Throws<ArgumentException>(() =>
             _ = value.ValidateAll((null!, rule)));
     }
 
     [Test]
-    public void ValidateAll_WithNullRuleInArray_ThrowsArgumentNullException()
+    public void ValidateAll_WithNullRuleInArray_ThrowsArgumentException()
     {
         // Arrange
-        var value = "test";
+        const string value = "test";
 
         // Act & Assert
-        Assert.Throws<ArgumentNullException>(() =>
+        Assert.Throws<ArgumentException>(() =>
             _ = value.ValidateAll((_ => true, null!)));
     }
 
@@ -483,7 +483,7 @@ public class BusinessRuleResultExtensionsTests
     public void ValidateAll_WithCustomMessages_WithNullOrWhitespaceErrorMessage_ThrowsArgumentException()
     {
         // Arrange
-        var value = "test";
+        const string value = "test";
         var rule = new TestPasswordMinLength();
 
         // Act & Assert

@@ -1,9 +1,9 @@
 <Project>
   <Target Name="CopyBusinessRulesSchema" BeforeTargets="BeforeBuild">
-    <Copy SourceFiles="$(MSBuildThisFileDirectory)..\schemas\businessrules-schema.json" DestinationFolder="$(MSBuildProjectDirectory)\schemas" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(MSBuildThisFileDirectory)..\schemas\businessrules-schema.json" DestinationFolder="$(MSBuildProjectDirectory)\schemas" SkipUnchangedFiles="true"/>
   </Target>
-  
+
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)..\schemas\businessrules-schema.json" Link="schemas\businessrules-schema.json" CopyToOutputDirectory="PreserveNewest" Visible="false" />
+    <None Include="$(MSBuildThisFileDirectory)..\schemas\businessrules-schema.json" Link="schemas\businessrules-schema.json" CopyToOutputDirectory="PreserveNewest" Visible="false"/>
   </ItemGroup>
 </Project>

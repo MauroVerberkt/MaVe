@@ -1,4 +1,5 @@
 using HelperUnions.UnitTests.Verifiers;
+using HelperUnionsAnalyzer;
 using Microsoft.CodeAnalysis.Testing;
 
 namespace HelperUnions.UnitTests;
@@ -12,21 +13,21 @@ public class InvalidUnionDeclarationAnalyzerTests
     public async Task UnionOnPartialClass_ReportsDiagnostic()
     {
         const string source = """
-            using HelperUnions;
+                              using HelperUnions;
 
-            namespace Demo;
+                              namespace Demo;
 
-            [Union]
-            public partial class BusinessParty
-            {
-            }
-            """;
+                              [Union]
+                              public partial class BusinessParty
+                              {
+                              }
+                              """;
 
-        var expected = CSharpAnalyzerVerifier<HelperUnionsAnalyzer.InvalidUnionDeclarationAnalyzer>
+        var expected = CSharpAnalyzerVerifier<InvalidUnionDeclarationAnalyzer>
             .Diagnostic(DiagnosticId)
             .WithSpan(5, 2, 5, 7);
 
-        await CSharpAnalyzerVerifier<HelperUnionsAnalyzer.InvalidUnionDeclarationAnalyzer>
+        await CSharpAnalyzerVerifier<InvalidUnionDeclarationAnalyzer>
             .VerifyAnalyzerAsync(source, expected);
     }
 
@@ -34,21 +35,21 @@ public class InvalidUnionDeclarationAnalyzerTests
     public async Task UnionOnNonPartialRecord_ReportsDiagnostic()
     {
         const string source = """
-            using HelperUnions;
+                              using HelperUnions;
 
-            namespace Demo;
+                              namespace Demo;
 
-            [Union]
-            public record BusinessParty
-            {
-            }
-            """;
+                              [Union]
+                              public record BusinessParty
+                              {
+                              }
+                              """;
 
-        var expected = CSharpAnalyzerVerifier<HelperUnionsAnalyzer.InvalidUnionDeclarationAnalyzer>
+        var expected = CSharpAnalyzerVerifier<InvalidUnionDeclarationAnalyzer>
             .Diagnostic(DiagnosticId)
             .WithSpan(5, 2, 5, 7);
 
-        await CSharpAnalyzerVerifier<HelperUnionsAnalyzer.InvalidUnionDeclarationAnalyzer>
+        await CSharpAnalyzerVerifier<InvalidUnionDeclarationAnalyzer>
             .VerifyAnalyzerAsync(source, expected);
     }
 
@@ -56,21 +57,21 @@ public class InvalidUnionDeclarationAnalyzerTests
     public async Task UnionOnNonPartialClass_ReportsDiagnostic()
     {
         const string source = """
-            using HelperUnions;
+                              using HelperUnions;
 
-            namespace Demo;
+                              namespace Demo;
 
-            [Union]
-            public class BusinessParty
-            {
-            }
-            """;
+                              [Union]
+                              public class BusinessParty
+                              {
+                              }
+                              """;
 
-        var expected = CSharpAnalyzerVerifier<HelperUnionsAnalyzer.InvalidUnionDeclarationAnalyzer>
+        var expected = CSharpAnalyzerVerifier<InvalidUnionDeclarationAnalyzer>
             .Diagnostic(DiagnosticId)
             .WithSpan(5, 2, 5, 7);
 
-        await CSharpAnalyzerVerifier<HelperUnionsAnalyzer.InvalidUnionDeclarationAnalyzer>
+        await CSharpAnalyzerVerifier<InvalidUnionDeclarationAnalyzer>
             .VerifyAnalyzerAsync(source, expected);
     }
 
@@ -78,17 +79,17 @@ public class InvalidUnionDeclarationAnalyzerTests
     public async Task UnionOnPartialRecord_DoesNotReportDiagnostic()
     {
         const string source = """
-            using HelperUnions;
+                              using HelperUnions;
 
-            namespace Demo;
+                              namespace Demo;
 
-            [Union]
-            public partial record BusinessParty
-            {
-            }
-            """;
+                              [Union]
+                              public partial record BusinessParty
+                              {
+                              }
+                              """;
 
-        await CSharpAnalyzerVerifier<HelperUnionsAnalyzer.InvalidUnionDeclarationAnalyzer>
+        await CSharpAnalyzerVerifier<InvalidUnionDeclarationAnalyzer>
             .VerifyAnalyzerAsync(source);
     }
 
@@ -96,17 +97,17 @@ public class InvalidUnionDeclarationAnalyzerTests
     public async Task UnionOnPartialRecordStruct_ReportsDiagnostic()
     {
         const string source = """
-            using HelperUnions;
+                              using HelperUnions;
 
-            namespace Demo;
+                              namespace Demo;
 
-            [Union]
-            public partial record struct BusinessParty
-            {
-            }
-            """;
+                              [Union]
+                              public partial record struct BusinessParty
+                              {
+                              }
+                              """;
 
-        var expected = CSharpAnalyzerVerifier<HelperUnionsAnalyzer.InvalidUnionDeclarationAnalyzer>
+        var expected = CSharpAnalyzerVerifier<InvalidUnionDeclarationAnalyzer>
             .Diagnostic(DiagnosticId)
             .WithSpan(5, 2, 5, 7);
 
@@ -115,7 +116,7 @@ public class InvalidUnionDeclarationAnalyzerTests
             .WithSpan(5, 2, 5, 7)
             .WithArguments("Union", "class");
 
-        await CSharpAnalyzerVerifier<HelperUnionsAnalyzer.InvalidUnionDeclarationAnalyzer>
+        await CSharpAnalyzerVerifier<InvalidUnionDeclarationAnalyzer>
             .VerifyAnalyzerAsync(source, expected, expectedCompilerDiagnostic);
     }
 
@@ -123,14 +124,14 @@ public class InvalidUnionDeclarationAnalyzerTests
     public async Task TypeWithoutUnionAttribute_DoesNotReportDiagnostic()
     {
         const string source = """
-            namespace Demo;
+                              namespace Demo;
 
-            public partial class BusinessParty
-            {
-            }
-            """;
+                              public partial class BusinessParty
+                              {
+                              }
+                              """;
 
-        await CSharpAnalyzerVerifier<HelperUnionsAnalyzer.InvalidUnionDeclarationAnalyzer>
+        await CSharpAnalyzerVerifier<InvalidUnionDeclarationAnalyzer>
             .VerifyAnalyzerAsync(source);
     }
 }

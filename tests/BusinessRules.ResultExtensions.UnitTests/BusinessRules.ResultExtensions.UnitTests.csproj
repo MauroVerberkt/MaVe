@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\BusinessRules.ResultExtensions\BusinessRules.ResultExtensions.csproj" />
-    <ProjectReference Include="..\..\src\BusinessRules\BusinessRules.csproj" />
-    <ProjectReference Include="..\..\src\HelperMonads\HelperMonads.csproj" />
+    <ProjectReference Include="..\..\src\BusinessRules.ResultExtensions\BusinessRules.ResultExtensions.csproj"/>
+    <ProjectReference Include="..\..\src\BusinessRules\BusinessRules.csproj"/>
+    <ProjectReference Include="..\..\src\HelperMonads\HelperMonads.csproj"/>
   </ItemGroup>
 
 </Project>

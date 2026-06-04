@@ -3,12 +3,12 @@ using System.Text.Json;
 namespace BusinessRulesAnalyzer;
 
 /// <summary>
-/// Extension methods for <see cref="JsonElement"/> to provide case-insensitive property lookups.
+/// Extension methods for <see cref="JsonElement" /> to provide case-insensitive property lookups.
 /// </summary>
 internal static class JsonElementExtensions
 {
     /// <summary>
-    /// Attempts to get a property from a <see cref="JsonElement"/> using a case-insensitive comparison.
+    /// Attempts to get a property from a <see cref="JsonElement" /> using a case-insensitive comparison.
     /// </summary>
     /// <param name="element">The JSON element to search.</param>
     /// <param name="propertyName">The property name to match (case-insensitive).</param>
