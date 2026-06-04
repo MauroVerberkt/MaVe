@@ -1,4 +1,3 @@
-using HelperUnions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Testing;
@@ -128,6 +127,19 @@ public static class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
     where TAnalyzer : DiagnosticAnalyzer, new()
     where TCodeFix : CodeFixProvider, new()
 {
+    public static DiagnosticResult Diagnostic(string diagnosticId)
+    {
+        return CSharpCodeFixVerifier<TAnalyzer, TCodeFix, LineEndingNormalizingVerifier>.Diagnostic(diagnosticId);
+    }
+
+    public static async Task VerifyCodeFixAsync(string source, string fixedSource, params DiagnosticResult[] expected)
+    {
+        var test = new Test { TestCode = source, FixedCode = fixedSource };
+
+        test.ExpectedDiagnostics.AddRange(expected);
+        await test.RunAsync();
+    }
+
     public class Test : CSharpCodeFixTest<TAnalyzer, TCodeFix, LineEndingNormalizingVerifier>
     {
         public Test()
@@ -147,20 +159,5 @@ public static class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
                 TestState.AdditionalReferences.Add(helperUnionsReference);
             }
         }
-    }
-
-    public static DiagnosticResult Diagnostic(string diagnosticId)
-        => Microsoft.CodeAnalysis.CSharp.Testing.CSharpCodeFixVerifier<TAnalyzer, TCodeFix, LineEndingNormalizingVerifier>.Diagnostic(diagnosticId);
-
-    public static async Task VerifyCodeFixAsync(string source, string fixedSource, params DiagnosticResult[] expected)
-    {
-        var test = new Test
-        {
-            TestCode = source,
-            FixedCode = fixedSource
-        };
-
-        test.ExpectedDiagnostics.AddRange(expected);
-        await test.RunAsync();
     }
 }

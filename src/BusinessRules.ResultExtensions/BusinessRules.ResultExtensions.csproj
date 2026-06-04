@@ -12,12 +12,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="" />
+    <None Include="README.md" Pack="true" PackagePath=""/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BusinessRules\BusinessRules.csproj" />
-    <ProjectReference Include="..\HelperMonads\HelperMonads.csproj" />
+    <ProjectReference Include="..\BusinessRules\BusinessRules.csproj"/>
+    <ProjectReference Include="..\HelperMonads\HelperMonads.csproj"/>
   </ItemGroup>
 
 </Project>

@@ -13,7 +13,8 @@ namespace HelperUnionsFixProvider;
 /// <summary>
 /// Adds missing union variants for DNHU0001 diagnostics.
 /// </summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(NonExhaustiveUnionMatchCodeFixProvider)), Shared]
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(NonExhaustiveUnionMatchCodeFixProvider))]
+[Shared]
 public sealed class NonExhaustiveUnionMatchCodeFixProvider : CodeFixProvider
 {
     private const string DiagnosticId = "DNHU0001";
@@ -24,7 +25,10 @@ public sealed class NonExhaustiveUnionMatchCodeFixProvider : CodeFixProvider
     public override ImmutableArray<string> FixableDiagnosticIds => [DiagnosticId];
 
     /// <inheritdoc />
-    public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+    public override FixAllProvider GetFixAllProvider()
+    {
+        return WellKnownFixAllProviders.BatchFixer;
+    }
 
     /// <inheritdoc />
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
@@ -70,13 +74,13 @@ public sealed class NonExhaustiveUnionMatchCodeFixProvider : CodeFixProvider
 
         context.RegisterCodeFix(
             CodeAction.Create(
-                title: Title,
-                createChangedDocument: cancellationToken => AddMissingArmsAsync(
+                Title,
+                cancellationToken => AddMissingArmsAsync(
                     context.Document,
                     diagnostic.Location.SourceSpan,
                     missingVariants,
                     cancellationToken),
-                equivalenceKey: Title),
+                Title),
             diagnostic);
     }
 
@@ -129,12 +133,15 @@ public sealed class NonExhaustiveUnionMatchCodeFixProvider : CodeFixProvider
 
         var updatedSwitchNode = switchNode switch
         {
-            SwitchStatementSyntax switchStatement => AddMissingSections(switchStatement, missingVariants, unionTypeName),
-            SwitchExpressionSyntax switchExpression => AddMissingExpressionArms(switchExpression, missingVariants, unionTypeName),
+            SwitchStatementSyntax switchStatement =>
+                AddMissingSections(switchStatement, missingVariants, unionTypeName),
+            SwitchExpressionSyntax switchExpression => AddMissingExpressionArms(switchExpression, missingVariants,
+                unionTypeName),
             _ => switchNode
         };
 
-        var updatedRoot = root.ReplaceNode(switchNode, updatedSwitchNode.WithAdditionalAnnotations(Formatter.Annotation));
+        var updatedRoot =
+            root.ReplaceNode(switchNode, updatedSwitchNode.WithAdditionalAnnotations(Formatter.Annotation));
         return document.WithSyntaxRoot(updatedRoot);
     }
 
@@ -172,14 +179,14 @@ public sealed class NonExhaustiveUnionMatchCodeFixProvider : CodeFixProvider
 
             var label = SyntaxFactory.CasePatternSwitchLabel(
                 pattern,
-                whenClause: null,
-                colonToken: SyntaxFactory.Token(SyntaxKind.ColonToken));
+                null,
+                SyntaxFactory.Token(SyntaxKind.ColonToken));
 
             var throwStatement = SyntaxFactory.ThrowStatement(CreateNotImplementedExceptionExpression());
 
             var section = SyntaxFactory.SwitchSection(
-                labels: [label],
-                statements: [throwStatement]);
+                [label],
+                [throwStatement]);
 
             sections = sections.Add(section);
         }

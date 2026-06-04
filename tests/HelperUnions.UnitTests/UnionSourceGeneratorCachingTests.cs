@@ -1,3 +1,4 @@
+using HelperUnionsGenerator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -11,25 +12,24 @@ public class UnionSourceGeneratorCachingTests
     private static GeneratorDriver CreateDriverWithTracking()
     {
         return CSharpGeneratorDriver.Create(
-            generators: [new HelperUnionsGenerator.UnionSourceGenerator().AsSourceGenerator()],
+            [new UnionSourceGenerator().AsSourceGenerator()],
             driverOptions: new GeneratorDriverOptions(
-                disabledOutputs: IncrementalGeneratorOutputKind.None,
-                trackIncrementalGeneratorSteps: true));
+                IncrementalGeneratorOutputKind.None,
+                true));
     }
 
     private static CSharpCompilation CreateCompilation(string source)
     {
         return CSharpCompilation.Create(
-            assemblyName: "CachingTests",
-            syntaxTrees: [CSharpSyntaxTree.ParseText(source)],
-            references:
+            "CachingTests",
+            [CSharpSyntaxTree.ParseText(source)],
             [
                 MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Attribute).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(UnionAttribute).Assembly.Location)
             ],
-            options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
     }
 
     private static IEnumerable<IncrementalStepRunReason> GetOutputReasons(GeneratorDriver driver)
@@ -44,21 +44,21 @@ public class UnionSourceGeneratorCachingTests
     public void SameCompilation_SecondRun_OutputIsCached()
     {
         const string source = """
-            using HelperUnions;
+                              using HelperUnions;
 
-            namespace Demo;
+                              namespace Demo;
 
-            [Union]
-            public partial record Payment
-            {
-                public sealed record Card(string Number) : Payment;
-                public sealed record Cash(decimal Amount) : Payment;
-            }
-            """;
+                              [Union]
+                              public partial record Payment
+                              {
+                                  public sealed record Card(string Number) : Payment;
+                                  public sealed record Cash(decimal Amount) : Payment;
+                              }
+                              """;
 
         var compilation = CreateCompilation(source);
 
-        GeneratorDriver driver = CreateDriverWithTracking();
+        var driver = CreateDriverWithTracking();
         driver = driver.RunGenerators(compilation);
         driver = driver.RunGenerators(compilation);
 
@@ -69,21 +69,21 @@ public class UnionSourceGeneratorCachingTests
     public void UnrelatedClassAdded_OutputIsCached()
     {
         const string source = """
-            using HelperUnions;
+                              using HelperUnions;
 
-            namespace Demo;
+                              namespace Demo;
 
-            [Union]
-            public partial record Payment
-            {
-                public sealed record Card(string Number) : Payment;
-                public sealed record Cash(decimal Amount) : Payment;
-            }
-            """;
+                              [Union]
+                              public partial record Payment
+                              {
+                                  public sealed record Card(string Number) : Payment;
+                                  public sealed record Cash(decimal Amount) : Payment;
+                              }
+                              """;
 
         var compilation = CreateCompilation(source);
 
-        GeneratorDriver driver = CreateDriverWithTracking();
+        var driver = CreateDriverWithTracking();
         driver = driver.RunGenerators(compilation);
 
         var modifiedCompilation = compilation.AddSyntaxTrees(
@@ -98,33 +98,33 @@ public class UnionSourceGeneratorCachingTests
     public void CommentAddedInsideUnion_OutputIsCached()
     {
         const string sourceV1 = """
-            using HelperUnions;
+                                using HelperUnions;
 
-            namespace Demo;
+                                namespace Demo;
 
-            [Union]
-            public partial record Payment
-            {
-                public sealed record Card(string Number) : Payment;
-                public sealed record Cash(decimal Amount) : Payment;
-            }
-            """;
+                                [Union]
+                                public partial record Payment
+                                {
+                                    public sealed record Card(string Number) : Payment;
+                                    public sealed record Cash(decimal Amount) : Payment;
+                                }
+                                """;
 
         const string sourceV2 = """
-            using HelperUnions;
+                                using HelperUnions;
 
-            namespace Demo;
+                                namespace Demo;
 
-            [Union]
-            public partial record Payment
-            {
-                // This is a comment that should not affect caching
-                public sealed record Card(string Number) : Payment;
-                public sealed record Cash(decimal Amount) : Payment;
-            }
-            """;
+                                [Union]
+                                public partial record Payment
+                                {
+                                    // This is a comment that should not affect caching
+                                    public sealed record Card(string Number) : Payment;
+                                    public sealed record Cash(decimal Amount) : Payment;
+                                }
+                                """;
 
-        GeneratorDriver driver = CreateDriverWithTracking();
+        var driver = CreateDriverWithTracking();
         driver = driver.RunGenerators(CreateCompilation(sourceV1));
         driver = driver.RunGenerators(CreateCompilation(sourceV2));
 
@@ -135,32 +135,32 @@ public class UnionSourceGeneratorCachingTests
     public void NamespaceChanged_OutputIsModified()
     {
         const string sourceV1 = """
-            using HelperUnions;
+                                using HelperUnions;
 
-            namespace Demo;
+                                namespace Demo;
 
-            [Union]
-            public partial record Payment
-            {
-                public sealed record Card(string Number) : Payment;
-                public sealed record Cash(decimal Amount) : Payment;
-            }
-            """;
+                                [Union]
+                                public partial record Payment
+                                {
+                                    public sealed record Card(string Number) : Payment;
+                                    public sealed record Cash(decimal Amount) : Payment;
+                                }
+                                """;
 
         const string sourceV2 = """
-            using HelperUnions;
+                                using HelperUnions;
 
-            namespace Demo.Modified;
+                                namespace Demo.Modified;
 
-            [Union]
-            public partial record Payment
-            {
-                public sealed record Card(string Number) : Payment;
-                public sealed record Cash(decimal Amount) : Payment;
-            }
-            """;
+                                [Union]
+                                public partial record Payment
+                                {
+                                    public sealed record Card(string Number) : Payment;
+                                    public sealed record Cash(decimal Amount) : Payment;
+                                }
+                                """;
 
-        GeneratorDriver driver = CreateDriverWithTracking();
+        var driver = CreateDriverWithTracking();
         driver = driver.RunGenerators(CreateCompilation(sourceV1));
         driver = driver.RunGenerators(CreateCompilation(sourceV2));
 
@@ -171,33 +171,33 @@ public class UnionSourceGeneratorCachingTests
     public void VariantAdded_OutputIsModified()
     {
         const string sourceV1 = """
-            using HelperUnions;
+                                using HelperUnions;
 
-            namespace Demo;
+                                namespace Demo;
 
-            [Union]
-            public partial record Payment
-            {
-                public sealed record Card(string Number) : Payment;
-                public sealed record Cash(decimal Amount) : Payment;
-            }
-            """;
+                                [Union]
+                                public partial record Payment
+                                {
+                                    public sealed record Card(string Number) : Payment;
+                                    public sealed record Cash(decimal Amount) : Payment;
+                                }
+                                """;
 
         const string sourceV2 = """
-            using HelperUnions;
+                                using HelperUnions;
 
-            namespace Demo;
+                                namespace Demo;
 
-            [Union]
-            public partial record Payment
-            {
-                public sealed record Card(string Number) : Payment;
-                public sealed record Cash(decimal Amount) : Payment;
-                public sealed record Crypto(string Wallet) : Payment;
-            }
-            """;
+                                [Union]
+                                public partial record Payment
+                                {
+                                    public sealed record Card(string Number) : Payment;
+                                    public sealed record Cash(decimal Amount) : Payment;
+                                    public sealed record Crypto(string Wallet) : Payment;
+                                }
+                                """;
 
-        GeneratorDriver driver = CreateDriverWithTracking();
+        var driver = CreateDriverWithTracking();
         driver = driver.RunGenerators(CreateCompilation(sourceV1));
         driver = driver.RunGenerators(CreateCompilation(sourceV2));
 
@@ -208,32 +208,32 @@ public class UnionSourceGeneratorCachingTests
     public void VariantRenamed_OutputIsModified()
     {
         const string sourceV1 = """
-            using HelperUnions;
+                                using HelperUnions;
 
-            namespace Demo;
+                                namespace Demo;
 
-            [Union]
-            public partial record Payment
-            {
-                public sealed record Card(string Number) : Payment;
-                public sealed record Cash(decimal Amount) : Payment;
-            }
-            """;
+                                [Union]
+                                public partial record Payment
+                                {
+                                    public sealed record Card(string Number) : Payment;
+                                    public sealed record Cash(decimal Amount) : Payment;
+                                }
+                                """;
 
         const string sourceV2 = """
-            using HelperUnions;
+                                using HelperUnions;
 
-            namespace Demo;
+                                namespace Demo;
 
-            [Union]
-            public partial record Payment
-            {
-                public sealed record CreditCard(string Number) : Payment;
-                public sealed record Cash(decimal Amount) : Payment;
-            }
-            """;
+                                [Union]
+                                public partial record Payment
+                                {
+                                    public sealed record CreditCard(string Number) : Payment;
+                                    public sealed record Cash(decimal Amount) : Payment;
+                                }
+                                """;
 
-        GeneratorDriver driver = CreateDriverWithTracking();
+        var driver = CreateDriverWithTracking();
         driver = driver.RunGenerators(CreateCompilation(sourceV1));
         driver = driver.RunGenerators(CreateCompilation(sourceV2));
 
@@ -244,32 +244,32 @@ public class UnionSourceGeneratorCachingTests
     public void VariantParameterTypeChanged_OutputIsModified()
     {
         const string sourceV1 = """
-            using HelperUnions;
+                                using HelperUnions;
 
-            namespace Demo;
+                                namespace Demo;
 
-            [Union]
-            public partial record Payment
-            {
-                public sealed record Card(string Number) : Payment;
-                public sealed record Cash(decimal Amount) : Payment;
-            }
-            """;
+                                [Union]
+                                public partial record Payment
+                                {
+                                    public sealed record Card(string Number) : Payment;
+                                    public sealed record Cash(decimal Amount) : Payment;
+                                }
+                                """;
 
         const string sourceV2 = """
-            using HelperUnions;
+                                using HelperUnions;
 
-            namespace Demo;
+                                namespace Demo;
 
-            [Union]
-            public partial record Payment
-            {
-                public sealed record Card(int Number) : Payment;
-                public sealed record Cash(decimal Amount) : Payment;
-            }
-            """;
+                                [Union]
+                                public partial record Payment
+                                {
+                                    public sealed record Card(int Number) : Payment;
+                                    public sealed record Cash(decimal Amount) : Payment;
+                                }
+                                """;
 
-        GeneratorDriver driver = CreateDriverWithTracking();
+        var driver = CreateDriverWithTracking();
         driver = driver.RunGenerators(CreateCompilation(sourceV1));
         driver = driver.RunGenerators(CreateCompilation(sourceV2));
 
@@ -280,32 +280,32 @@ public class UnionSourceGeneratorCachingTests
     public void VariantParameterNameChanged_OutputIsModified()
     {
         const string sourceV1 = """
-            using HelperUnions;
+                                using HelperUnions;
 
-            namespace Demo;
+                                namespace Demo;
 
-            [Union]
-            public partial record Payment
-            {
-                public sealed record Card(string Number) : Payment;
-                public sealed record Cash(decimal Amount) : Payment;
-            }
-            """;
+                                [Union]
+                                public partial record Payment
+                                {
+                                    public sealed record Card(string Number) : Payment;
+                                    public sealed record Cash(decimal Amount) : Payment;
+                                }
+                                """;
 
         const string sourceV2 = """
-            using HelperUnions;
+                                using HelperUnions;
 
-            namespace Demo;
+                                namespace Demo;
 
-            [Union]
-            public partial record Payment
-            {
-                public sealed record Card(string CardNumber) : Payment;
-                public sealed record Cash(decimal Amount) : Payment;
-            }
-            """;
+                                [Union]
+                                public partial record Payment
+                                {
+                                    public sealed record Card(string CardNumber) : Payment;
+                                    public sealed record Cash(decimal Amount) : Payment;
+                                }
+                                """;
 
-        GeneratorDriver driver = CreateDriverWithTracking();
+        var driver = CreateDriverWithTracking();
         driver = driver.RunGenerators(CreateCompilation(sourceV1));
         driver = driver.RunGenerators(CreateCompilation(sourceV2));
 
@@ -316,38 +316,38 @@ public class UnionSourceGeneratorCachingTests
     public void ContainingTypeChanged_OutputIsModified()
     {
         const string sourceV1 = """
-            using HelperUnions;
+                                using HelperUnions;
 
-            namespace Demo;
+                                namespace Demo;
 
-            public partial class Container
-            {
-                [Union]
-                public partial record Payment
-                {
-                    public sealed record Card(string Number) : Payment;
-                    public sealed record Cash(decimal Amount) : Payment;
-                }
-            }
-            """;
+                                public partial class Container
+                                {
+                                    [Union]
+                                    public partial record Payment
+                                    {
+                                        public sealed record Card(string Number) : Payment;
+                                        public sealed record Cash(decimal Amount) : Payment;
+                                    }
+                                }
+                                """;
 
         const string sourceV2 = """
-            using HelperUnions;
+                                using HelperUnions;
 
-            namespace Demo;
+                                namespace Demo;
 
-            public partial class OtherContainer
-            {
-                [Union]
-                public partial record Payment
-                {
-                    public sealed record Card(string Number) : Payment;
-                    public sealed record Cash(decimal Amount) : Payment;
-                }
-            }
-            """;
+                                public partial class OtherContainer
+                                {
+                                    [Union]
+                                    public partial record Payment
+                                    {
+                                        public sealed record Card(string Number) : Payment;
+                                        public sealed record Cash(decimal Amount) : Payment;
+                                    }
+                                }
+                                """;
 
-        GeneratorDriver driver = CreateDriverWithTracking();
+        var driver = CreateDriverWithTracking();
         driver = driver.RunGenerators(CreateCompilation(sourceV1));
         driver = driver.RunGenerators(CreateCompilation(sourceV2));
 

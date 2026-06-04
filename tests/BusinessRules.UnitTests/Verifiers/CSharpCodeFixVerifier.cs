@@ -25,7 +25,9 @@ public class LineEndingNormalizingVerifier : IVerifier
             var normalizedExpected = NormalizeWhitespace(expectedStr);
             var normalizedActual = NormalizeWhitespace(actualStr);
             if (normalizedExpected == normalizedActual)
+            {
                 return;
+            }
         }
 
         _inner.Equal(expected, actual, message);
@@ -47,7 +49,10 @@ public class LineEndingNormalizingVerifier : IVerifier
     {
         if (message != null && message.Contains("did not match") && message.Contains("<CR><LF>"))
             // Just ignore line ending mismatches
+        {
             return;
+        }
+
         _inner.Fail(message);
     }
 
@@ -90,11 +95,7 @@ public static class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
     public static async Task VerifyCodeFixWithGeneratedCodeAsync(string source, string fixedSource,
         params DiagnosticResult[] expected)
     {
-        var test = new Test
-        {
-            TestCode = source.Replace("\r\n", "\n"),
-            FixedCode = fixedSource.Replace("\r\n", "\n")
-        };
+        var test = new Test { TestCode = source.Replace("\r\n", "\n"), FixedCode = fixedSource.Replace("\r\n", "\n") };
         test.TestState.Sources.Add(GeneratedBusinessRules.GetAllGeneratedSources());
         test.FixedState.Sources.Add(GeneratedBusinessRules.GetAllGeneratedSources());
         test.ExpectedDiagnostics.AddRange(expected);
@@ -116,14 +117,18 @@ public static class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
 
             var businessRulesRef = MetadataReference.CreateFromFile(typeof(BusinessRuleAttribute).Assembly.Location);
             if (TestState.AdditionalReferences.All(r => r.Display != businessRulesRef.Display))
+            {
                 TestState.AdditionalReferences.Add(businessRulesRef);
+            }
 
             // Add System.ServiceModel.Primitives for FaultException support
             try
             {
                 var serviceModelRef = MetadataReference.CreateFromFile(typeof(FaultException<>).Assembly.Location);
                 if (TestState.AdditionalReferences.All(r => r.Display != serviceModelRef.Display))
+                {
                     TestState.AdditionalReferences.Add(serviceModelRef);
+                }
             }
             catch
             {

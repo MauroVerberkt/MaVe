@@ -12,25 +12,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="" />
+    <None Include="README.md" Pack="true" PackagePath=""/>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\HelperUnionsAnalyzer\HelperUnionsAnalyzer.csproj"
-                      ReferenceOutputAssembly="false" />
+                      ReferenceOutputAssembly="false"/>
     <ProjectReference Include="..\HelperUnionsFixProvider\HelperUnionsFixProvider.csproj"
-                      ReferenceOutputAssembly="false" />
+                      ReferenceOutputAssembly="false"/>
     <ProjectReference Include="..\HelperUnionsGenerator\HelperUnionsGenerator.csproj"
-                      ReferenceOutputAssembly="false" />
+                      ReferenceOutputAssembly="false"/>
   </ItemGroup>
 
   <ItemGroup>
     <None Include="..\HelperUnionsAnalyzer\bin\$(Configuration)\netstandard2.0\HelperUnionsAnalyzer.dll"
-          Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+          Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
     <None Include="..\HelperUnionsFixProvider\bin\$(Configuration)\netstandard2.0\HelperUnionsFixProvider.dll"
-          Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+          Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
     <None Include="..\HelperUnionsGenerator\bin\$(Configuration)\netstandard2.0\HelperUnionsGenerator.dll"
-          Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+          Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
   </ItemGroup>
 
 </Project>

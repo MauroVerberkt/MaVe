@@ -1,7 +1,7 @@
 namespace HelperMonads.UnitTests;
 
 /// <summary>
-/// Contains unit tests for the <see cref="Error"/> record type.
+/// Contains unit tests for the <see cref="Error" /> record type.
 /// </summary>
 [TestFixture]
 public class ErrorTests
@@ -61,7 +61,7 @@ public class ErrorTests
     public void Unexpected_WithNullException_ShouldThrow()
     {
         // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => Error.Unexpected(null!));
+        Assert.Throws<ArgumentNullException>(() => _ = Error.Unexpected(null!));
     }
 
     [Test]

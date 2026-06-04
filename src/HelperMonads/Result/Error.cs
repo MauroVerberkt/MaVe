@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 namespace HelperMonads;
 
 /// <summary>
-/// Represents an error in a failed <see cref="Result{TData}"/>.
+/// Represents an error in a failed <see cref="Result{TData}" />.
 /// Extend with your own static factory methods for domain-specific errors.
 /// </summary>
 /// <param name="Message">A human-readable description of the error.</param>
@@ -17,7 +17,10 @@ public record Error(string Message, string? Code = null, Exception? Exception = 
     /// <param name="message">A human-readable description of the error.</param>
     /// <param name="code">An optional machine-readable error code.</param>
     [Pure]
-    public static Error Create(string message, string? code = null) => new(message, code);
+    public static Error Create(string message, string? code = null)
+    {
+        return new Error(message, code);
+    }
 
     /// <summary>
     /// Creates an error from an unexpected exception.

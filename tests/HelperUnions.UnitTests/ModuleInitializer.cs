@@ -5,5 +5,8 @@ namespace HelperUnions.UnitTests;
 internal static class ModuleInitializer
 {
     [ModuleInitializer]
-    public static void Init() => VerifySourceGenerators.Initialize();
+    public static void Init()
+    {
+        VerifySourceGenerators.Initialize();
+    }
 }

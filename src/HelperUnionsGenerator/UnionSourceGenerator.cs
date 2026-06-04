@@ -1,6 +1,7 @@
-using System.Text;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
@@ -45,7 +46,8 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
             return null;
         }
 
-        if (syntaxContext.SemanticModel.GetDeclaredSymbol(recordDeclaration) is not INamedTypeSymbol unionSymbol)
+        if (ModelExtensions.GetDeclaredSymbol(syntaxContext.SemanticModel, recordDeclaration) is not INamedTypeSymbol
+            unionSymbol)
         {
             return null;
         }
@@ -70,7 +72,8 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
                 : unionSymbol.ContainingNamespace.ToDisplayString(),
             GetContainingTypeChain(unionSymbol),
             BuildRecordDeclaration(unionSymbol),
-            unionSymbol.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Replace('<', '_').Replace('>', '_'),
+            unionSymbol.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Replace('<', '_')
+                .Replace('>', '_'),
             variants);
     }
 
@@ -84,7 +87,7 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
 
     private static bool IsPartial(RecordDeclarationSyntax recordDeclaration)
     {
-        return recordDeclaration.Modifiers.Any(static modifier => modifier.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PartialKeyword));
+        return recordDeclaration.Modifiers.Any(static modifier => modifier.IsKind(SyntaxKind.PartialKeyword));
     }
 
     private static string GenerateAbstractBase(UnionCandidate candidate)
@@ -179,7 +182,8 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         }
     }
 
-    private static void AppendMatchBuilder(StringBuilder sourceBuilder, string unionName, IReadOnlyList<UnionVariant> variants)
+    private static void AppendMatchBuilder(StringBuilder sourceBuilder, string unionName,
+        IReadOnlyList<UnionVariant> variants)
     {
         sourceBuilder.AppendLine("    public __MatchBuilder_0 Match() => new __MatchBuilder_0(this);");
         sourceBuilder.AppendLine();
@@ -193,7 +197,8 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         AppendMatchBuilderFinalStage(sourceBuilder, variants, unionName);
     }
 
-    private static void AppendMatchBuilderStage(StringBuilder sourceBuilder, string unionName, int stage, IReadOnlyList<UnionVariant> variants)
+    private static void AppendMatchBuilderStage(StringBuilder sourceBuilder, string unionName, int stage,
+        IReadOnlyList<UnionVariant> variants)
     {
         var currentVariant = variants[stage];
         var builderName = $"__MatchBuilder_{stage}";
@@ -207,7 +212,7 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
 
         for (var i = 0; i < stage; i++)
         {
-            sourceBuilder.AppendLine($"        private readonly {GetMatchHandlerType(variants[i], includeResultType: true)} _handler{i};");
+            sourceBuilder.AppendLine($"        private readonly {GetMatchHandlerType(variants[i], true)} _handler{i};");
         }
 
         sourceBuilder.AppendLine();
@@ -215,7 +220,7 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         var constructorParameters = new List<string> { unionName + " value" };
         for (var i = 0; i < stage; i++)
         {
-            constructorParameters.Add($"{GetMatchHandlerType(variants[i], includeResultType: true)} handler{i}");
+            constructorParameters.Add($"{GetMatchHandlerType(variants[i], true)} handler{i}");
         }
 
         sourceBuilder.AppendLine($"        internal {builderName}({string.Join(", ", constructorParameters)})");
@@ -225,11 +230,13 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         {
             sourceBuilder.AppendLine($"            _handler{i} = handler{i};");
         }
+
         sourceBuilder.AppendLine("        }");
         sourceBuilder.AppendLine();
 
         var methodResultType = stage == 0 ? "<TResult>" : string.Empty;
-        sourceBuilder.AppendLine($"        public {nextBuilderName}<TResult> {currentVariant.Name}{methodResultType}({GetMatchHandlerType(currentVariant, includeResultType: true)} handler)");
+        sourceBuilder.AppendLine(
+            $"        public {nextBuilderName}<TResult> {currentVariant.Name}{methodResultType}({GetMatchHandlerType(currentVariant, true)} handler)");
         sourceBuilder.AppendLine("        {");
 
         var nextConstructorArgs = new List<string> { "_value" };
@@ -237,15 +244,18 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         {
             nextConstructorArgs.Add($"_handler{i}");
         }
+
         nextConstructorArgs.Add("handler");
 
-        sourceBuilder.AppendLine($"            return new {nextBuilderName}<TResult>({string.Join(", ", nextConstructorArgs)});");
+        sourceBuilder.AppendLine(
+            $"            return new {nextBuilderName}<TResult>({string.Join(", ", nextConstructorArgs)});");
         sourceBuilder.AppendLine("        }");
 
         if (currentVariant.Parameters.Count == 0 && stage > 0)
         {
             sourceBuilder.AppendLine();
-            sourceBuilder.AppendLine($"        public {nextBuilderName}<TResult> {currentVariant.Name}{methodResultType}(TResult value)");
+            sourceBuilder.AppendLine(
+                $"        public {nextBuilderName}<TResult> {currentVariant.Name}{methodResultType}(TResult value)");
             sourceBuilder.AppendLine("        {");
             sourceBuilder.AppendLine($"            return {currentVariant.Name}{methodResultType}(() => value);");
             sourceBuilder.AppendLine("        }");
@@ -254,7 +264,8 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         sourceBuilder.AppendLine("    }");
     }
 
-    private static void AppendMatchBuilderFinalStage(StringBuilder sourceBuilder, IReadOnlyList<UnionVariant> variants, string unionName)
+    private static void AppendMatchBuilderFinalStage(StringBuilder sourceBuilder, IReadOnlyList<UnionVariant> variants,
+        string unionName)
     {
         var finalBuilderName = $"__MatchBuilder_{variants.Count}";
         sourceBuilder.AppendLine($"    public readonly struct {finalBuilderName}<TResult>");
@@ -262,14 +273,15 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         sourceBuilder.AppendLine($"        private readonly {unionName} _value;");
         for (var i = 0; i < variants.Count; i++)
         {
-            sourceBuilder.AppendLine($"        private readonly {GetMatchHandlerType(variants[i], includeResultType: true)} _handler{i};");
+            sourceBuilder.AppendLine($"        private readonly {GetMatchHandlerType(variants[i], true)} _handler{i};");
         }
+
         sourceBuilder.AppendLine();
 
         var constructorParameters = new List<string> { unionName + " value" };
         for (var i = 0; i < variants.Count; i++)
         {
-            constructorParameters.Add($"{GetMatchHandlerType(variants[i], includeResultType: true)} handler{i}");
+            constructorParameters.Add($"{GetMatchHandlerType(variants[i], true)} handler{i}");
         }
 
         sourceBuilder.AppendLine($"        internal {finalBuilderName}({string.Join(", ", constructorParameters)})");
@@ -279,6 +291,7 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         {
             sourceBuilder.AppendLine($"            _handler{i} = handler{i};");
         }
+
         sourceBuilder.AppendLine("        }");
         sourceBuilder.AppendLine();
 
@@ -301,7 +314,8 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
             sourceBuilder.AppendLine($"                {pattern} => {invoke},");
         }
 
-        sourceBuilder.AppendLine("                _ => throw new global::System.InvalidOperationException(\"Unrecognized union variant.\")");
+        sourceBuilder.AppendLine(
+            "                _ => throw new global::System.InvalidOperationException(\"Unrecognized union variant.\")");
         sourceBuilder.AppendLine("            };");
         sourceBuilder.AppendLine("        }");
         sourceBuilder.AppendLine("    }");
@@ -318,7 +332,8 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         return $"global::System.Func<{string.Join(", ", parameterTypes)}>";
     }
 
-    private static void AppendMatchAsyncBuilder(StringBuilder sourceBuilder, string unionName, IReadOnlyList<UnionVariant> variants)
+    private static void AppendMatchAsyncBuilder(StringBuilder sourceBuilder, string unionName,
+        IReadOnlyList<UnionVariant> variants)
     {
         sourceBuilder.AppendLine("    public __MatchAsyncBuilder_0 MatchAsync() => new __MatchAsyncBuilder_0(this);");
         sourceBuilder.AppendLine();
@@ -332,7 +347,8 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         AppendMatchAsyncBuilderFinalStage(sourceBuilder, variants, unionName);
     }
 
-    private static void AppendMatchAsyncBuilderStage(StringBuilder sourceBuilder, string unionName, int stage, IReadOnlyList<UnionVariant> variants)
+    private static void AppendMatchAsyncBuilderStage(StringBuilder sourceBuilder, string unionName, int stage,
+        IReadOnlyList<UnionVariant> variants)
     {
         var currentVariant = variants[stage];
         var builderName = $"__MatchAsyncBuilder_{stage}";
@@ -346,7 +362,8 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
 
         for (var i = 0; i < stage; i++)
         {
-            sourceBuilder.AppendLine($"        private readonly {GetMatchAsyncHandlerType(variants[i], includeResultType: true)} _handler{i};");
+            sourceBuilder.AppendLine(
+                $"        private readonly {GetMatchAsyncHandlerType(variants[i], true)} _handler{i};");
         }
 
         sourceBuilder.AppendLine();
@@ -354,7 +371,7 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         var constructorParameters = new List<string> { unionName + " value" };
         for (var i = 0; i < stage; i++)
         {
-            constructorParameters.Add($"{GetMatchAsyncHandlerType(variants[i], includeResultType: true)} handler{i}");
+            constructorParameters.Add($"{GetMatchAsyncHandlerType(variants[i], true)} handler{i}");
         }
 
         sourceBuilder.AppendLine($"        internal {builderName}({string.Join(", ", constructorParameters)})");
@@ -364,11 +381,13 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         {
             sourceBuilder.AppendLine($"            _handler{i} = handler{i};");
         }
+
         sourceBuilder.AppendLine("        }");
         sourceBuilder.AppendLine();
 
         var methodResultType = stage == 0 ? "<TResult>" : string.Empty;
-        sourceBuilder.AppendLine($"        public {nextBuilderName}<TResult> {currentVariant.Name}{methodResultType}({GetMatchAsyncHandlerType(currentVariant, includeResultType: true)} handler)");
+        sourceBuilder.AppendLine(
+            $"        public {nextBuilderName}<TResult> {currentVariant.Name}{methodResultType}({GetMatchAsyncHandlerType(currentVariant, true)} handler)");
         sourceBuilder.AppendLine("        {");
 
         var nextConstructorArgs = new List<string> { "_value" };
@@ -376,24 +395,29 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         {
             nextConstructorArgs.Add($"_handler{i}");
         }
+
         nextConstructorArgs.Add("handler");
 
-        sourceBuilder.AppendLine($"            return new {nextBuilderName}<TResult>({string.Join(", ", nextConstructorArgs)});");
+        sourceBuilder.AppendLine(
+            $"            return new {nextBuilderName}<TResult>({string.Join(", ", nextConstructorArgs)});");
         sourceBuilder.AppendLine("        }");
 
         if (currentVariant.Parameters.Count == 0 && stage > 0)
         {
             sourceBuilder.AppendLine();
-            sourceBuilder.AppendLine($"        public {nextBuilderName}<TResult> {currentVariant.Name}{methodResultType}(TResult value)");
+            sourceBuilder.AppendLine(
+                $"        public {nextBuilderName}<TResult> {currentVariant.Name}{methodResultType}(TResult value)");
             sourceBuilder.AppendLine("        {");
-            sourceBuilder.AppendLine($"            return {currentVariant.Name}{methodResultType}(() => global::System.Threading.Tasks.Task.FromResult(value));");
+            sourceBuilder.AppendLine(
+                $"            return {currentVariant.Name}{methodResultType}(() => global::System.Threading.Tasks.Task.FromResult(value));");
             sourceBuilder.AppendLine("        }");
         }
 
         sourceBuilder.AppendLine("    }");
     }
 
-    private static void AppendMatchAsyncBuilderFinalStage(StringBuilder sourceBuilder, IReadOnlyList<UnionVariant> variants, string unionName)
+    private static void AppendMatchAsyncBuilderFinalStage(StringBuilder sourceBuilder,
+        IReadOnlyList<UnionVariant> variants, string unionName)
     {
         var finalBuilderName = $"__MatchAsyncBuilder_{variants.Count}";
         sourceBuilder.AppendLine($"    public readonly struct {finalBuilderName}<TResult>");
@@ -401,14 +425,16 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         sourceBuilder.AppendLine($"        private readonly {unionName} _value;");
         for (var i = 0; i < variants.Count; i++)
         {
-            sourceBuilder.AppendLine($"        private readonly {GetMatchAsyncHandlerType(variants[i], includeResultType: true)} _handler{i};");
+            sourceBuilder.AppendLine(
+                $"        private readonly {GetMatchAsyncHandlerType(variants[i], true)} _handler{i};");
         }
+
         sourceBuilder.AppendLine();
 
         var constructorParameters = new List<string> { unionName + " value" };
         for (var i = 0; i < variants.Count; i++)
         {
-            constructorParameters.Add($"{GetMatchAsyncHandlerType(variants[i], includeResultType: true)} handler{i}");
+            constructorParameters.Add($"{GetMatchAsyncHandlerType(variants[i], true)} handler{i}");
         }
 
         sourceBuilder.AppendLine($"        internal {finalBuilderName}({string.Join(", ", constructorParameters)})");
@@ -418,6 +444,7 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         {
             sourceBuilder.AppendLine($"            _handler{i} = handler{i};");
         }
+
         sourceBuilder.AppendLine("        }");
         sourceBuilder.AppendLine();
 
@@ -440,7 +467,8 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
             sourceBuilder.AppendLine($"                {pattern} => {invoke},");
         }
 
-        sourceBuilder.AppendLine("                _ => throw new global::System.InvalidOperationException(\"Unrecognized union variant.\")");
+        sourceBuilder.AppendLine(
+            "                _ => throw new global::System.InvalidOperationException(\"Unrecognized union variant.\")");
         sourceBuilder.AppendLine("            };");
         sourceBuilder.AppendLine("        }");
         sourceBuilder.AppendLine("    }");
@@ -457,7 +485,8 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         return $"global::System.Func<{string.Join(", ", parameterTypes)}>";
     }
 
-    private static void AppendSwitchBuilder(StringBuilder sourceBuilder, string unionName, IReadOnlyList<UnionVariant> variants)
+    private static void AppendSwitchBuilder(StringBuilder sourceBuilder, string unionName,
+        IReadOnlyList<UnionVariant> variants)
     {
         sourceBuilder.AppendLine("    public __SwitchBuilder_0 Switch() => new __SwitchBuilder_0(this);");
         sourceBuilder.AppendLine();
@@ -471,7 +500,8 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         AppendSwitchBuilderFinalStage(sourceBuilder, variants, unionName);
     }
 
-    private static void AppendSwitchBuilderStage(StringBuilder sourceBuilder, string unionName, int stage, IReadOnlyList<UnionVariant> variants)
+    private static void AppendSwitchBuilderStage(StringBuilder sourceBuilder, string unionName, int stage,
+        IReadOnlyList<UnionVariant> variants)
     {
         var currentVariant = variants[stage];
         var builderName = $"__SwitchBuilder_{stage}";
@@ -501,10 +531,12 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         {
             sourceBuilder.AppendLine($"            _handler{i} = handler{i};");
         }
+
         sourceBuilder.AppendLine("        }");
         sourceBuilder.AppendLine();
 
-        sourceBuilder.AppendLine($"        public {nextBuilderName} {currentVariant.Name}({GetSwitchHandlerType(currentVariant)} handler)");
+        sourceBuilder.AppendLine(
+            $"        public {nextBuilderName} {currentVariant.Name}({GetSwitchHandlerType(currentVariant)} handler)");
         sourceBuilder.AppendLine("        {");
 
         var nextConstructorArgs = new List<string> { "_value" };
@@ -512,15 +544,18 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         {
             nextConstructorArgs.Add($"_handler{i}");
         }
+
         nextConstructorArgs.Add("handler");
 
-        sourceBuilder.AppendLine($"            return new {nextBuilderName}({string.Join(", ", nextConstructorArgs)});");
+        sourceBuilder.AppendLine(
+            $"            return new {nextBuilderName}({string.Join(", ", nextConstructorArgs)});");
         sourceBuilder.AppendLine("        }");
 
         sourceBuilder.AppendLine("    }");
     }
 
-    private static void AppendSwitchBuilderFinalStage(StringBuilder sourceBuilder, IReadOnlyList<UnionVariant> variants, string unionName)
+    private static void AppendSwitchBuilderFinalStage(StringBuilder sourceBuilder, IReadOnlyList<UnionVariant> variants,
+        string unionName)
     {
         var finalBuilderName = $"__SwitchBuilder_{variants.Count}";
         sourceBuilder.AppendLine($"    public readonly struct {finalBuilderName}");
@@ -530,6 +565,7 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         {
             sourceBuilder.AppendLine($"        private readonly {GetSwitchHandlerType(variants[i])} _handler{i};");
         }
+
         sourceBuilder.AppendLine();
 
         var constructorParameters = new List<string> { unionName + " value" };
@@ -545,6 +581,7 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         {
             sourceBuilder.AppendLine($"            _handler{i} = handler{i};");
         }
+
         sourceBuilder.AppendLine("        }");
         sourceBuilder.AppendLine();
 
@@ -570,7 +607,8 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         }
 
         sourceBuilder.AppendLine("                default:");
-        sourceBuilder.AppendLine("                    throw new global::System.InvalidOperationException(\"Unrecognized union variant.\");");
+        sourceBuilder.AppendLine(
+            "                    throw new global::System.InvalidOperationException(\"Unrecognized union variant.\");");
         sourceBuilder.AppendLine("            }");
         sourceBuilder.AppendLine("        }");
         sourceBuilder.AppendLine("    }");
@@ -583,12 +621,15 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
             return "global::System.Action";
         }
 
-        return $"global::System.Action<{string.Join(", ", variant.Parameters.Select(parameter => parameter.TypeName))}>";
+        return
+            $"global::System.Action<{string.Join(", ", variant.Parameters.Select(parameter => parameter.TypeName))}>";
     }
 
-    private static void AppendSwitchAsyncBuilder(StringBuilder sourceBuilder, string unionName, IReadOnlyList<UnionVariant> variants)
+    private static void AppendSwitchAsyncBuilder(StringBuilder sourceBuilder, string unionName,
+        IReadOnlyList<UnionVariant> variants)
     {
-        sourceBuilder.AppendLine("    public __SwitchAsyncBuilder_0 SwitchAsync() => new __SwitchAsyncBuilder_0(this);");
+        sourceBuilder.AppendLine(
+            "    public __SwitchAsyncBuilder_0 SwitchAsync() => new __SwitchAsyncBuilder_0(this);");
         sourceBuilder.AppendLine();
 
         for (var stage = 0; stage < variants.Count; stage++)
@@ -600,7 +641,8 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         AppendSwitchAsyncBuilderFinalStage(sourceBuilder, variants, unionName);
     }
 
-    private static void AppendSwitchAsyncBuilderStage(StringBuilder sourceBuilder, string unionName, int stage, IReadOnlyList<UnionVariant> variants)
+    private static void AppendSwitchAsyncBuilderStage(StringBuilder sourceBuilder, string unionName, int stage,
+        IReadOnlyList<UnionVariant> variants)
     {
         var currentVariant = variants[stage];
         var builderName = $"__SwitchAsyncBuilder_{stage}";
@@ -630,10 +672,12 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         {
             sourceBuilder.AppendLine($"            _handler{i} = handler{i};");
         }
+
         sourceBuilder.AppendLine("        }");
         sourceBuilder.AppendLine();
 
-        sourceBuilder.AppendLine($"        public {nextBuilderName} {currentVariant.Name}({GetSwitchAsyncHandlerType(currentVariant)} handler)");
+        sourceBuilder.AppendLine(
+            $"        public {nextBuilderName} {currentVariant.Name}({GetSwitchAsyncHandlerType(currentVariant)} handler)");
         sourceBuilder.AppendLine("        {");
 
         var nextConstructorArgs = new List<string> { "_value" };
@@ -641,15 +685,18 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         {
             nextConstructorArgs.Add($"_handler{i}");
         }
+
         nextConstructorArgs.Add("handler");
 
-        sourceBuilder.AppendLine($"            return new {nextBuilderName}({string.Join(", ", nextConstructorArgs)});");
+        sourceBuilder.AppendLine(
+            $"            return new {nextBuilderName}({string.Join(", ", nextConstructorArgs)});");
         sourceBuilder.AppendLine("        }");
 
         sourceBuilder.AppendLine("    }");
     }
 
-    private static void AppendSwitchAsyncBuilderFinalStage(StringBuilder sourceBuilder, IReadOnlyList<UnionVariant> variants, string unionName)
+    private static void AppendSwitchAsyncBuilderFinalStage(StringBuilder sourceBuilder,
+        IReadOnlyList<UnionVariant> variants, string unionName)
     {
         var finalBuilderName = $"__SwitchAsyncBuilder_{variants.Count}";
         sourceBuilder.AppendLine($"    public readonly struct {finalBuilderName}");
@@ -659,6 +706,7 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         {
             sourceBuilder.AppendLine($"        private readonly {GetSwitchAsyncHandlerType(variants[i])} _handler{i};");
         }
+
         sourceBuilder.AppendLine();
 
         var constructorParameters = new List<string> { unionName + " value" };
@@ -674,6 +722,7 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
         {
             sourceBuilder.AppendLine($"            _handler{i} = handler{i};");
         }
+
         sourceBuilder.AppendLine("        }");
         sourceBuilder.AppendLine();
 
@@ -696,7 +745,8 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
             sourceBuilder.AppendLine($"                {pattern} => {invoke},");
         }
 
-        sourceBuilder.AppendLine("                _ => throw new global::System.InvalidOperationException(\"Unrecognized union variant.\")");
+        sourceBuilder.AppendLine(
+            "                _ => throw new global::System.InvalidOperationException(\"Unrecognized union variant.\")");
         sourceBuilder.AppendLine("            };");
         sourceBuilder.AppendLine("        }");
         sourceBuilder.AppendLine("    }");
@@ -886,18 +936,18 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
             unchecked
             {
                 var hashCode = 17;
-                hashCode = (hashCode * 31) + (Namespace is null ? 0 : StringComparer.Ordinal.GetHashCode(Namespace));
-                hashCode = (hashCode * 31) + StringComparer.Ordinal.GetHashCode(Declaration);
-                hashCode = (hashCode * 31) + StringComparer.Ordinal.GetHashCode(HintName);
+                hashCode = hashCode * 31 + (Namespace is null ? 0 : StringComparer.Ordinal.GetHashCode(Namespace));
+                hashCode = hashCode * 31 + StringComparer.Ordinal.GetHashCode(Declaration);
+                hashCode = hashCode * 31 + StringComparer.Ordinal.GetHashCode(HintName);
 
                 foreach (var containingType in ContainingTypeChain)
                 {
-                    hashCode = (hashCode * 31) + StringComparer.Ordinal.GetHashCode(containingType);
+                    hashCode = hashCode * 31 + StringComparer.Ordinal.GetHashCode(containingType);
                 }
 
                 foreach (var variant in Variants)
                 {
-                    hashCode = (hashCode * 31) + variant.GetHashCode();
+                    hashCode = hashCode * 31 + variant.GetHashCode();
                 }
 
                 return hashCode;
@@ -947,10 +997,10 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
             unchecked
             {
                 var hashCode = 17;
-                hashCode = (hashCode * 31) + StringComparer.Ordinal.GetHashCode(Name);
+                hashCode = hashCode * 31 + StringComparer.Ordinal.GetHashCode(Name);
                 foreach (var parameter in Parameters)
                 {
-                    hashCode = (hashCode * 31) + parameter.GetHashCode();
+                    hashCode = hashCode * 31 + parameter.GetHashCode();
                 }
 
                 return hashCode;
@@ -1004,9 +1054,9 @@ public sealed class UnionSourceGenerator : IIncrementalGenerator
             unchecked
             {
                 var hashCode = 17;
-                hashCode = (hashCode * 31) + StringComparer.Ordinal.GetHashCode(TypeName);
-                hashCode = (hashCode * 31) + StringComparer.Ordinal.GetHashCode(ParameterName);
-                hashCode = (hashCode * 31) + StringComparer.Ordinal.GetHashCode(PropertyName);
+                hashCode = hashCode * 31 + StringComparer.Ordinal.GetHashCode(TypeName);
+                hashCode = hashCode * 31 + StringComparer.Ordinal.GetHashCode(ParameterName);
+                hashCode = hashCode * 31 + StringComparer.Ordinal.GetHashCode(PropertyName);
                 return hashCode;
             }
         }

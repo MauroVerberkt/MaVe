@@ -29,19 +29,19 @@ public class BusinessRuleSourceGeneratorTests
     [Test]
     public Task SingleRule_SingleCategory_GeneratesCorrectSource()
     {
-        var json = """
-            {
-              "businessRules": [
-                {
-                  "className": "UserMustBeAuthenticated",
-                  "key": "USER_AUTH",
-                  "requirement": "User must be authenticated",
-                  "description": "Validates that the user is authenticated",
-                  "category": "Authentication"
-                }
-              ]
-            }
-            """;
+        const string json = """
+                            {
+                              "businessRules": [
+                                {
+                                  "className": "UserMustBeAuthenticated",
+                                  "key": "USER_AUTH",
+                                  "requirement": "User must be authenticated",
+                                  "description": "Validates that the user is authenticated",
+                                  "category": "Authentication"
+                                }
+                              ]
+                            }
+                            """;
 
         var driver = CreateDriver("BusinessRules.json", json)
             .RunGenerators(CreateCompilation());
@@ -52,33 +52,33 @@ public class BusinessRuleSourceGeneratorTests
     [Test]
     public Task MultipleCategories_GeneratesSeparateFiles()
     {
-        var json = """
-            {
-              "businessRules": [
-                {
-                  "className": "UserMustBeAuthenticated",
-                  "key": "USER_AUTH",
-                  "requirement": "User must be authenticated",
-                  "description": "Validates that the user is authenticated",
-                  "category": "Authentication"
-                },
-                {
-                  "className": "UserMustBeAdmin",
-                  "key": "USER_ADMIN",
-                  "requirement": "User must have admin privileges",
-                  "description": "Validates that the user has admin rights",
-                  "category": "Authorization"
-                },
-                {
-                  "className": "AgeMinimum",
-                  "key": "AGE_MIN",
-                  "requirement": "Age minimum",
-                  "description": "User must meet minimum age requirement",
-                  "category": "Validation"
-                }
-              ]
-            }
-            """;
+        const string json = """
+                            {
+                              "businessRules": [
+                                {
+                                  "className": "UserMustBeAuthenticated",
+                                  "key": "USER_AUTH",
+                                  "requirement": "User must be authenticated",
+                                  "description": "Validates that the user is authenticated",
+                                  "category": "Authentication"
+                                },
+                                {
+                                  "className": "UserMustBeAdmin",
+                                  "key": "USER_ADMIN",
+                                  "requirement": "User must have admin privileges",
+                                  "description": "Validates that the user has admin rights",
+                                  "category": "Authorization"
+                                },
+                                {
+                                  "className": "AgeMinimum",
+                                  "key": "AGE_MIN",
+                                  "requirement": "Age minimum",
+                                  "description": "User must meet minimum age requirement",
+                                  "category": "Validation"
+                                }
+                              ]
+                            }
+                            """;
 
         var driver = CreateDriver("BusinessRules.json", json)
             .RunGenerators(CreateCompilation());
@@ -89,26 +89,26 @@ public class BusinessRuleSourceGeneratorTests
     [Test]
     public Task EmptyCategory_DefaultsToGeneral()
     {
-        var json = """
-            {
-              "businessRules": [
-                {
-                  "className": "GenericRule",
-                  "key": "GENERIC",
-                  "requirement": "A generic rule",
-                  "description": "Has no category",
-                  "category": ""
-                },
-                {
-                  "className": "NullCategoryRule",
-                  "key": "NULL_CAT",
-                  "requirement": "Null category rule",
-                  "description": "Category is whitespace only",
-                  "category": "   "
-                }
-              ]
-            }
-            """;
+        const string json = """
+                            {
+                              "businessRules": [
+                                {
+                                  "className": "GenericRule",
+                                  "key": "GENERIC",
+                                  "requirement": "A generic rule",
+                                  "description": "Has no category",
+                                  "category": ""
+                                },
+                                {
+                                  "className": "NullCategoryRule",
+                                  "key": "NULL_CAT",
+                                  "requirement": "Null category rule",
+                                  "description": "Category is whitespace only",
+                                  "category": "   "
+                                }
+                              ]
+                            }
+                            """;
 
         var driver = CreateDriver("BusinessRules.json", json)
             .RunGenerators(CreateCompilation());
@@ -119,11 +119,11 @@ public class BusinessRuleSourceGeneratorTests
     [Test]
     public void EmptyRulesArray_GeneratesNothing()
     {
-        var json = """
-            {
-              "businessRules": []
-            }
-            """;
+        const string json = """
+                            {
+                              "businessRules": []
+                            }
+                            """;
 
         var driver = CreateDriver("BusinessRules.json", json)
             .RunGenerators(CreateCompilation());
@@ -136,11 +136,11 @@ public class BusinessRuleSourceGeneratorTests
     [Test]
     public void NullRulesProperty_GeneratesNothing()
     {
-        var json = """
-            {
-              "businessRules": null
-            }
-            """;
+        const string json = """
+                            {
+                              "businessRules": null
+                            }
+                            """;
 
         var driver = CreateDriver("BusinessRules.json", json)
             .RunGenerators(CreateCompilation());
@@ -153,7 +153,7 @@ public class BusinessRuleSourceGeneratorTests
     [Test]
     public void InvalidJson_GeneratesNothing_NoCrash()
     {
-        var json = "{ this is not valid json at all }}}}";
+        const string json = "{ this is not valid json at all }}}}";
 
         var driver = CreateDriver("BusinessRules.json", json)
             .RunGenerators(CreateCompilation());
@@ -167,19 +167,19 @@ public class BusinessRuleSourceGeneratorTests
     [Test]
     public Task SpecialCharactersInStrings_AreEscaped()
     {
-        var json = """
-            {
-              "businessRules": [
-                {
-                  "className": "RuleWithSpecialChars",
-                  "key": "SPECIAL",
-                  "requirement": "Must contain \"quotes\" and \\backslashes",
-                  "description": "Line1\nLine2\rLine3",
-                  "category": "Escaping"
-                }
-              ]
-            }
-            """;
+        const string json = """
+                            {
+                              "businessRules": [
+                                {
+                                  "className": "RuleWithSpecialChars",
+                                  "key": "SPECIAL",
+                                  "requirement": "Must contain \"quotes\" and \\backslashes",
+                                  "description": "Line1\nLine2\rLine3",
+                                  "category": "Escaping"
+                                }
+                              ]
+                            }
+                            """;
 
         var driver = CreateDriver("BusinessRules.json", json)
             .RunGenerators(CreateCompilation());
@@ -190,19 +190,19 @@ public class BusinessRuleSourceGeneratorTests
     [Test]
     public Task InvalidCharactersInCategory_AreSanitized()
     {
-        var json = """
-            {
-              "businessRules": [
-                {
-                  "className": "SanitizedRule",
-                  "key": "SANITIZED",
-                  "requirement": "Category has special chars",
-                  "description": "Tests namespace sanitization",
-                  "category": "My Category!"
-                }
-              ]
-            }
-            """;
+        const string json = """
+                            {
+                              "businessRules": [
+                                {
+                                  "className": "SanitizedRule",
+                                  "key": "SANITIZED",
+                                  "requirement": "Category has special chars",
+                                  "description": "Tests namespace sanitization",
+                                  "category": "My Category!"
+                                }
+                              ]
+                            }
+                            """;
 
         var driver = CreateDriver("BusinessRules.json", json)
             .RunGenerators(CreateCompilation());
@@ -213,19 +213,19 @@ public class BusinessRuleSourceGeneratorTests
     [Test]
     public Task AssemblyName_UsedInNamespace()
     {
-        var json = """
-            {
-              "businessRules": [
-                {
-                  "className": "SimpleRule",
-                  "key": "SIMPLE",
-                  "requirement": "Simple rule",
-                  "description": "Tests assembly name in namespace",
-                  "category": "Core"
-                }
-              ]
-            }
-            """;
+        const string json = """
+                            {
+                              "businessRules": [
+                                {
+                                  "className": "SimpleRule",
+                                  "key": "SIMPLE",
+                                  "requirement": "Simple rule",
+                                  "description": "Tests assembly name in namespace",
+                                  "category": "Core"
+                                }
+                              ]
+                            }
+                            """;
 
         var driver = CreateDriver("BusinessRules.json", json)
             .RunGenerators(CreateCompilation("MyCompany.MyApp"));
@@ -236,19 +236,19 @@ public class BusinessRuleSourceGeneratorTests
     [Test]
     public void NonMatchingFileName_IsIgnored()
     {
-        var json = """
-            {
-              "businessRules": [
-                {
-                  "className": "ShouldNotGenerate",
-                  "key": "IGNORED",
-                  "requirement": "Should be ignored",
-                  "description": "File name does not end in BusinessRules.json",
-                  "category": "Test"
-                }
-              ]
-            }
-            """;
+        const string json = """
+                            {
+                              "businessRules": [
+                                {
+                                  "className": "ShouldNotGenerate",
+                                  "key": "IGNORED",
+                                  "requirement": "Should be ignored",
+                                  "description": "File name does not end in BusinessRules.json",
+                                  "category": "Test"
+                                }
+                              ]
+                            }
+                            """;
 
         var driver = CreateDriver("rules.json", json)
             .RunGenerators(CreateCompilation());
@@ -261,19 +261,19 @@ public class BusinessRuleSourceGeneratorTests
     [Test]
     public Task CaseInsensitiveJsonProperties()
     {
-        var json = """
-            {
-              "BusinessRules": [
-                {
-                  "ClassName": "PascalCaseRule",
-                  "Key": "PASCAL",
-                  "Requirement": "PascalCase properties work",
-                  "Description": "Tests case-insensitive deserialization",
-                  "Category": "CaseTest"
-                }
-              ]
-            }
-            """;
+        const string json = """
+                            {
+                              "BusinessRules": [
+                                {
+                                  "ClassName": "PascalCaseRule",
+                                  "Key": "PASCAL",
+                                  "Requirement": "PascalCase properties work",
+                                  "Description": "Tests case-insensitive deserialization",
+                                  "Category": "CaseTest"
+                                }
+                              ]
+                            }
+                            """;
 
         var driver = CreateDriver("BusinessRules.json", json)
             .RunGenerators(CreateCompilation());

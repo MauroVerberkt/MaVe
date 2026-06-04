@@ -4,13 +4,19 @@
   "description": "Schema for defining business rules that will be code-generated",
   "type": "object",
   "properties": {
-    "$schema": { "type": "string" },
+    "$schema": {
+      "type": "string"
+    },
     "businessRules": {
       "type": "array",
       "description": "List of business rule definitions",
       "items": {
         "type": "object",
-        "required": ["className", "key", "requirement"],
+        "required": [
+          "className",
+          "key",
+          "requirement"
+        ],
         "properties": {
           "className": {
             "type": "string",
@@ -43,6 +49,8 @@
       }
     }
   },
-  "required": ["businessRules"],
+  "required": [
+    "businessRules"
+  ],
   "additionalProperties": false
 }

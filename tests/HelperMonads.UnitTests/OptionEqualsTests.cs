@@ -5,10 +5,18 @@ namespace HelperMonads.UnitTests;
 /// <para>
 /// These tests validate the equality logic of <c>Option{T}</c> objects under different scenarios, including:
 /// <list type="bullet">
-/// <item><description>Equal options (Some with the same value, or both None)</description></item>
-/// <item><description>Different options (Some vs. None, different values)</description></item>
-/// <item><description>Comparisons with objects of different types</description></item>
-/// <item><description>GetHashCode consistency with equality</description></item>
+///     <item>
+///         <description>Equal options (Some with the same value, or both None)</description>
+///     </item>
+///     <item>
+///         <description>Different options (Some vs. None, different values)</description>
+///     </item>
+///     <item>
+///         <description>Comparisons with objects of different types</description>
+///     </item>
+///     <item>
+///         <description>GetHashCode consistency with equality</description>
+///     </item>
 /// </list>
 /// </para>
 /// </summary>
@@ -101,7 +109,8 @@ public class OptionEqualsTests
     }
 
     /// <summary>
-    /// Tests that <see cref="Option{T}.Equals(object)" /> returns <c>false</c> when comparing with an object of a different type.
+    /// Tests that <see cref="Option{T}.Equals(object)" /> returns <c>false</c> when comparing with an object of a different
+    /// type.
     /// </summary>
     [Test]
     public void Equals_ShouldReturnFalse_WhenComparingWithDifferentType()
@@ -218,7 +227,7 @@ public class OptionEqualsTests
     public void Equals_ShouldReturnTrue_WhenNoneCreatedViaDifferentPaths()
     {
         // Arrange
-        Option<string> none1 = Option<string>.None;
+        var none1 = Option<string>.None;
         Option<string> none2 = (string?)null!;
 
         // Act
