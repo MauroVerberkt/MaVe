@@ -380,7 +380,7 @@ public class OptionTests
     {
         var option = Option<string>.Some(ValidValue);
 
-        Assert.Throws<ArgumentNullException>(() => _ = option.Map<int>(null!));
+        Assert.Throws<NullReferenceException>(() => _ = option.Map<int>(null!));
     }
 
     [Test]
@@ -388,7 +388,7 @@ public class OptionTests
     {
         var option = Option<string>.Some(ValidValue);
 
-        Assert.Throws<ArgumentNullException>(() => _ = option.Bind<int>(null!));
+        Assert.Throws<NullReferenceException>(() => _ = option.Bind<int>(null!));
     }
 
     [Test]
@@ -396,7 +396,7 @@ public class OptionTests
     {
         var option = Option<string>.Some(ValidValue);
 
-        Assert.Throws<ArgumentNullException>(() => _ = option.Select<int>(null!));
+        Assert.Throws<NullReferenceException>(() => _ = option.Select<int>(null!));
     }
 
     [Test]
@@ -404,7 +404,7 @@ public class OptionTests
     {
         var option = Option<string>.Some(ValidValue);
 
-        Assert.Throws<ArgumentNullException>(() => _ = option.SelectMany<int, int>(null!, (_, _) => 0));
+        Assert.Throws<NullReferenceException>(() => _ = option.SelectMany<int, int>(null!, (_, _) => 0));
     }
 
     [Test]
@@ -412,7 +412,7 @@ public class OptionTests
     {
         var option = Option<string>.Some(ValidValue);
 
-        Assert.Throws<ArgumentNullException>(() =>
+        Assert.Throws<NullReferenceException>(() =>
             _ = option.SelectMany<int, int>(value => Option<int>.Some(value.Length), null!));
     }
 
@@ -421,7 +421,7 @@ public class OptionTests
     {
         var option = Option<string>.Some(ValidValue);
 
-        Assert.ThrowsAsync<ArgumentNullException>(async () => await option.MapAsync<int>(null!));
+        Assert.ThrowsAsync<NullReferenceException>(async () => await option.MapAsync<int>(null!));
     }
 
     [Test]
@@ -429,7 +429,7 @@ public class OptionTests
     {
         var option = Option<string>.Some(ValidValue);
 
-        Assert.ThrowsAsync<ArgumentNullException>(async () =>
+        Assert.ThrowsAsync<NullReferenceException>(async () =>
             await option.MapAsync<int>(null!, CancellationToken.None));
     }
 
@@ -438,7 +438,7 @@ public class OptionTests
     {
         var option = Option<string>.Some(ValidValue);
 
-        Assert.ThrowsAsync<ArgumentNullException>(async () => await option.BindAsync<int>(null!));
+        Assert.ThrowsAsync<NullReferenceException>(async () => await option.BindAsync<int>(null!));
     }
 
     [Test]
@@ -446,7 +446,7 @@ public class OptionTests
     {
         var option = Option<string>.Some(ValidValue);
 
-        Assert.ThrowsAsync<ArgumentNullException>(async () =>
+        Assert.ThrowsAsync<NullReferenceException>(async () =>
             await option.BindAsync<int>(null!, CancellationToken.None));
     }
 
@@ -455,7 +455,7 @@ public class OptionTests
     {
         var invalidOption = new Mock<Option<string>>().Object;
 
-        Assert.Throws<OptionIsNoneException>(() => _ = invalidOption.Map(value => value.Length));
+        Assert.Throws<InvalidOperationException>(() => _ = invalidOption.Map(value => value.Length));
     }
 
     [Test]
@@ -463,7 +463,7 @@ public class OptionTests
     {
         var invalidOption = new Mock<Option<string>>().Object;
 
-        Assert.Throws<OptionIsNoneException>(() => _ = invalidOption.Bind(value => Option<int>.Some(value.Length)));
+        Assert.Throws<InvalidOperationException>(() => _ = invalidOption.Bind(value => Option<int>.Some(value.Length)));
     }
 
     [Test]
@@ -471,7 +471,7 @@ public class OptionTests
     {
         var invalidOption = new Mock<Option<string>>().Object;
 
-        Assert.ThrowsAsync<OptionIsNoneException>(async () =>
+        Assert.ThrowsAsync<InvalidOperationException>(async () =>
             await invalidOption.MapAsync(value => Task.FromResult(value.Length)));
     }
 
@@ -480,7 +480,7 @@ public class OptionTests
     {
         var invalidOption = new Mock<Option<string>>().Object;
 
-        Assert.ThrowsAsync<OptionIsNoneException>(async () =>
+        Assert.ThrowsAsync<InvalidOperationException>(async () =>
             await invalidOption.BindAsync(value => Task.FromResult(Option<int>.Some(value.Length))));
     }
 
@@ -489,7 +489,7 @@ public class OptionTests
     {
         var invalidOption = new Mock<Option<string>>().Object;
 
-        Assert.ThrowsAsync<OptionIsNoneException>(async () =>
+        Assert.ThrowsAsync<InvalidOperationException>(async () =>
             await invalidOption.MapAsync((value, _) => Task.FromResult(value.Length), CancellationToken.None));
     }
 
@@ -498,7 +498,7 @@ public class OptionTests
     {
         var invalidOption = new Mock<Option<string>>().Object;
 
-        Assert.ThrowsAsync<OptionIsNoneException>(async () =>
+        Assert.ThrowsAsync<InvalidOperationException>(async () =>
             await invalidOption.BindAsync((value, _) => Task.FromResult(Option<int>.Some(value.Length)),
                 CancellationToken.None));
     }
@@ -509,7 +509,7 @@ public class OptionTests
         var option = Option<string>.Some(ValidValue);
         var invalidIntermediate = new Mock<Option<int>>().Object;
 
-        Assert.Throws<OptionIsNoneException>(() =>
+        Assert.Throws<InvalidOperationException>(() =>
             _ = option.SelectMany(_ => invalidIntermediate, (_, value) => value));
     }
 
@@ -528,7 +528,7 @@ public class OptionTests
         mockOption.Setup(m => m.Value).Throws(() => new OptionIsNoneException(typeof(string).Name));
 
         // Act & Assert
-        Assert.Throws<OptionIsNoneException>(TestDelegate);
+        Assert.Throws<InvalidOperationException>(TestDelegate);
         return;
 
         void TestDelegate()
@@ -553,7 +553,7 @@ public class OptionTests
         mockOption.Setup(m => m.Value).Throws(() => new OptionIsNoneException(typeof(string).Name));
 
         // Act & Assert
-        Assert.ThrowsAsync<OptionIsNoneException>(AsyncTestDelegate);
+        Assert.ThrowsAsync<InvalidOperationException>(AsyncTestDelegate);
         return;
 
         async Task AsyncTestDelegate()
@@ -578,7 +578,7 @@ public class OptionTests
         mockOption.Setup(m => m.Value).Throws(() => new OptionIsNoneException(typeof(string).Name));
 
         // Act & Assert
-        Assert.ThrowsAsync<OptionIsNoneException>(AsyncTestDelegate);
+        Assert.ThrowsAsync<InvalidOperationException>(AsyncTestDelegate);
         return;
 
         async Task AsyncTestDelegate()

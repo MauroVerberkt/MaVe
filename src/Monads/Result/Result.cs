@@ -177,7 +177,6 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
     [Pure]
     public Result<TNewData> Select<TNewData>(Func<TData, TNewData> selector) where TNewData : notnull
     {
-        ArgumentNullException.ThrowIfNull(selector);
         return Map(selector);
     }
 
@@ -194,9 +193,6 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
         where TNewData : notnull
         where TResult : notnull
     {
-        ArgumentNullException.ThrowIfNull(selector);
-        ArgumentNullException.ThrowIfNull(resultSelector);
-
         if (IsFailure)
         {
             return Result<TResult>.Failure(Error);
@@ -274,9 +270,6 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
     [Pure]
     public TResult Match<TResult>(Func<TData, TResult> onSuccess, Func<Error, TResult> onFailure)
     {
-        ArgumentNullException.ThrowIfNull(onSuccess);
-        ArgumentNullException.ThrowIfNull(onFailure);
-
         return IsSuccess ? onSuccess(Data) : onFailure(Error);
     }
 
@@ -285,9 +278,6 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
         Func<TData, Task<TResult>> onSuccess,
         Func<Error, Task<TResult>> onFailure)
     {
-        ArgumentNullException.ThrowIfNull(onSuccess);
-        ArgumentNullException.ThrowIfNull(onFailure);
-
         return IsSuccess
             ? await onSuccess(Data).ConfigureAwait(false)
             : await onFailure(Error).ConfigureAwait(false);
@@ -299,9 +289,6 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
         Func<Error, CancellationToken, Task<TResult>> onFailure,
         CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(onSuccess);
-        ArgumentNullException.ThrowIfNull(onFailure);
-
         return IsSuccess
             ? await onSuccess(Data, cancellationToken).ConfigureAwait(false)
             : await onFailure(Error, cancellationToken).ConfigureAwait(false);

@@ -55,19 +55,17 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
     /// <param name="some">The function to apply if the option contains a value.</param>
     /// <param name="none">The function to apply if the option does not contain a value.</param>
     /// <returns>The result of the appropriate function based on the option's value presence.</returns>
-    /// <exception cref="OptionIsNoneException">
+    /// <exception cref="InvalidOperationException">
     /// Thrown if the option is in an invalid state and neither a <see cref="Some{TValue}" /> nor <see cref="None{TValue}" />.
     /// </exception>
+    [Pure]
     public TResult Match<TResult>(Func<TValue, TResult> some, Func<TResult> none)
     {
-        ArgumentNullException.ThrowIfNull(some);
-        ArgumentNullException.ThrowIfNull(none);
-
         return this switch
         {
             Some<TValue> someOption => some(someOption.Value),
             None<TValue> => none(),
-            _ => throw new OptionIsNoneException(typeof(TValue).Name)
+            _ => throw new InvalidOperationException($"Unexpected Option<{typeof(TValue).Name}> implementation.")
         };
     }
 
@@ -80,19 +78,16 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
     /// <param name="none">The asynchronous function to apply if the option does not contain a value.</param>
     /// <typeparam name="TResult">The result type of the match function.</typeparam>
     /// <returns>A task representing the result of the appropriate function based on the option's value presence.</returns>
-    /// <exception cref="OptionIsNoneException">
+    /// <exception cref="InvalidOperationException">
     /// Thrown if the option is in an invalid state and neither a <see cref="Some{TValue}" /> nor <see cref="None{TValue}" />.
     /// </exception>
     public async Task<TResult> MatchAsync<TResult>(Func<TValue, Task<TResult>> some, Func<Task<TResult>> none)
     {
-        ArgumentNullException.ThrowIfNull(some);
-        ArgumentNullException.ThrowIfNull(none);
-
         return this switch
         {
             Some<TValue> someOption => await some(someOption.Value).ConfigureAwait(false),
             None<TValue> => await none().ConfigureAwait(false),
-            _ => throw new OptionIsNoneException(typeof(TValue).Name)
+            _ => throw new InvalidOperationException($"Unexpected Option<{typeof(TValue).Name}> implementation.")
         };
     }
 
@@ -101,14 +96,11 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
         Func<TValue, CancellationToken, Task<TResult>> some, Func<CancellationToken, Task<TResult>> none,
         CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(some);
-        ArgumentNullException.ThrowIfNull(none);
-
         return this switch
         {
             Some<TValue> someOption => await some(someOption.Value, cancellationToken).ConfigureAwait(false),
             None<TValue> => await none(cancellationToken).ConfigureAwait(false),
-            _ => throw new OptionIsNoneException(typeof(TValue).Name)
+            _ => throw new InvalidOperationException($"Unexpected Option<{typeof(TValue).Name}> implementation.")
         };
     }
 
@@ -121,13 +113,11 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
     public Option<TNewValue> Map<TNewValue>(Func<TValue, TNewValue> transform)
         where TNewValue : notnull
     {
-        ArgumentNullException.ThrowIfNull(transform);
-
         return this switch
         {
             Some<TValue> someOption => Option<TNewValue>.Some(transform(someOption.Value)),
             None<TValue> => Option<TNewValue>.None,
-            _ => throw new OptionIsNoneException(typeof(TValue).Name)
+            _ => throw new InvalidOperationException($"Unexpected Option<{typeof(TValue).Name}> implementation.")
         };
     }
 
@@ -135,13 +125,11 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
     public async Task<Option<TNewValue>> MapAsync<TNewValue>(Func<TValue, Task<TNewValue>> transform)
         where TNewValue : notnull
     {
-        ArgumentNullException.ThrowIfNull(transform);
-
         return this switch
         {
             Some<TValue> someOption => Option<TNewValue>.Some(await transform(someOption.Value).ConfigureAwait(false)),
             None<TValue> => Option<TNewValue>.None,
-            _ => throw new OptionIsNoneException(typeof(TValue).Name)
+            _ => throw new InvalidOperationException($"Unexpected Option<{typeof(TValue).Name}> implementation.")
         };
     }
 
@@ -151,14 +139,12 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
         CancellationToken cancellationToken)
         where TNewValue : notnull
     {
-        ArgumentNullException.ThrowIfNull(transform);
-
         return this switch
         {
             Some<TValue> someOption =>
                 Option<TNewValue>.Some(await transform(someOption.Value, cancellationToken).ConfigureAwait(false)),
             None<TValue> => Option<TNewValue>.None,
-            _ => throw new OptionIsNoneException(typeof(TValue).Name)
+            _ => throw new InvalidOperationException($"Unexpected Option<{typeof(TValue).Name}> implementation.")
         };
     }
 
@@ -171,13 +157,11 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
     public Option<TNewValue> Bind<TNewValue>(Func<TValue, Option<TNewValue>> function)
         where TNewValue : notnull
     {
-        ArgumentNullException.ThrowIfNull(function);
-
         return this switch
         {
             Some<TValue> someOption => function(someOption.Value),
             None<TValue> => Option<TNewValue>.None,
-            _ => throw new OptionIsNoneException(typeof(TValue).Name)
+            _ => throw new InvalidOperationException($"Unexpected Option<{typeof(TValue).Name}> implementation.")
         };
     }
 
@@ -185,13 +169,11 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
     public async Task<Option<TNewValue>> BindAsync<TNewValue>(Func<TValue, Task<Option<TNewValue>>> function)
         where TNewValue : notnull
     {
-        ArgumentNullException.ThrowIfNull(function);
-
         return this switch
         {
             Some<TValue> someOption => await function(someOption.Value).ConfigureAwait(false),
             None<TValue> => Option<TNewValue>.None,
-            _ => throw new OptionIsNoneException(typeof(TValue).Name)
+            _ => throw new InvalidOperationException($"Unexpected Option<{typeof(TValue).Name}> implementation.")
         };
     }
 
@@ -201,13 +183,11 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
         CancellationToken cancellationToken)
         where TNewValue : notnull
     {
-        ArgumentNullException.ThrowIfNull(function);
-
         return this switch
         {
             Some<TValue> someOption => await function(someOption.Value, cancellationToken).ConfigureAwait(false),
             None<TValue> => Option<TNewValue>.None,
-            _ => throw new OptionIsNoneException(typeof(TValue).Name)
+            _ => throw new InvalidOperationException($"Unexpected Option<{typeof(TValue).Name}> implementation.")
         };
     }
 
@@ -219,7 +199,6 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
     public Option<TNewValue> Select<TNewValue>(Func<TValue, TNewValue> selector)
         where TNewValue : notnull
     {
-        ArgumentNullException.ThrowIfNull(selector);
         return Map(selector);
     }
 
@@ -236,12 +215,11 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
         where TNewValue : notnull
         where TResult : notnull
     {
-        ArgumentNullException.ThrowIfNull(selector);
-        ArgumentNullException.ThrowIfNull(resultSelector);
-
         if (this is not Some<TValue> someOption)
         {
-            return this is None<TValue> ? Option<TResult>.None : throw new OptionIsNoneException(typeof(TValue).Name);
+            return this is None<TValue>
+                ? Option<TResult>.None
+                : throw new InvalidOperationException($"Unexpected Option<{typeof(TValue).Name}> implementation.");
         }
 
         var intermediate = selector(someOption.Value);
@@ -250,7 +228,7 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
         {
             return intermediate is None<TNewValue>
                 ? Option<TResult>.None
-                : throw new OptionIsNoneException(typeof(TNewValue).Name);
+                : throw new InvalidOperationException($"Unexpected Option<{typeof(TValue).Name}> implementation.");
         }
 
         var result = resultSelector(someOption.Value, intermediateSome.Value);
