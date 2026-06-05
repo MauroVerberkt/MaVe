@@ -172,6 +172,7 @@ jobs:
     needs: [verify-and-filter-release-packages]
     permissions:
       contents: read
+      packages: write
     uses: ./.github/workflows/_publish-packages.yml
     with:
       feed: nuget
