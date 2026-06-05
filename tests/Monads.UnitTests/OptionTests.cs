@@ -1,3 +1,4 @@
+using System.Reflection;
 using Moq;
 
 namespace MaVe.Monads.UnitTests;
@@ -686,6 +687,38 @@ public class OptionTests
 
         // Assert
         Assert.That(stringValue, Is.EqualTo("None"));
+    }
+
+    [Test]
+    public void SomeAndNone_Constructors_ShouldNotBePublic()
+    {
+        var someConstructor = typeof(Some<string>).GetConstructor(
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            binder: null,
+            [typeof(string)],
+            modifiers: null);
+        var noneConstructor = typeof(None<string>).GetConstructor(
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            binder: null,
+            Type.EmptyTypes,
+            modifiers: null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(someConstructor, Is.Not.Null);
+            Assert.That(someConstructor!.IsPublic, Is.False);
+            Assert.That(noneConstructor, Is.Not.Null);
+            Assert.That(noneConstructor!.IsPublic, Is.False);
+        });
+    }
+
+    [Test]
+    public void OptionNotPresentException_TypeShouldNotExist()
+    {
+        var monadsAssembly = typeof(Option<string>).Assembly;
+        var missingType = monadsAssembly.GetType("MaVe.Monads.OptionNotPresentException", throwOnError: false);
+
+        Assert.That(missingType, Is.Null);
     }
 
     /// <summary>

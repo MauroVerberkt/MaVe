@@ -5,7 +5,7 @@ namespace MaVe.Monads;
 /// <summary>
 /// Represents an option that contains a value.
 /// </summary>
-/// <typeparam name="TValue">The type of the value, which must be a reference type (class).</typeparam>
+/// <typeparam name="TValue">The type of the value, which must be non-null.</typeparam>
 public sealed class Some<TValue> : Option<TValue> where TValue : notnull
 {
     internal Some([DisallowNull] TValue value)

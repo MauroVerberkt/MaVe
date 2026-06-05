@@ -14,7 +14,7 @@ namespace MaVe.Monads.UnitTests;
 public class ResultBindingTests
 {
     private static Error TestError => Error.Create(FailureMessage);
-    private const string FailureMessage = "ValidData";
+    private const string FailureMessage = "Failed";
     private const string SuccessMessage = "Success";
     private const string NextMessage = "Next";
     private const string ProcessedMessage = "Processed";

@@ -6,7 +6,7 @@ namespace MaVe.Monads;
 /// <summary>
 /// Represents an abstract base class for an option that contains a value or is empty.
 /// </summary>
-/// <typeparam name="TValue">The type of the value, which must be a reference type (class).</typeparam>
+/// <typeparam name="TValue">The type of the value, which must be non-null.</typeparam>
 public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue : notnull
 {
     /// <summary>
