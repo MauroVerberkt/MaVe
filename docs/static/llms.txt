@@ -1,0 +1,40 @@
+# MaVe
+
+> Canonical URL: https://mauroverberkt.github.io/MaVe/
+> Repository: https://github.com/MauroVerberkt/MaVe
+>
+> Functional patterns for .NET: Result<T>, Option<T>, discriminated unions, and a
+> source-generated business rule framework. Production-grade NuGet packages for C# 12+ / .NET 8+.
+
+## Documentation
+
+- [Architecture Overview](https://mauroverberkt.github.io/MaVe/architecture/overview): System design, package relationships, and principles
+- [Installation](https://mauroverberkt.github.io/MaVe/docs/getting-started/installation): NuGet packages and setup
+- [Quick Start](https://mauroverberkt.github.io/MaVe/docs/getting-started/quick-start): First steps with the libraries
+- [Result Monad](https://mauroverberkt.github.io/MaVe/docs/monads/result/): Error handling without exceptions — Map, Bind, Match
+- [Option Monad](https://mauroverberkt.github.io/MaVe/docs/monads/option/): Nullable replacement with monadic composition
+- [Monads Overview](https://mauroverberkt.github.io/MaVe/docs/monads/overview): Design philosophy and patterns
+- [Discriminated Unions](https://mauroverberkt.github.io/MaVe/docs/unions/overview): Source-generated unions with exhaustive matching
+- [Business Rules](https://mauroverberkt.github.io/MaVe/docs/business-rules/overview): Source-generated rule framework with Roslyn analyzers
+- [Result Extensions](https://mauroverberkt.github.io/MaVe/docs/business-rules/result-extensions): Bridge between BusinessRules and Result<T>
+
+## Architecture
+
+- [Decisions](https://mauroverberkt.github.io/MaVe/architecture/decisions/): Architecture Decision Records (ADRs)
+- [Proposals](https://mauroverberkt.github.io/MaVe/architecture/proposals/): Active design proposals
+
+## Packages
+
+- [MaVe.Monads](https://www.nuget.org/packages/MaVe.Monads): Result<T> and Option<T> monadic types
+- [MaVe.Unions](https://www.nuget.org/packages/MaVe.Unions): Discriminated unions with source generation and Roslyn analyzers
+- [MaVe.BusinessRules](https://www.nuget.org/packages/MaVe.BusinessRules): Source-generated business rule framework
+- [MaVe.BusinessRules.ResultExtensions](https://www.nuget.org/packages/MaVe.BusinessRules.ResultExtensions): Bridge between MaVe.BusinessRules and MaVe.Monads
+- [MaVe.BusinessRules.Wcf](https://www.nuget.org/packages/MaVe.BusinessRules.Wcf): WCF fault exception support for business rule violations
+
+## Source
+
+- [GitHub Repository](https://github.com/MauroVerberkt/MaVe)
+- [Monads source](https://github.com/MauroVerberkt/MaVe/tree/main/src/Monads)
+- [Unions source](https://github.com/MauroVerberkt/MaVe/tree/main/src/Unions)
+- [BusinessRules source](https://github.com/MauroVerberkt/MaVe/tree/main/src/BusinessRules)
+- [BusinessRules.ResultExtensions source](https://github.com/MauroVerberkt/MaVe/tree/main/src/BusinessRules.ResultExtensions)
