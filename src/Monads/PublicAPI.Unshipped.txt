@@ -24,3 +24,13 @@ MaVe.Monads.Result<TData>.Select<TNewData>(System.Func<TData, TNewData>! selecto
 MaVe.Monads.Result<TData>.SelectMany<TNewData, TResult>(System.Func<TData, MaVe.Monads.Result<TNewData>!>! selector, System.Func<TData, TNewData, TResult>! resultSelector) -> MaVe.Monads.Result<TResult>!
 static MaVe.Monads.Result<TData>.operator !=(MaVe.Monads.Result<TData>? left, MaVe.Monads.Result<TData>? right) -> bool
 static MaVe.Monads.Result<TData>.operator ==(MaVe.Monads.Result<TData>? left, MaVe.Monads.Result<TData>? right) -> bool
+MaVe.Monads.Option<TValue>.Map<TNewValue>(System.Func<TValue, TNewValue>! transform) -> MaVe.Monads.Option<TNewValue>!
+MaVe.Monads.Option<TValue>.MapAsync<TNewValue>(System.Func<TValue, System.Threading.CancellationToken, System.Threading.Tasks.Task<TNewValue>!>! transform, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<MaVe.Monads.Option<TNewValue>!>!
+MaVe.Monads.Option<TValue>.MapAsync<TNewValue>(System.Func<TValue, System.Threading.Tasks.Task<TNewValue>!>! transform) -> System.Threading.Tasks.Task<MaVe.Monads.Option<TNewValue>!>!
+MaVe.Monads.Option<TValue>.Bind<TNewValue>(System.Func<TValue, MaVe.Monads.Option<TNewValue>!>! function) -> MaVe.Monads.Option<TNewValue>!
+MaVe.Monads.Option<TValue>.BindAsync<TNewValue>(System.Func<TValue, System.Threading.CancellationToken, System.Threading.Tasks.Task<MaVe.Monads.Option<TNewValue>!>!>! function, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<MaVe.Monads.Option<TNewValue>!>!
+MaVe.Monads.Option<TValue>.BindAsync<TNewValue>(System.Func<TValue, System.Threading.Tasks.Task<MaVe.Monads.Option<TNewValue>!>!>! function) -> System.Threading.Tasks.Task<MaVe.Monads.Option<TNewValue>!>!
+MaVe.Monads.Option<TValue>.Select<TNewValue>(System.Func<TValue, TNewValue>! selector) -> MaVe.Monads.Option<TNewValue>!
+MaVe.Monads.Option<TValue>.SelectMany<TNewValue, TResult>(System.Func<TValue, MaVe.Monads.Option<TNewValue>!>! selector, System.Func<TValue, TNewValue, TResult>! resultSelector) -> MaVe.Monads.Option<TResult>!
+static MaVe.Monads.Option<TValue>.operator !=(MaVe.Monads.Option<TValue>? left, MaVe.Monads.Option<TValue>? right) -> bool
+static MaVe.Monads.Option<TValue>.operator ==(MaVe.Monads.Option<TValue>? left, MaVe.Monads.Option<TValue>? right) -> bool

@@ -173,6 +173,345 @@ public class OptionTests
         Assert.That(result, Is.EqualTo(NoValueString));
     }
 
+    [Test]
+    public void Map_ShouldTransformValue_WhenSome()
+    {
+        var option = Option<string>.Some(ValidValue);
+
+        var mapped = option.Map(value => value.Length);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(mapped.HasValue, Is.True);
+            Assert.That(mapped.Value, Is.EqualTo(ValidValue.Length));
+        });
+    }
+
+    [Test]
+    public void Map_ShouldReturnNone_WhenNone()
+    {
+        var option = Option<string>.None;
+
+        var mapped = option.Map(value => value.Length);
+
+        Assert.That(mapped.HasValue, Is.False);
+    }
+
+    [Test]
+    public async Task MapAsync_ShouldTransformValue_WhenSome()
+    {
+        var option = Option<string>.Some(ValidValue);
+
+        var mapped = await option.MapAsync(value => Task.FromResult(value.Length));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(mapped.HasValue, Is.True);
+            Assert.That(mapped.Value, Is.EqualTo(ValidValue.Length));
+        });
+    }
+
+    [Test]
+    public async Task MapAsync_ShouldTransformValue_WhenSome_WithCancellationToken()
+    {
+        var option = Option<string>.Some(ValidValue);
+
+        var mapped = await option.MapAsync((value, _) => Task.FromResult(value.Length), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(mapped.HasValue, Is.True);
+            Assert.That(mapped.Value, Is.EqualTo(ValidValue.Length));
+        });
+    }
+
+    [Test]
+    public async Task MapAsync_ShouldReturnNone_WhenNone()
+    {
+        var option = Option<string>.None;
+
+        var mapped = await option.MapAsync(value => Task.FromResult(value.Length));
+
+        Assert.That(mapped.HasValue, Is.False);
+    }
+
+    [Test]
+    public async Task MapAsync_ShouldReturnNone_WhenNone_WithCancellationToken()
+    {
+        var option = Option<string>.None;
+
+        var mapped = await option.MapAsync((value, _) => Task.FromResult(value.Length), CancellationToken.None);
+
+        Assert.That(mapped.HasValue, Is.False);
+    }
+
+    [Test]
+    public void Bind_ShouldTransformValue_WhenSome()
+    {
+        var option = Option<string>.Some(ValidValue);
+
+        var bound = option.Bind(value => Option<int>.Some(value.Length));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(bound.HasValue, Is.True);
+            Assert.That(bound.Value, Is.EqualTo(ValidValue.Length));
+        });
+    }
+
+    [Test]
+    public void Bind_ShouldReturnNone_WhenNone()
+    {
+        var option = Option<string>.None;
+
+        var bound = option.Bind(value => Option<int>.Some(value.Length));
+
+        Assert.That(bound.HasValue, Is.False);
+    }
+
+    [Test]
+    public async Task BindAsync_ShouldTransformValue_WhenSome()
+    {
+        var option = Option<string>.Some(ValidValue);
+
+        var bound = await option.BindAsync(value => Task.FromResult(Option<int>.Some(value.Length)));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(bound.HasValue, Is.True);
+            Assert.That(bound.Value, Is.EqualTo(ValidValue.Length));
+        });
+    }
+
+    [Test]
+    public async Task BindAsync_ShouldTransformValue_WhenSome_WithCancellationToken()
+    {
+        var option = Option<string>.Some(ValidValue);
+
+        var bound = await option.BindAsync((value, _) => Task.FromResult(Option<int>.Some(value.Length)),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(bound.HasValue, Is.True);
+            Assert.That(bound.Value, Is.EqualTo(ValidValue.Length));
+        });
+    }
+
+    [Test]
+    public async Task BindAsync_ShouldReturnNone_WhenNone()
+    {
+        var option = Option<string>.None;
+
+        var bound = await option.BindAsync(value => Task.FromResult(Option<int>.Some(value.Length)));
+
+        Assert.That(bound.HasValue, Is.False);
+    }
+
+    [Test]
+    public async Task BindAsync_ShouldReturnNone_WhenNone_WithCancellationToken()
+    {
+        var option = Option<string>.None;
+
+        var bound = await option.BindAsync((value, _) => Task.FromResult(Option<int>.Some(value.Length)),
+            CancellationToken.None);
+
+        Assert.That(bound.HasValue, Is.False);
+    }
+
+    [Test]
+    public void Select_ShouldTransformValue_WhenSome()
+    {
+        var option = Option<string>.Some(ValidValue);
+
+        var selected = option.Select(value => value.Length);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(selected.HasValue, Is.True);
+            Assert.That(selected.Value, Is.EqualTo(ValidValue.Length));
+        });
+    }
+
+    [Test]
+    public void SelectMany_ShouldCompose_WhenBothSome()
+    {
+        var first = Option<int>.Some(3);
+        var second = Option<int>.Some(7);
+
+        var query = from x in first
+            from y in second
+            select x + y;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(query.HasValue, Is.True);
+            Assert.That(query.Value, Is.EqualTo(10));
+        });
+    }
+
+    [Test]
+    public void SelectMany_ShouldReturnNone_WhenOuterIsNone()
+    {
+        var first = Option<int>.None;
+
+        var query = from x in first
+            from y in Option<int>.Some(7)
+            select x + y;
+
+        Assert.That(query.HasValue, Is.False);
+    }
+
+    [Test]
+    public void SelectMany_ShouldReturnNone_WhenInnerIsNone()
+    {
+        var first = Option<int>.Some(3);
+
+        var query = from x in first
+            from y in Option<int>.None
+            select x + y;
+
+        Assert.That(query.HasValue, Is.False);
+    }
+
+    [Test]
+    public void Map_ShouldThrow_WhenTransformIsNull()
+    {
+        var option = Option<string>.Some(ValidValue);
+
+        Assert.Throws<ArgumentNullException>(() => _ = option.Map<int>(null!));
+    }
+
+    [Test]
+    public void Bind_ShouldThrow_WhenFunctionIsNull()
+    {
+        var option = Option<string>.Some(ValidValue);
+
+        Assert.Throws<ArgumentNullException>(() => _ = option.Bind<int>(null!));
+    }
+
+    [Test]
+    public void Select_ShouldThrow_WhenSelectorIsNull()
+    {
+        var option = Option<string>.Some(ValidValue);
+
+        Assert.Throws<ArgumentNullException>(() => _ = option.Select<int>(null!));
+    }
+
+    [Test]
+    public void SelectMany_ShouldThrow_WhenSelectorIsNull()
+    {
+        var option = Option<string>.Some(ValidValue);
+
+        Assert.Throws<ArgumentNullException>(() => _ = option.SelectMany<int, int>(null!, (_, _) => 0));
+    }
+
+    [Test]
+    public void SelectMany_ShouldThrow_WhenResultSelectorIsNull()
+    {
+        var option = Option<string>.Some(ValidValue);
+
+        Assert.Throws<ArgumentNullException>(() =>
+            _ = option.SelectMany<int, int>(value => Option<int>.Some(value.Length), null!));
+    }
+
+    [Test]
+    public async Task MapAsync_ShouldThrow_WhenTransformIsNull()
+    {
+        var option = Option<string>.Some(ValidValue);
+
+        Assert.ThrowsAsync<ArgumentNullException>(async () => await option.MapAsync<int>(null!));
+    }
+
+    [Test]
+    public async Task MapAsync_WithCancellation_ShouldThrow_WhenTransformIsNull()
+    {
+        var option = Option<string>.Some(ValidValue);
+
+        Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            await option.MapAsync<int>(null!, CancellationToken.None));
+    }
+
+    [Test]
+    public async Task BindAsync_ShouldThrow_WhenFunctionIsNull()
+    {
+        var option = Option<string>.Some(ValidValue);
+
+        Assert.ThrowsAsync<ArgumentNullException>(async () => await option.BindAsync<int>(null!));
+    }
+
+    [Test]
+    public async Task BindAsync_WithCancellation_ShouldThrow_WhenFunctionIsNull()
+    {
+        var option = Option<string>.Some(ValidValue);
+
+        Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            await option.BindAsync<int>(null!, CancellationToken.None));
+    }
+
+    [Test]
+    public void Map_ShouldThrow_WhenOptionIsInvalid()
+    {
+        var invalidOption = new Mock<Option<string>>().Object;
+
+        Assert.Throws<OptionNotPresentException>(() => _ = invalidOption.Map(value => value.Length));
+    }
+
+    [Test]
+    public void Bind_ShouldThrow_WhenOptionIsInvalid()
+    {
+        var invalidOption = new Mock<Option<string>>().Object;
+
+        Assert.Throws<OptionNotPresentException>(() => _ = invalidOption.Bind(value => Option<int>.Some(value.Length)));
+    }
+
+    [Test]
+    public async Task MapAsync_ShouldThrow_WhenOptionIsInvalid()
+    {
+        var invalidOption = new Mock<Option<string>>().Object;
+
+        Assert.ThrowsAsync<OptionNotPresentException>(async () =>
+            await invalidOption.MapAsync(value => Task.FromResult(value.Length)));
+    }
+
+    [Test]
+    public async Task BindAsync_ShouldThrow_WhenOptionIsInvalid()
+    {
+        var invalidOption = new Mock<Option<string>>().Object;
+
+        Assert.ThrowsAsync<OptionNotPresentException>(async () =>
+            await invalidOption.BindAsync(value => Task.FromResult(Option<int>.Some(value.Length))));
+    }
+
+    [Test]
+    public async Task MapAsync_WithCancellation_ShouldThrow_WhenOptionIsInvalid()
+    {
+        var invalidOption = new Mock<Option<string>>().Object;
+
+        Assert.ThrowsAsync<OptionNotPresentException>(async () =>
+            await invalidOption.MapAsync((value, _) => Task.FromResult(value.Length), CancellationToken.None));
+    }
+
+    [Test]
+    public async Task BindAsync_WithCancellation_ShouldThrow_WhenOptionIsInvalid()
+    {
+        var invalidOption = new Mock<Option<string>>().Object;
+
+        Assert.ThrowsAsync<OptionNotPresentException>(async () =>
+            await invalidOption.BindAsync((value, _) => Task.FromResult(Option<int>.Some(value.Length)),
+                CancellationToken.None));
+    }
+
+    [Test]
+    public void SelectMany_ShouldThrow_WhenIntermediateOptionIsInvalid()
+    {
+        var option = Option<string>.Some(ValidValue);
+        var invalidIntermediate = new Mock<Option<int>>().Object;
+
+        Assert.Throws<OptionNotPresentException>(() =>
+            _ = option.SelectMany(_ => invalidIntermediate, (_, value) => value));
+    }
+
     /// <summary>
     /// Tests that the <see cref="Option{TValue}.Match{TResult}(Func{TValue, TResult}, Func{TResult})" /> method throws an
     /// exception

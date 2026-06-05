@@ -236,4 +236,59 @@ public class OptionEqualsTests
         // Assert
         Assert.That(isEqual, Is.True);
     }
+
+    [Test]
+    public void OperatorEquals_ShouldReturnTrue_WhenBothAreEqual()
+    {
+        var left = Option<string>.Some(TestValue);
+        var right = Option<string>.Some(TestValue);
+
+#pragma warning disable NUnit2010
+        Assert.That(left == right, Is.True);
+#pragma warning restore NUnit2010
+    }
+
+    [Test]
+    public void OperatorEquals_ShouldReturnFalse_WhenDifferent()
+    {
+        var left = Option<string>.Some(TestValue);
+        var right = Option<string>.Some(OtherValue);
+
+#pragma warning disable NUnit2010
+        Assert.That(left == right, Is.False);
+#pragma warning restore NUnit2010
+    }
+
+    [Test]
+    public void OperatorEquals_ShouldHandleNulls()
+    {
+        Option<string>? left = null;
+        Option<string>? right = null;
+        var value = Option<string>.Some(TestValue);
+
+#pragma warning disable NUnit2010
+        Assert.Multiple(() =>
+        {
+            Assert.That(left == right, Is.True);
+            Assert.That(left == value, Is.False);
+            Assert.That(value == left, Is.False);
+        });
+#pragma warning restore NUnit2010
+    }
+
+    [Test]
+    public void OperatorNotEquals_ShouldReturnOppositeOfEquals()
+    {
+        var left = Option<string>.Some(TestValue);
+        var same = Option<string>.Some(TestValue);
+        var different = Option<string>.Some(OtherValue);
+
+#pragma warning disable NUnit2010
+        Assert.Multiple(() =>
+        {
+            Assert.That(left != same, Is.False);
+            Assert.That(left != different, Is.True);
+        });
+#pragma warning restore NUnit2010
+    }
 }

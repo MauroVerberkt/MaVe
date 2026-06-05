@@ -60,6 +60,9 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
     /// </exception>
     public TResult Match<TResult>(Func<TValue, TResult> some, Func<TResult> none)
     {
+        ArgumentNullException.ThrowIfNull(some);
+        ArgumentNullException.ThrowIfNull(none);
+
         return this switch
         {
             Some<TValue> someOption => some(someOption.Value),
@@ -82,6 +85,9 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
     /// </exception>
     public async Task<TResult> MatchAsync<TResult>(Func<TValue, Task<TResult>> some, Func<Task<TResult>> none)
     {
+        ArgumentNullException.ThrowIfNull(some);
+        ArgumentNullException.ThrowIfNull(none);
+
         return this switch
         {
             Some<TValue> someOption => await some(someOption.Value).ConfigureAwait(false),
@@ -95,6 +101,9 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
         Func<TValue, CancellationToken, Task<TResult>> some, Func<CancellationToken, Task<TResult>> none,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(some);
+        ArgumentNullException.ThrowIfNull(none);
+
         return this switch
         {
             Some<TValue> someOption => await some(someOption.Value, cancellationToken).ConfigureAwait(false),
@@ -103,11 +112,172 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
         };
     }
 
+    /// <summary>
+    /// Transforms the value if present; otherwise propagates <see cref="None" />.
+    /// </summary>
+    /// <typeparam name="TNewValue">The transformed value type.</typeparam>
+    /// <param name="transform">The transform to apply when a value is present.</param>
+    [Pure]
+    public Option<TNewValue> Map<TNewValue>(Func<TValue, TNewValue> transform)
+        where TNewValue : notnull
+    {
+        ArgumentNullException.ThrowIfNull(transform);
+
+        return this switch
+        {
+            Some<TValue> someOption => Option<TNewValue>.Some(transform(someOption.Value)),
+            None<TValue> => Option<TNewValue>.None,
+            _ => throw new OptionNotPresentException()
+        };
+    }
+
+    /// <inheritdoc cref="Map" />
+    public async Task<Option<TNewValue>> MapAsync<TNewValue>(Func<TValue, Task<TNewValue>> transform)
+        where TNewValue : notnull
+    {
+        ArgumentNullException.ThrowIfNull(transform);
+
+        return this switch
+        {
+            Some<TValue> someOption => Option<TNewValue>.Some(await transform(someOption.Value).ConfigureAwait(false)),
+            None<TValue> => Option<TNewValue>.None,
+            _ => throw new OptionNotPresentException()
+        };
+    }
+
+    /// <inheritdoc cref="Map" />
+    public async Task<Option<TNewValue>> MapAsync<TNewValue>(
+        Func<TValue, CancellationToken, Task<TNewValue>> transform,
+        CancellationToken cancellationToken)
+        where TNewValue : notnull
+    {
+        ArgumentNullException.ThrowIfNull(transform);
+
+        return this switch
+        {
+            Some<TValue> someOption =>
+                Option<TNewValue>.Some(await transform(someOption.Value, cancellationToken).ConfigureAwait(false)),
+            None<TValue> => Option<TNewValue>.None,
+            _ => throw new OptionNotPresentException()
+        };
+    }
+
+    /// <summary>
+    /// Binds the value to another option-producing function if present; otherwise propagates <see cref="None" />.
+    /// </summary>
+    /// <typeparam name="TNewValue">The bound value type.</typeparam>
+    /// <param name="function">The option-producing function to invoke when a value is present.</param>
+    [Pure]
+    public Option<TNewValue> Bind<TNewValue>(Func<TValue, Option<TNewValue>> function)
+        where TNewValue : notnull
+    {
+        ArgumentNullException.ThrowIfNull(function);
+
+        return this switch
+        {
+            Some<TValue> someOption => function(someOption.Value),
+            None<TValue> => Option<TNewValue>.None,
+            _ => throw new OptionNotPresentException()
+        };
+    }
+
+    /// <inheritdoc cref="Bind" />
+    public async Task<Option<TNewValue>> BindAsync<TNewValue>(Func<TValue, Task<Option<TNewValue>>> function)
+        where TNewValue : notnull
+    {
+        ArgumentNullException.ThrowIfNull(function);
+
+        return this switch
+        {
+            Some<TValue> someOption => await function(someOption.Value).ConfigureAwait(false),
+            None<TValue> => Option<TNewValue>.None,
+            _ => throw new OptionNotPresentException()
+        };
+    }
+
+    /// <inheritdoc cref="Bind" />
+    public async Task<Option<TNewValue>> BindAsync<TNewValue>(
+        Func<TValue, CancellationToken, Task<Option<TNewValue>>> function,
+        CancellationToken cancellationToken)
+        where TNewValue : notnull
+    {
+        ArgumentNullException.ThrowIfNull(function);
+
+        return this switch
+        {
+            Some<TValue> someOption => await function(someOption.Value, cancellationToken).ConfigureAwait(false),
+            None<TValue> => Option<TNewValue>.None,
+            _ => throw new OptionNotPresentException()
+        };
+    }
+
+    /// <summary>
+    /// Projects the value into a new form. Enables LINQ <c>select</c> syntax.
+    /// </summary>
+    /// <param name="selector">The projection function.</param>
+    [Pure]
+    public Option<TNewValue> Select<TNewValue>(Func<TValue, TNewValue> selector)
+        where TNewValue : notnull
+    {
+        ArgumentNullException.ThrowIfNull(selector);
+        return Map(selector);
+    }
+
+    /// <summary>
+    /// Projects the value into an intermediate option and applies a result selector.
+    /// Enables LINQ <c>from x in ... from y in ... select ...</c> syntax.
+    /// </summary>
+    /// <param name="selector">The function that projects to an intermediate option.</param>
+    /// <param name="resultSelector">The function that combines original and intermediate values.</param>
+    [Pure]
+    public Option<TResult> SelectMany<TNewValue, TResult>(
+        Func<TValue, Option<TNewValue>> selector,
+        Func<TValue, TNewValue, TResult> resultSelector)
+        where TNewValue : notnull
+        where TResult : notnull
+    {
+        ArgumentNullException.ThrowIfNull(selector);
+        ArgumentNullException.ThrowIfNull(resultSelector);
+
+        if (this is not Some<TValue> someOption)
+        {
+            return this is None<TValue> ? Option<TResult>.None : throw new OptionNotPresentException();
+        }
+
+        var intermediate = selector(someOption.Value);
+
+        if (intermediate is not Some<TNewValue> intermediateSome)
+        {
+            return intermediate is None<TNewValue> ? Option<TResult>.None : throw new OptionNotPresentException();
+        }
+
+        var result = resultSelector(someOption.Value, intermediateSome.Value);
+        return Option<TResult>.Some(result);
+    }
+
     /// <inheritdoc />
     [Pure]
     public override bool Equals(object? obj)
     {
         return obj is Option<TValue> other && Equals(other);
+    }
+
+    /// <summary>
+    /// Determines whether two <see cref="Option{TValue}" /> instances are equal.
+    /// </summary>
+    [Pure]
+    public static bool operator ==(Option<TValue>? left, Option<TValue>? right)
+    {
+        return left?.Equals(right) ?? right is null;
+    }
+
+    /// <summary>
+    /// Determines whether two <see cref="Option{TValue}" /> instances are not equal.
+    /// </summary>
+    [Pure]
+    public static bool operator !=(Option<TValue>? left, Option<TValue>? right)
+    {
+        return !(left == right);
     }
 
     /// <inheritdoc />
