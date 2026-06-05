@@ -1,7 +1,7 @@
 ---
 sidebar_position: 14
 title: "PROP-014: Source-Generated Typed Error Codes"
-tags: [HelperMonads]
+tags: [Monads]
 ---
 
 # PROP-014: Source-Generated Typed Error Codes
@@ -54,7 +54,7 @@ public record OrderError : Error
 
 - Generate factory methods (simple, `string` Code under the hood) or a typed `Error` subtype?
 - How do consumers combine errors from different enum types in a single pipeline?
-- Should the generator live in the HelperMonads package or a separate analyzer package?
+- Should the generator live in the Monads package or a separate analyzer package?
 - What if the consumer doesn't use a generator — does `string? Code` still work seamlessly?
 
 ## Open Questions

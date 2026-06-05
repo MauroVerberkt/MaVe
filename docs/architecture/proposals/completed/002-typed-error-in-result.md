@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: "PROP-002: Typed Error in Result<TData>"
-tags: [HelperMonads]
+tags: [Monads]
 ---
 
 # PROP-002: Typed Error in Result&lt;TData&gt;
@@ -57,7 +57,7 @@ Key additions to the API surface:
 - Rust `Result<T, E>`
 - F# `Result<'T, 'TError>`
 - FluentResults, OneOf, ErrorOr (C# alternatives)
-- Current implementation: `src/HelperMonads/Result/Result.cs` (hardcoded `Exception?`)
+- Current implementation: `src/Monads/Result/Result.cs` (hardcoded `Exception?`)
 
 ## Outcome
 

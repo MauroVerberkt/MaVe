@@ -1,7 +1,7 @@
 ---
 sidebar_position: 11
 title: "PROP-011: Package Versioning and Publishing"
-tags: [infra, packaging, HelperMonads, BusinessRules]
+tags: [infra, packaging, Monads, BusinessRules]
 ---
 
 # PROP-011: Package Versioning and Publishing
@@ -12,10 +12,10 @@ tags: [infra, packaging, HelperMonads, BusinessRules]
 
 ## Problem / Motivation
 
-The repo produces multiple independently-consumable NuGet packages (`HelperMonads`, `BusinessRules`, analyzers, extension bridges) but has no versioning or publishing strategy. Before packages can be shipped to consumers we need:
+The repo produces multiple independently-consumable NuGet packages (`Monads`, `BusinessRules`, analyzers, extension bridges) but has no versioning or publishing strategy. Before packages can be shipped to consumers we need:
 
 1. **Deterministic, reproducible versions** — any commit should produce a traceable version.
-2. **Independent versioning per package** — a change to `HelperMonads` shouldn't force a version bump in `BusinessRules`.
+2. **Independent versioning per package** — a change to `Monads` shouldn't force a version bump in `BusinessRules`.
 3. **Automatic patch increments** — avoid manual version bookkeeping for every merge.
 4. **Prerelease support** — feature branches produce prerelease packages automatically.
 5. **A publishing pipeline** — CI builds, packs, and pushes only new versions.
@@ -28,7 +28,7 @@ Each publishable package gets its own `version.json` with path filters so that g
 
 ```
 src/
-├── HelperMonads/
+├── Monads/
 │   └── version.json          → "version": "0.1"
 ├── BusinessRules/
 │   └── version.json          → "version": "0.1"
@@ -72,7 +72,7 @@ This ensures 1 PR = 1 patch increment — predictable and clean.
 
 During development: `ProjectReference` (unchanged — fast inner loop, single build graph).
 
-At pack time: NuGet automatically converts project references to package dependencies using the version NBGV calculated for the referenced project. The resulting `.nupkg` declares minimum-version dependencies (e.g., `HelperMonads >= 1.0.23`).
+At pack time: NuGet automatically converts project references to package dependencies using the version NBGV calculated for the referenced project. The resulting `.nupkg` declares minimum-version dependencies (e.g., `Monads >= 1.0.23`).
 
 When a dependency package makes a **breaking change**, the dependent package must update its code, which naturally creates a commit in its path and bumps its own version.
 

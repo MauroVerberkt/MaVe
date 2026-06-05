@@ -11,7 +11,7 @@ const sidebars: SidebarsConfig = {
         {
           type: 'doc',
           id: 'by-project/helper-monads',
-          label: 'HelperMonads',
+          label: 'Monads',
         },
         {
           type: 'doc',
@@ -21,7 +21,7 @@ const sidebars: SidebarsConfig = {
         {
           type: 'doc',
           id: 'by-project/helper-unions',
-          label: 'HelperUnions',
+          label: 'Unions',
         },
       ],
     },

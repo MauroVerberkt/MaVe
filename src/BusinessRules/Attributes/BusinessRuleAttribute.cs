@@ -1,4 +1,4 @@
-﻿namespace BusinessRules.Attributes;
+namespace MaVe.BusinessRules.Attributes;
 
 /// <summary>
 /// Marks a method or class as requiring a specific business rule to be enforced.

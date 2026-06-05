@@ -1,6 +1,6 @@
 using System.ServiceModel;
 
-namespace BusinessRules.Wcf.UnitTests;
+namespace MaVe.BusinessRules.Wcf.UnitTests;
 
 [TestFixture]
 public class BusinessRuleWcfExtensionsTests

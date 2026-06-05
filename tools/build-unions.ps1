@@ -9,5 +9,5 @@ if (-not (Test-Path -LiteralPath $outputDir)) {
     New-Item -ItemType Directory -Path $outputDir | Out-Null
 }
 
-dotnet pack "$repoRoot\src\HelperUnions\HelperUnions.csproj" --configuration Release --output $outputDir
+dotnet pack "$repoRoot\src\Unions\Unions.csproj" --configuration Release --output $outputDir
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

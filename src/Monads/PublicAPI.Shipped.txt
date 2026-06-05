@@ -1,0 +1,77 @@
+#nullable enable
+abstract MaVe.Monads.Option<TValue>.HasValue.get -> bool
+abstract MaVe.Monads.Option<TValue>.Value.get -> TValue
+MaVe.Monads.Error
+MaVe.Monads.Error.Code.get -> string?
+MaVe.Monads.Error.Code.init -> void
+MaVe.Monads.Error.Deconstruct(out string! Message, out string? Code, out System.Exception? Exception) -> void
+MaVe.Monads.Error.Error(MaVe.Monads.Error! original) -> void
+MaVe.Monads.Error.Error(string! Message, string? Code = null, System.Exception? Exception = null) -> void
+MaVe.Monads.Error.Exception.get -> System.Exception?
+MaVe.Monads.Error.Exception.init -> void
+MaVe.Monads.Error.Message.get -> string!
+MaVe.Monads.Error.Message.init -> void
+MaVe.Monads.None<TValue>
+MaVe.Monads.None<TValue>.None() -> void
+MaVe.Monads.Option<TValue>
+MaVe.Monads.Option<TValue>.Equals(MaVe.Monads.Option<TValue>? other) -> bool
+MaVe.Monads.Option<TValue>.Match<TResult>(System.Func<TValue, TResult>! some, System.Func<TResult>! none) -> TResult
+MaVe.Monads.Option<TValue>.MatchAsync<TResult>(System.Func<TValue, System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>!>! some, System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>!>! none, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResult>!
+MaVe.Monads.Option<TValue>.MatchAsync<TResult>(System.Func<TValue, System.Threading.Tasks.Task<TResult>!>! some, System.Func<System.Threading.Tasks.Task<TResult>!>! none) -> System.Threading.Tasks.Task<TResult>!
+MaVe.Monads.Option<TValue>.Option() -> void
+MaVe.Monads.OptionIsNoneException
+MaVe.Monads.OptionIsNoneException.OptionIsNoneException(string! typeName) -> void
+MaVe.Monads.OptionNotPresentException
+MaVe.Monads.OptionNotPresentException.OptionNotPresentException() -> void
+MaVe.Monads.Result
+MaVe.Monads.Result<TData>
+MaVe.Monads.Result<TData>.Bind(System.Func<MaVe.Monads.Result<TData>!>! function) -> MaVe.Monads.Result<TData>!
+MaVe.Monads.Result<TData>.BindAndTransform<TNewData>(System.Func<TData, MaVe.Monads.Result<TNewData>!>! function) -> MaVe.Monads.Result<TNewData>!
+MaVe.Monads.Result<TData>.BindAndTransformAsync<TNewData>(System.Func<TData, System.Threading.CancellationToken, System.Threading.Tasks.Task<MaVe.Monads.Result<TNewData>!>!>! function, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<MaVe.Monads.Result<TNewData>!>!
+MaVe.Monads.Result<TData>.BindAndTransformAsync<TNewData>(System.Func<TData, System.Threading.Tasks.Task<MaVe.Monads.Result<TNewData>!>!>! function) -> System.Threading.Tasks.Task<MaVe.Monads.Result<TNewData>!>!
+MaVe.Monads.Result<TData>.BindAsync(System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task<MaVe.Monads.Result<TData>!>!>! function, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<MaVe.Monads.Result<TData>!>!
+MaVe.Monads.Result<TData>.BindAsync(System.Func<System.Threading.Tasks.Task<MaVe.Monads.Result<TData>!>!>! function) -> System.Threading.Tasks.Task<MaVe.Monads.Result<TData>!>!
+MaVe.Monads.Result<TData>.BindWithData(System.Func<TData, MaVe.Monads.Result<TData>!>! function) -> MaVe.Monads.Result<TData>!
+MaVe.Monads.Result<TData>.BindWithDataAsync(System.Func<TData, System.Threading.CancellationToken, System.Threading.Tasks.Task<MaVe.Monads.Result<TData>!>!>! function, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<MaVe.Monads.Result<TData>!>!
+MaVe.Monads.Result<TData>.BindWithDataAsync(System.Func<TData, System.Threading.Tasks.Task<MaVe.Monads.Result<TData>!>!>! function) -> System.Threading.Tasks.Task<MaVe.Monads.Result<TData>!>!
+MaVe.Monads.Result<TData>.Data.get -> TData?
+MaVe.Monads.Result<TData>.Deconstruct(out bool isSuccess, out TData? data, out MaVe.Monads.Error? error) -> void
+MaVe.Monads.Result<TData>.Equals(MaVe.Monads.Result<TData>? other) -> bool
+MaVe.Monads.Result<TData>.Error.get -> MaVe.Monads.Error?
+MaVe.Monads.Result<TData>.IsFailure.get -> bool
+MaVe.Monads.Result<TData>.IsSuccess.get -> bool
+MaVe.Monads.Result<TData>.Map<TNewData>(System.Func<TData, TNewData>! transform) -> MaVe.Monads.Result<TNewData>!
+MaVe.Monads.Result<TData>.MapAsync<TNewData>(System.Func<TData, System.Threading.CancellationToken, System.Threading.Tasks.Task<TNewData>!>! transform, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<MaVe.Monads.Result<TNewData>!>!
+MaVe.Monads.Result<TData>.MapAsync<TNewData>(System.Func<TData, System.Threading.Tasks.Task<TNewData>!>! transform) -> System.Threading.Tasks.Task<MaVe.Monads.Result<TNewData>!>!
+MaVe.Monads.Result<TData>.OnFailure(System.Action<MaVe.Monads.Error!>! action) -> MaVe.Monads.Result<TData>!
+MaVe.Monads.Result<TData>.OnSuccess(System.Action<TData>! action) -> MaVe.Monads.Result<TData>!
+MaVe.Monads.Result<TData>.Tap(System.Action<MaVe.Monads.Result<TData>!>! action) -> MaVe.Monads.Result<TData>!
+MaVe.Monads.Some<TValue>
+MaVe.Monads.Some<TValue>.Some(TValue value) -> void
+override MaVe.Monads.Error.Equals(object? obj) -> bool
+override MaVe.Monads.Error.GetHashCode() -> int
+override MaVe.Monads.Error.ToString() -> string!
+override MaVe.Monads.None<TValue>.HasValue.get -> bool
+override MaVe.Monads.None<TValue>.Value.get -> TValue
+override MaVe.Monads.Option<TValue>.Equals(object? obj) -> bool
+override MaVe.Monads.Option<TValue>.GetHashCode() -> int
+override MaVe.Monads.Option<TValue>.ToString() -> string!
+override MaVe.Monads.Result<TData>.Equals(object? obj) -> bool
+override MaVe.Monads.Result<TData>.GetHashCode() -> int
+override MaVe.Monads.Result<TData>.ToString() -> string!
+override MaVe.Monads.Some<TValue>.HasValue.get -> bool
+override MaVe.Monads.Some<TValue>.Value.get -> TValue
+static MaVe.Monads.Error.Create(string! message, string? code = null) -> MaVe.Monads.Error!
+static MaVe.Monads.Error.operator !=(MaVe.Monads.Error? left, MaVe.Monads.Error? right) -> bool
+static MaVe.Monads.Error.operator ==(MaVe.Monads.Error? left, MaVe.Monads.Error? right) -> bool
+static MaVe.Monads.Error.Unexpected(System.Exception! exception) -> MaVe.Monads.Error!
+static MaVe.Monads.Option<TValue>.FromNullable(TValue? value) -> MaVe.Monads.Option<TValue>!
+static MaVe.Monads.Option<TValue>.implicit operator MaVe.Monads.Option<TValue>!(TValue? value) -> MaVe.Monads.Option<TValue>!
+static MaVe.Monads.Option<TValue>.None.get -> MaVe.Monads.Option<TValue>!
+static MaVe.Monads.Option<TValue>.Some(TValue value) -> MaVe.Monads.Option<TValue>!
+static MaVe.Monads.Result.Failure<TData>(MaVe.Monads.Error! error) -> MaVe.Monads.Result<TData>!
+static MaVe.Monads.Result.Success<TData>(TData data) -> MaVe.Monads.Result<TData>!
+virtual MaVe.Monads.Error.<Clone>$() -> MaVe.Monads.Error!
+virtual MaVe.Monads.Error.EqualityContract.get -> System.Type!
+virtual MaVe.Monads.Error.Equals(MaVe.Monads.Error? other) -> bool
+virtual MaVe.Monads.Error.PrintMembers(System.Text.StringBuilder! builder) -> bool

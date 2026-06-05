@@ -1,7 +1,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
-namespace BusinessRulesGenerator.UnitTests.Helpers;
+namespace MaVe.BusinessRulesGenerator.UnitTests.Helpers;
 
 internal sealed class InMemoryAdditionalText(string path, string text) : AdditionalText
 {

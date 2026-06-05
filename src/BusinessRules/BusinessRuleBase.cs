@@ -1,7 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
-namespace BusinessRules;
+namespace MaVe.BusinessRules;
 
 /// <summary>
 /// Abstract base class for all business rules, providing key, requirement, description, and category.

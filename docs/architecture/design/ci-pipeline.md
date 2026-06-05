@@ -1,8 +1,8 @@
-﻿---
+---
 sidebar_position: 5
 title: CI Pipeline
 description: GitHub Actions CI/CD architecture, coverage reporting, and branch protection
-tags: [infra, testing, HelperMonads, BusinessRules]
+tags: [infra, testing, Monads, BusinessRules]
 keywords:
   - ci
   - github-actions
@@ -98,7 +98,7 @@ Two calls to `codecov/codecov-action@v5` are used:
 - First call: uploads coverage data (Cobertura XML)
 - Second call: uploads JUnit test results with `report_type: test_results`
 
-Dashboard: [app.codecov.io/github/MauroVerberkt/DotnetHelpers](https://app.codecov.io/github/MauroVerberkt/DotnetHelpers)
+Dashboard: [app.codecov.io/github/MauroVerberkt/MaVe](https://app.codecov.io/github/MauroVerberkt/MaVe)
 
 ## Branch Protection
 

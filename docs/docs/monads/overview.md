@@ -12,7 +12,7 @@ keywords:
 
 # Monads Overview
 
-DotnetHelpers provides two core monadic types for safer, more expressive C# code:
+MaVe provides two core monadic types for safer, more expressive C# code:
 
 ## Result&lt;T&gt;
 

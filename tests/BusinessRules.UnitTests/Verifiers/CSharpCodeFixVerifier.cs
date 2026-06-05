@@ -1,13 +1,13 @@
 using System.ServiceModel;
-using BusinessRules.Attributes;
-using BusinessRules.UnitTests.TestHelpers;
+using MaVe.BusinessRules.Attributes;
+using MaVe.BusinessRules.UnitTests.TestHelpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Testing;
 
-namespace BusinessRules.UnitTests.Verifiers;
+namespace MaVe.BusinessRules.UnitTests.Verifiers;
 
 public class LineEndingNormalizingVerifier : IVerifier
 {

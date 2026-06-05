@@ -1,7 +1,7 @@
 ---
 sidebar_position: 10
 title: "ADR-010: Error Record Over Exception"
-tags: [HelperMonads]
+tags: [Monads]
 ---
 
 # ADR-010: Error Record Over Exception

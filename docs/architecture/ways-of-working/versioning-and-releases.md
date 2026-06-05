@@ -25,11 +25,11 @@ Each independently-versioned package has its own `version.json`:
 | File | Scope |
 |------|-------|
 | `version.json` (root) | Repo-wide defaults (`publicReleaseRefSpec`, cloud build config) |
-| `src/HelperMonads/version.json` | HelperMonads package |
+| `src/Monads/version.json` | Monads package |
 | `src/BusinessRules/version.json` | BusinessRules + analyzers (shared version) |
 | `src/BusinessRules.ResultExtensions/version.json` | BusinessRules.ResultExtensions |
 | `src/BusinessRules.Wcf/version.json` | BusinessRules.Wcf |
-| `src/HelperUnions/version.json` | HelperUnions |
+| `src/Unions/version.json` | Unions |
 
 ### `pathFilters`
 
@@ -53,7 +53,7 @@ version:
 }
 ```
 
-A commit touching only `src/HelperMonads/` does not bump the BusinessRules
+A commit touching only `src/Monads/` does not bump the BusinessRules
 version, and vice versa.
 
 ## Prerelease Flow

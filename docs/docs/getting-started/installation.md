@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: Installation
-description: How to install and reference DotnetHelpers packages in your .NET project
+description: How to install and reference MaVe packages in your .NET project
 keywords:
   - installation
   - nuget
@@ -11,14 +11,14 @@ keywords:
 
 # Installation
 
-Add DotnetHelpers to your .NET project via NuGet or project references.
+Add MaVe to your .NET project via NuGet or project references.
 
 ## NuGet Packages
 
 ```bash
-dotnet add package HelperMonads
-dotnet add package BusinessRulesManagement
-dotnet add package HelperUnions
+dotnet add package MaVe.Monads
+dotnet add package MaVe.BusinessRules
+dotnet add package MaVe.Unions
 ```
 
 ## Requirements
@@ -32,9 +32,9 @@ If you're working directly with the source code:
 
 ```xml
 <ItemGroup>
-  <ProjectReference Include="..\HelperMonads\HelperMonads.csproj" />
+  <ProjectReference Include="..\Monads\Monads.csproj" />
   <ProjectReference Include="..\BusinessRules\BusinessRules.csproj" />
-  <ProjectReference Include="..\HelperUnions\HelperUnions.csproj" />
+  <ProjectReference Include="..\Unions\Unions.csproj" />
 </ItemGroup>
 ```
 
@@ -68,6 +68,6 @@ The BusinessRules package includes Roslyn analyzers and a source generator. You'
 
 :::tip
 
-The HelperUnions package includes a source generator, Roslyn analyzers (DNHU0001, DNHU0003), and a code fix provider. You'll get exhaustive matching and compile-time union validation automatically.
+The Unions package includes a source generator, Roslyn analyzers (DNHU0001, DNHU0003), and a code fix provider. You'll get exhaustive matching and compile-time union validation automatically.
 
 :::

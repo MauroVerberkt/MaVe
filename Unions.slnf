@@ -1,12 +1,12 @@
 {
   "solution": {
-    "path": "DotnetHelpers.sln",
+    "path": "MaVe.sln",
     "projects": [
-      "src\\HelperUnions\\HelperUnions.csproj",
-      "src\\HelperUnionsGenerator\\HelperUnionsGenerator.csproj",
-      "src\\HelperUnionsAnalyzer\\HelperUnionsAnalyzer.csproj",
-      "src\\HelperUnionsFixProvider\\HelperUnionsFixProvider.csproj",
-      "tests\\HelperUnions.UnitTests\\HelperUnions.UnitTests.csproj"
+      "src\\Unions\\Unions.csproj",
+      "src\\UnionsGenerator\\UnionsGenerator.csproj",
+      "src\\UnionsAnalyzer\\UnionsAnalyzer.csproj",
+      "src\\UnionsFixProvider\\UnionsFixProvider.csproj",
+      "tests\\Unions.UnitTests\\Unions.UnitTests.csproj"
     ]
   }
 }

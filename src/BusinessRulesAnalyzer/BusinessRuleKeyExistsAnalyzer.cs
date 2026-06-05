@@ -6,11 +6,11 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace BusinessRulesAnalyzer;
+namespace MaVe.BusinessRulesAnalyzer;
 
 /// <summary>
 /// Analyzer (BR001): Reports an error when a business rule key used in an attribute
-/// is not defined in the project's BusinessRules.json file.
+/// is not defined in the project's MaVe.BusinessRules.json file.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class BusinessRuleKeyExistsAnalyzer : DiagnosticAnalyzer
@@ -21,11 +21,11 @@ public class BusinessRuleKeyExistsAnalyzer : DiagnosticAnalyzer
     private static readonly DiagnosticDescriptor _rule = new(
         DiagnosticId,
         "Business rule key not found",
-        "Business rule with key '{0}' is not defined in BusinessRules.json",
+        "Business rule with key '{0}' is not defined in MaVe.BusinessRules.json",
         Category,
         DiagnosticSeverity.Error,
         true,
-        "All business rule keys used in ImplementsBusinessRule or BusinessRule attributes must be defined in BusinessRules.json.",
+        "All business rule keys used in ImplementsBusinessRule or BusinessRule attributes must be defined in MaVe.BusinessRules.json.",
         customTags: []
     );
 
@@ -42,10 +42,10 @@ public class BusinessRuleKeyExistsAnalyzer : DiagnosticAnalyzer
         {
             var validatesAttrSymbol =
                 compilationContext.Compilation.GetTypeByMetadataName(
-                    "BusinessRules.Attributes.ImplementsBusinessRuleAttribute");
+                    "MaVe.BusinessRules.Attributes.ImplementsBusinessRuleAttribute");
             var requiresAttrSymbol =
                 compilationContext.Compilation.GetTypeByMetadataName(
-                    "BusinessRules.Attributes.BusinessRuleAttribute");
+                    "MaVe.BusinessRules.Attributes.BusinessRuleAttribute");
 
             if (validatesAttrSymbol == null || requiresAttrSymbol == null)
             {
@@ -57,7 +57,7 @@ public class BusinessRuleKeyExistsAnalyzer : DiagnosticAnalyzer
 
             // --- READ BUSINESS RULES FROM JSON FILE ---
             var jsonFile = compilationContext.Options.AdditionalFiles.FirstOrDefault(f =>
-                f.Path.EndsWith("BusinessRules.json", StringComparison.OrdinalIgnoreCase));
+                f.Path.EndsWith("MaVe.BusinessRules.json", StringComparison.OrdinalIgnoreCase));
             if (jsonFile != null)
             {
                 var jsonText = jsonFile.GetText(compilationContext.CancellationToken);
@@ -66,7 +66,7 @@ public class BusinessRuleKeyExistsAnalyzer : DiagnosticAnalyzer
                     try
                     {
                         var jsonDoc = JsonDocument.Parse(jsonText.ToString());
-                        if (jsonDoc.RootElement.TryGetPropertyIgnoreCase("BusinessRules", out var rulesArray) &&
+                        if (jsonDoc.RootElement.TryGetPropertyIgnoreCase("MaVe.BusinessRules", out var rulesArray) &&
                             rulesArray.ValueKind == JsonValueKind.Array)
                         {
                             foreach (var rule in rulesArray.EnumerateArray())

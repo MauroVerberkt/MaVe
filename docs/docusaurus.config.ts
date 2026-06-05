@@ -32,7 +32,7 @@ function parseFrontmatter(content: string): Record<string, string | string[]> {
 }
 
 const config: Config = {
-  title: 'DotnetHelpers',
+  title: 'MaVe',
   tagline: 'Functional patterns for .NET: Result, Option, and Business Rules',
   favicon: 'img/favicon.ico',
 
@@ -41,10 +41,10 @@ const config: Config = {
   },
 
   url: 'https://mauroverberkt.github.io',
-  baseUrl: '/DotnetHelpers/',
+  baseUrl: '/MaVe/',
 
   organizationName: 'MauroVerberkt',
-  projectName: 'DotnetHelpers',
+  projectName: 'MaVe',
 
   onBrokenLinks: 'throw',
 
@@ -66,7 +66,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/MauroVerberkt/DotnetHelpers/tree/main/docs/',
+          editUrl: 'https://github.com/MauroVerberkt/MaVe/tree/main/docs/',
         },
         blog: false,
         theme: {
@@ -86,7 +86,7 @@ const config: Config = {
         path: 'architecture',
         routeBasePath: 'architecture',
         sidebarPath: './sidebarsArchitecture.ts',
-        editUrl: 'https://github.com/MauroVerberkt/DotnetHelpers/tree/main/docs/',
+        editUrl: 'https://github.com/MauroVerberkt/MaVe/tree/main/docs/',
         tags: 'tags.yml',
       },
     ],
@@ -166,9 +166,9 @@ const config: Config = {
       respectPrefersColorScheme: false,
     },
     navbar: {
-      title: 'DotnetHelpers',
+      title: 'MaVe',
       logo: {
-        alt: 'DotnetHelpers Logo',
+        alt: 'MaVe Logo',
         src: 'img/logo.svg',
       },
       items: [
@@ -186,7 +186,7 @@ const config: Config = {
           label: 'Architecture',
         },
         {
-          href: 'https://github.com/MauroVerberkt/DotnetHelpers',
+          href: 'https://github.com/MauroVerberkt/MaVe',
           label: 'GitHub',
           position: 'right',
         },
@@ -221,12 +221,12 @@ const config: Config = {
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/MauroVerberkt/DotnetHelpers',
+              href: 'https://github.com/MauroVerberkt/MaVe',
             },
           ],
         },
       ],
-      copyright: `Copyright \u00A9 ${new Date().getFullYear()} DotnetHelpers. Built with Docusaurus.`,
+      copyright: `Copyright \u00A9 ${new Date().getFullYear()} MaVe. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,

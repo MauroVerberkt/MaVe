@@ -79,7 +79,7 @@ Set `url` and `baseUrl` in `docusaurus.config.js`:
 
 ```js
 url: 'https://mauroverberkt.github.io',
-baseUrl: '/DotnetHelpers/',
+baseUrl: '/MaVe/',
 ```
 
 ### Repo Settings Required
@@ -88,7 +88,7 @@ baseUrl: '/DotnetHelpers/',
 
 ### Post-Deploy Tasks
 
-- Update root `README.md` docs link from "run locally" instructions to the hosted URL (`https://mauroverberkt.github.io/DotnetHelpers/`)
+- Update root `README.md` docs link from "run locally" instructions to the hosted URL (`https://mauroverberkt.github.io/MaVe/`)
 - Investigate build-time coverage injection: CI test run → extract percentage → inject into Docusaurus build as a custom field (enables live coverage display on landing page without client-side API calls)
 
 ## Open Questions
@@ -150,6 +150,6 @@ Done. GitHub Pages deployment implemented:
 - GitHub repo settings configured: Pages source set to "GitHub Actions"
 - README updated with link to hosted site
 
-Site live at: https://mauroverberkt.github.io/DotnetHelpers/
+Site live at: https://mauroverberkt.github.io/MaVe/
 
 Stretch goal (project health dashboard) can now be pursued — PROP-009 (CI pipeline) is complete.

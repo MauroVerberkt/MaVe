@@ -1,6 +1,6 @@
 {
 	"solution": {
-		"path": "DotnetHelpers.sln",
+		"path": "MaVe.sln",
 		"projects": [
 			"src\\BusinessRules\\BusinessRules.csproj",
 			"src\\BusinessRules.ResultExtensions\\BusinessRules.ResultExtensions.csproj",

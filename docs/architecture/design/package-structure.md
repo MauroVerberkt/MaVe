@@ -2,7 +2,7 @@
 sidebar_position: 4
 title: Package Structure
 description: NuGet package composition, analyzer packing strategy, and build configuration
-tags: [HelperMonads, BusinessRules]
+tags: [Monads, BusinessRules]
 keywords:
   - nuget
   - package
@@ -16,26 +16,26 @@ keywords:
 
 ## Overview
 
-DotnetHelpers ships as three primary NuGet packages, each with specific internal layouts to support runtime code, analyzers, and build integration.
+MaVe ships as three primary NuGet packages, each with specific internal layouts to support runtime code, analyzers, and build integration.
 
-## HelperMonads Package
+## Monads Package
 
 Simple library package - no analyzers or generators:
 
 ```
-HelperMonads.nupkg
+Monads.nupkg
 └── lib/
     └── net8.0/
-        └── HelperMonads.dll
+        └── Monads.dll
 ```
 
-## BusinessRulesManagement Package
+## MaVe.BusinessRules Package
 
 Complex package combining runtime library, source generator, analyzers, fix provider, schema, and build props:
 
 ```mermaid
 graph TD
-    subgraph "BusinessRulesManagement.nupkg"
+    subgraph "MaVe.BusinessRules.nupkg"
         subgraph "lib/"
             L[net8.0/BusinessRules.dll]
         end
@@ -49,7 +49,7 @@ graph TD
             S[businessrules-schema.json]
         end
         subgraph "build/"
-            B[BusinessRulesManagement.props]
+            B[MaVe.BusinessRules.props]
         end
     end
 
@@ -67,7 +67,7 @@ graph TD
 | `analyzers/dotnet/cs/` | Generator + Analyzer + FixProvider DLLs | Loaded by the compiler during build |
 | `analyzers/dotnet/cs/` | System.Text.Json.dll | Private dependency for the generator (netstandard2.0 needs it) |
 | `schemas/` | businessrules-schema.json | JSON schema for IntelliSense in JSON editors |
-| `build/` | BusinessRulesManagement.props | MSBuild props imported by consuming projects |
+| `build/` | MaVe.BusinessRules.props | MSBuild props imported by consuming projects |
 
 ## How Analyzers Are Packed
 
@@ -115,7 +115,7 @@ The generator needs `System.Text.Json` to parse the JSON files, but targets `net
 ```mermaid
 graph LR
     subgraph "net8.0"
-        RT[BusinessRules<br/>HelperMonads<br/>ResultExtensions<br/>Wcf]
+        RT[BusinessRules<br/>Monads<br/>ResultExtensions<br/>Wcf]
     end
 
     subgraph "netstandard2.0"
@@ -151,7 +151,7 @@ Consumers reference it in their JSON:
 
 ### MSBuild Props
 
-The `build/BusinessRulesManagement.props` file is automatically imported by consuming projects (NuGet convention). It can set defaults like:
+The `build/MaVe.BusinessRules.props` file is automatically imported by consuming projects (NuGet convention). It can set defaults like:
 - Adding the schema to known JSON schemas
 - Configuring analyzer severity defaults
 - Setting up AdditionalFiles patterns
@@ -168,23 +168,23 @@ BusinessRules.ResultExtensions.nupkg       BusinessRules.Wcf.nupkg
 ```
 
 They declare package dependencies on their prerequisites:
-- `ResultExtensions` depends on: `HelperMonads`, `BusinessRulesManagement`
-- `Wcf` depends on: `BusinessRulesManagement`, `System.ServiceModel.Primitives`
+- `ResultExtensions` depends on: `Monads`, `MaVe.BusinessRules`
+- `Wcf` depends on: `MaVe.BusinessRules`, `System.ServiceModel.Primitives`
 
-## HelperUnions Package
+## Unions Package
 
-Single package combining the attribute assembly, source generator, analyzer, and code fix provider. No private dependencies are bundled — unlike `BusinessRulesManagement`, the generator does not need `System.Text.Json`.
+Single package combining the attribute assembly, source generator, analyzer, and code fix provider. No private dependencies are bundled — unlike `MaVe.BusinessRules`, the generator does not need `System.Text.Json`.
 
 ```mermaid
 graph TD
-    subgraph "HelperUnions.nupkg"
+    subgraph "Unions.nupkg"
         subgraph "lib/"
-            L[net8.0/HelperUnions.dll]
+            L[net8.0/Unions.dll]
         end
         subgraph "analyzers/dotnet/cs/"
-            A1[HelperUnionsGenerator.dll]
-            A2[HelperUnionsAnalyzer.dll]
-            A3[HelperUnionsFixProvider.dll]
+            A1[UnionsGenerator.dll]
+            A2[UnionsAnalyzer.dll]
+            A3[UnionsFixProvider.dll]
         end
     end
 
@@ -198,37 +198,37 @@ graph TD
 
 | Path | Content | Purpose |
 |------|---------|---------|
-| `lib/net8.0/` | HelperUnions.dll | `[Union]` attribute consumed by user code |
+| `lib/net8.0/` | Unions.dll | `[Union]` attribute consumed by user code |
 | `analyzers/dotnet/cs/` | Generator DLL | Emits union base, inspection API, and builder chains |
 | `analyzers/dotnet/cs/` | Analyzer DLL | DNHU0001 (non-exhaustive switch) + DNHU0003 (invalid declaration) |
 | `analyzers/dotnet/cs/` | FixProvider DLL | "Add missing union variant arms" code fix for DNHU0001 |
 
 ### Packing Strategy
 
-`HelperUnions.csproj` uses a different packing strategy than `BusinessRules.csproj`. The `ProjectReference` entries only carry `ReferenceOutputAssembly="false"` (build ordering); the DLLs are packed via explicit `None Include` items:
+`Unions.csproj` uses a different packing strategy than `BusinessRules.csproj`. The `ProjectReference` entries only carry `ReferenceOutputAssembly="false"` (build ordering); the DLLs are packed via explicit `None Include` items:
 
 ```xml
 <ItemGroup>
-  <ProjectReference Include="..\HelperUnionsAnalyzer\HelperUnionsAnalyzer.csproj"
+  <ProjectReference Include="..\UnionsAnalyzer\UnionsAnalyzer.csproj"
                     ReferenceOutputAssembly="false" />
-  <ProjectReference Include="..\HelperUnionsFixProvider\HelperUnionsFixProvider.csproj"
+  <ProjectReference Include="..\UnionsFixProvider\UnionsFixProvider.csproj"
                     ReferenceOutputAssembly="false" />
-  <ProjectReference Include="..\HelperUnionsGenerator\HelperUnionsGenerator.csproj"
+  <ProjectReference Include="..\UnionsGenerator\UnionsGenerator.csproj"
                     ReferenceOutputAssembly="false" />
 </ItemGroup>
 
 <ItemGroup>
-  <None Include="..\HelperUnionsAnalyzer\bin\$(Configuration)\netstandard2.0\HelperUnionsAnalyzer.dll"
+  <None Include="..\UnionsAnalyzer\bin\$(Configuration)\netstandard2.0\UnionsAnalyzer.dll"
         Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-  <None Include="..\HelperUnionsFixProvider\bin\$(Configuration)\netstandard2.0\HelperUnionsFixProvider.dll"
+  <None Include="..\UnionsFixProvider\bin\$(Configuration)\netstandard2.0\UnionsFixProvider.dll"
         Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-  <None Include="..\HelperUnionsGenerator\bin\$(Configuration)\netstandard2.0\HelperUnionsGenerator.dll"
+  <None Include="..\UnionsGenerator\bin\$(Configuration)\netstandard2.0\UnionsGenerator.dll"
         Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 </ItemGroup>
 ```
 
 | Attribute | Effect |
 |-----------|--------|
-| `ReferenceOutputAssembly="false"` | Ensures tooling projects build before packing, without adding a compile reference to `HelperUnions.dll` |
+| `ReferenceOutputAssembly="false"` | Ensures tooling projects build before packing, without adding a compile reference to `Unions.dll` |
 | `Pack="true" PackagePath="analyzers/dotnet/cs"` | Copies the built DLL directly into the correct analyzer slot in the package |
 | `Visible="false"` | Hides the item from Solution Explorer |

@@ -1,7 +1,7 @@
 #Requires -Version 7.0
 <#
 .SYNOPSIS
-    One-time repository setup for DotnetHelpers development.
+    One-time repository setup for MaVe development.
 
 .DESCRIPTION
     Configures git hooks for branch naming enforcement.
@@ -11,7 +11,7 @@
 $ErrorActionPreference = 'Stop'
 
 Write-Host ""
-Write-Host "DotnetHelpers — Developer Setup" -ForegroundColor Cyan
+Write-Host "MaVe — Developer Setup" -ForegroundColor Cyan
 Write-Host "================================" -ForegroundColor Cyan
 Write-Host ""
 

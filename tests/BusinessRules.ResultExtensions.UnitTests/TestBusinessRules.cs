@@ -1,4 +1,4 @@
-namespace BusinessRules.ResultExtensions.UnitTests;
+namespace MaVe.BusinessRules.ResultExtensions.UnitTests;
 
 // Test business rules for unit testing
 public class TestUserMustBeAdult() : BusinessRule<TestUserMustBeAdult>(

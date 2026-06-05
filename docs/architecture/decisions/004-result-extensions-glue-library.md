@@ -1,7 +1,7 @@
 ---
 sidebar_position: 4
 title: "ADR-004: ResultExtensions as Glue Library"
-tags: [HelperMonads, BusinessRules]
+tags: [Monads, BusinessRules]
 ---
 
 # ADR-004: ResultExtensions as Glue Library
@@ -10,17 +10,17 @@ tags: [HelperMonads, BusinessRules]
 
 ## Context
 
-`HelperMonads` (Result pattern) and `BusinessRules` (rule validation) are independently useful libraries. Some consumers want both, some want only one:
+`Monads` (Result pattern) and `BusinessRules` (rule validation) are independently useful libraries. Some consumers want both, some want only one:
 
 - A project using Result for HTTP client calls doesn't need BusinessRules
-- A project using BusinessRules with exception-based handling doesn't need HelperMonads
+- A project using BusinessRules with exception-based handling doesn't need Monads
 - A project wanting functional validation (Result + BusinessRules together) needs both
 
 If integration code lives in either core library, it forces an unwanted dependency on the other.
 
 ## Decision
 
-Create `BusinessRules.ResultExtensions` as a dedicated **glue library** that depends on both `BusinessRules` and `HelperMonads`, providing:
+Create `BusinessRules.ResultExtensions` as a dedicated **glue library** that depends on both `BusinessRules` and `Monads`, providing:
 
 - `EnsureBusinessRule<T>` - predicate validation returning Result
 - `ValidateAll<T>` - multiple rule validation
@@ -39,4 +39,4 @@ Create `BusinessRules.ResultExtensions` as a dedicated **glue library** that dep
 **Negative:**
 - Additional package to discover, reference, and version
 - Consumers need to know the integration package exists
-- Three packages to reference for the full experience (HelperMonads + BusinessRules + ResultExtensions)
+- Three packages to reference for the full experience (Monads + BusinessRules + ResultExtensions)

@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace BusinessRulesFixProvider;
+namespace MaVe.BusinessRulesFixProvider;
 
 /// <summary>
 /// Code fix provider for BR004: automatically adds an <c>[ImplementsBusinessRule]</c> attribute
@@ -117,13 +117,11 @@ public class ThrowWithoutValidationCodeFixProvider : CodeFixProvider
         // Add using statement if not present
         if (root is CompilationUnitSyntax compilationUnit)
         {
-            var hasUsing = compilationUnit.Usings.Any(u => u.Name?.ToString() == "BusinessRules.Attributes");
+            var hasUsing = compilationUnit.Usings.Any(u => u.Name?.ToString() == "MaVe.BusinessRules.Attributes");
             if (!hasUsing)
             {
                 var usingDirective = SyntaxFactory.UsingDirective(
-                    SyntaxFactory.QualifiedName(
-                        SyntaxFactory.IdentifierName("BusinessRules"),
-                        SyntaxFactory.IdentifierName("Attributes")));
+                    SyntaxFactory.ParseName("MaVe.BusinessRules.Attributes"));
                 root = compilationUnit.AddUsings(usingDirective);
                 // Re-find the method declaration in the new root
                 methodDeclaration = root.DescendantNodes().OfType<MethodDeclarationSyntax>()

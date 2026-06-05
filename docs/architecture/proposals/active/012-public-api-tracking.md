@@ -1,7 +1,7 @@
 ---
 sidebar_position: 12
 title: "PROP-012: Public API Tracking"
-tags: [infra, packaging, HelperMonads, BusinessRules]
+tags: [infra, packaging, Monads, BusinessRules]
 ---
 
 # PROP-012: Public API Tracking
@@ -51,7 +51,7 @@ Add to `src/Directory.Build.props` (scoped to packable projects):
 Each packable project gets:
 
 ```
-src/HelperMonads/
+src/Monads/
 ├── PublicAPI.Shipped.txt
 ├── PublicAPI.Unshipped.txt
 ├── Result.cs
@@ -97,12 +97,12 @@ Recommendation: Start with option 1 (explicit listing). If noise becomes a probl
 
 ```text
 #nullable enable
-HelperMonads.Result<T>
-HelperMonads.Result<T>.IsSuccess.get -> bool
-HelperMonads.Result<T>.IsFailure.get -> bool
-HelperMonads.Result<T>.Map<U>(System.Func<T!, U!>!) -> HelperMonads.Result<U!>
-HelperMonads.Result<T>.Bind<U>(System.Func<T!, HelperMonads.Result<U!>!>!) -> HelperMonads.Result<U!>
-HelperMonads.Result<T>.Match<U>(System.Func<T!, U!>!, System.Func<string!, U!>!) -> U!
+MaVe.Monads.Result<T>
+MaVe.Monads.Result<T>.IsSuccess.get -> bool
+MaVe.Monads.Result<T>.IsFailure.get -> bool
+MaVe.Monads.Result<T>.Map<U>(System.Func<T!, U!>!) -> MaVe.Monads.Result<U!>
+MaVe.Monads.Result<T>.Bind<U>(System.Func<T!, MaVe.Monads.Result<U!>!>!) -> MaVe.Monads.Result<U!>
+MaVe.Monads.Result<T>.Match<U>(System.Func<T!, U!>!, System.Func<string!, U!>!) -> U!
 ```
 
 ### Relationship to PROP-011

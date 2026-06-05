@@ -1,7 +1,7 @@
 ---
 sidebar_position: 6
 title: "ADR-006: Nullable Annotations Strategy"
-tags: [HelperMonads, BusinessRules]
+tags: [Monads, BusinessRules]
 ---
 
 # ADR-006: Nullable Annotations Strategy

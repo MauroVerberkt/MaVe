@@ -11,7 +11,7 @@ MSBuild automatically imports `Directory.Build.props` files from parent
 directories. This repo uses three layers:
 
 ```
-DotnetHelpers/
+MaVe/
 ├── Directory.Build.props        ← root: shared metadata + analyzers
 ├── src/
 │   └── Directory.Build.props    ← src: docs, SourceLink, PublicApiAnalyzers
@@ -87,9 +87,9 @@ The `tools/` scripts produce packages locally for testing without going through 
 
 | Script | Output |
 |--------|--------|
-| `tools/build-monads.ps1` | `packages/HelperMonads.*.nupkg` |
+| `tools/build-monads.ps1` | `packages/Monads.*.nupkg` |
 | `tools/build-businessrules.ps1` | `packages/BusinessRules.*.nupkg` + analyzer package |
-| `tools/build-unions.ps1` | `packages/HelperUnions.*.nupkg` |
+| `tools/build-unions.ps1` | `packages/Unions.*.nupkg` |
 
 Output lands in `packages/` at the repo root (not committed). Use these to
 test package consumption locally before merging.

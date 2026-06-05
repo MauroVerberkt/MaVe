@@ -1,4 +1,4 @@
-namespace BusinessRules.UnitTests.TestHelpers;
+namespace MaVe.BusinessRules.UnitTests.TestHelpers;
 
 /// <summary>
 /// Provides generated BusinessRule source code for testing
@@ -6,9 +6,9 @@ namespace BusinessRules.UnitTests.TestHelpers;
 public static class GeneratedBusinessRules
 {
     public const string UserMustBeAuthenticatedSource = """
-                                                        namespace BusinessRules.Rules.Authentication
+                                                        namespace MaVe.BusinessRules.Rules.Authentication
                                                         {
-                                                            public class UserMustBeAuthenticated() : BusinessRules.BusinessRule<UserMustBeAuthenticated>(Key, Requirement, Description, Category)
+                                                            public class UserMustBeAuthenticated() : MaVe.BusinessRules.BusinessRule<UserMustBeAuthenticated>(Key, Requirement, Description, Category)
                                                             {
                                                                 public const string Key = "USER_AUTH";
                                                                 public const string Requirement = "User must be authenticated";
@@ -19,9 +19,9 @@ public static class GeneratedBusinessRules
                                                         """;
 
     public const string UserMustBeAdminSource = """
-                                                namespace BusinessRules.Rules.Authorization
+                                                namespace MaVe.BusinessRules.Rules.Authorization
                                                 {
-                                                    public class UserMustBeAdmin() : BusinessRules.BusinessRule<UserMustBeAdmin>(Key, Requirement, Description, Category)
+                                                    public class UserMustBeAdmin() : MaVe.BusinessRules.BusinessRule<UserMustBeAdmin>(Key, Requirement, Description, Category)
                                                     {
                                                         public const string Key = "USER_ADMIN";
                                                         public const string Requirement = "User must have admin privileges";

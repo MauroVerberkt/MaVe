@@ -1,8 +1,8 @@
 ---
 sidebar_position: 1
-title: HelperMonads Design
+title: Monads Design
 description: Internal design of Result<T> and Option<T> - class hierarchies, method chaining, and async patterns
-tags: [HelperMonads]
+tags: [Monads]
 keywords:
   - result
   - option
@@ -11,11 +11,11 @@ keywords:
   - design
 ---
 
-# HelperMonads Design
+# Monads Design
 
 ## Package Overview
 
-HelperMonads provides two monadic types: `Result<TData>` for fallible operations and `Option<TValue>` for optional values. Both are designed for composition and null safety.
+Monads provides two monadic types: `Result<TData>` for fallible operations and `Option<TValue>` for optional values. Both are designed for composition and null safety.
 
 ## Result&lt;T&gt; Class Hierarchy
 

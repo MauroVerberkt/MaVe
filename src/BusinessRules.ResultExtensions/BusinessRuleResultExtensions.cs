@@ -1,10 +1,10 @@
 using System.Diagnostics.Contracts;
-using HelperMonads;
+using MaVe.Monads;
 
-namespace BusinessRules.ResultExtensions;
+namespace MaVe.BusinessRules.ResultExtensions;
 
 /// <summary>
-/// Extension methods for integrating BusinessRules with the Result monad pattern.
+/// Extension methods for integrating MaVe.BusinessRules with the Result monad pattern.
 /// </summary>
 public static class BusinessRuleResultExtensions
 {

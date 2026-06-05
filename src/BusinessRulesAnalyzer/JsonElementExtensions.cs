@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace BusinessRulesAnalyzer;
+namespace MaVe.BusinessRulesAnalyzer;
 
 /// <summary>
 /// Extension methods for <see cref="JsonElement" /> to provide case-insensitive property lookups.

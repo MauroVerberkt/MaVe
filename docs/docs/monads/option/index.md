@@ -68,7 +68,7 @@ The Option Monad is ideal for:
 ## Example Usage
 
 ```csharp title="OptionBasics.cs"
-using HelperMonads.Option;
+using MaVe.Monads.Option;
 
 // Using Some to represent a value
 Option<string> someOption = Option<string>.Some("Hello, world!");

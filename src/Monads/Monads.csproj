@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>MaVe.Monads</PackageId>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Title>MaVe Monads</Title>
+    <Description>Functional programming monads for C# including Result and Option types</Description>
+    <PackageTags>monad;result;option;functional;railway</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath=""/>
+  </ItemGroup>
+
+</Project>

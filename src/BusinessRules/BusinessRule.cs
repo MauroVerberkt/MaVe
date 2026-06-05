@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
-namespace BusinessRules;
+namespace MaVe.BusinessRules;
 
 /// <summary>
 /// Generic base class for business rules using the Curiously Recurring Template Pattern (CRTP).

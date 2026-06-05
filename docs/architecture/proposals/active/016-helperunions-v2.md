@@ -1,10 +1,10 @@
 ---
 sidebar_position: 16
-title: "PROP-016: HelperUnions V2"
-tags: [HelperUnions]
+title: "PROP-016: Unions V2"
+tags: [Unions]
 ---
 
-# PROP-016: HelperUnions V2
+# PROP-016: Unions V2
 
 **Status:** idea  
 **Size:** medium  
@@ -12,7 +12,7 @@ tags: [HelperUnions]
 
 ## Problem / Motivation
 
-HelperUnions V1 (PROP-015) shipped a complete, production-ready foundation for discriminated unions in C#. During implementation, several features were explicitly deferred as out of scope for V1 due to design complexity, potential hazards, or unclear demand. This proposal collects those deferred items for consideration as a cohesive V2 milestone.
+Unions V1 (PROP-015) shipped a complete, production-ready foundation for discriminated unions in C#. During implementation, several features were explicitly deferred as out of scope for V1 due to design complexity, potential hazards, or unclear demand. This proposal collects those deferred items for consideration as a cohesive V2 milestone.
 
 ## Sketch
 
@@ -39,7 +39,7 @@ System.Text.Json round-trip support for union types:
 { "$type": "Customer", "info": { "name": "Acme Corp" } }
 ```
 
-Likely a separate `HelperUnions.SystemTextJson` package to keep the core package free of private dependencies. The generator would emit `[JsonDerivedType]` attributes or a custom `JsonConverter<T>` for each union.
+Likely a separate `Unions.SystemTextJson` package to keep the core package free of private dependencies. The generator would emit `[JsonDerivedType]` attributes or a custom `JsonConverter<T>` for each union.
 
 ### Generic Union Variants
 

@@ -19,7 +19,7 @@ This guide shows you the core patterns in under 5 minutes.
 Use `Result<T>` to represent operations that can succeed or fail without throwing exceptions:
 
 ```csharp title="UserService.cs"
-using HelperMonads;
+using MaVe.Monads;
 
 public Result<User> GetUser(int id)
 {
@@ -90,7 +90,7 @@ public Result<User> CreateUser(string username, int age)
 Model domain alternatives with source-generated discriminated unions:
 
 ```csharp title="BusinessParty.cs"
-using HelperUnions;
+using MaVe.Unions;
 
 [Union]
 public partial record BusinessParty

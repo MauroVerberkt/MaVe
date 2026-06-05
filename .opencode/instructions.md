@@ -1,4 +1,4 @@
-# DotnetHelpers — Project Instructions
+# MaVe — Project Instructions
 
 ## What This Is
 
@@ -14,9 +14,9 @@ projects.
 ## Repository Layout
 
 ```
-DotnetHelpers/
+MaVe/
 ├── src/                        # NuGet package source code
-│   ├── HelperMonads/           # Result<T> and Option<T> monadic types
+│   ├── Monads/           # Result<T> and Option<T> monadic types
 │   ├── BusinessRules/          # Code-gen business rule framework
 │   ├── BusinessRulesAnalyzer/  # Roslyn analyzer for business rules
 │   ├── BusinessRulesGenerator/ # Roslyn source generator
@@ -25,7 +25,7 @@ DotnetHelpers/
 │   ├── BusinessRules.Wcf/      # WCF fault exception support
 │   └── Railyard/               # (Railway-oriented programming utilities)
 ├── tests/                      # Test projects (unit + integration)
-│   ├── HelperMonads.UnitTests/
+│   ├── Monads.UnitTests/
 │   ├── BusinessRules.UnitTests/
 │   ├── BusinessRules.IntegrationTests/
 │   ├── BusinessRules.ResultExtensions.UnitTests/
@@ -34,7 +34,7 @@ DotnetHelpers/
 │   ├── build-businessrules.ps1
 │   ├── build-monads.ps1
 │   ├── BusinessRules.Analyzers.Package/
-│   └── HelperMonads.Package/
+│   └── Monads.Package/
 ├── docs/                       # Docusaurus documentation site
 │   ├── docs/                   # User-facing library docs
 │   │   ├── getting-started/
@@ -46,7 +46,7 @@ DotnetHelpers/
 │       ├── proposals/          # Design proposals
 │       ├── design/             # Design documents
 │       └── by-project/         # Per-project architecture
-├── DotnetHelpers.sln           # Full solution
+├── MaVe.sln           # Full solution
 ├── BusinessRules.slnf          # Solution filter: business rules only
 ├── Monads.slnf                 # Solution filter: monads only
 └── Directory.Build.props       # Shared build properties
@@ -94,7 +94,7 @@ revised freely until they reach "done" status.
    over reflection, strong typing over stringly-typed APIs
 2. **Composability** — Operations chain via Map/Bind/Match; avoid side effects
    in core logic
-3. **Package independence** — A consumer should be able to use HelperMonads
+3. **Package independence** — A consumer should be able to use Monads
    without BusinessRules and vice versa
 4. **Production-ready** — XML docs, nullable annotations, deterministic builds,
    proper packaging metadata
@@ -122,7 +122,7 @@ revised freely until they reach "done" status.
 
 ## Don'ts
 
-- Don't add exception-based error handling to HelperMonads (use Result/Option)
+- Don't add exception-based error handling to Monads (use Result/Option)
 - Don't merge proposal content into the decisions folder — proposals become
   ADRs through the lifecycle, they don't transform in place
 - Don't add runtime reflection where a source generator can solve the problem

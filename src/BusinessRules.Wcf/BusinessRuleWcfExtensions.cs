@@ -1,10 +1,10 @@
 using System.Diagnostics.Contracts;
 using System.ServiceModel;
 
-namespace BusinessRules.Wcf;
+namespace MaVe.BusinessRules.Wcf;
 
 /// <summary>
-/// Extension methods for integrating BusinessRules with WCF (Windows Communication Foundation).
+/// Extension methods for integrating MaVe.BusinessRules with WCF (Windows Communication Foundation).
 /// </summary>
 public static class BusinessRuleWcfExtensions
 {

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 6
 title: "PROP-006: Add notnull Constraint to Option<TValue>"
-tags: [HelperMonads]
+tags: [Monads]
 ---
 
 # PROP-006: Add notnull Constraint to Option&lt;TValue&gt;
@@ -49,7 +49,7 @@ No API changes beyond the constraint. Existing consumers using non-nullable type
 - Rust's `Option<T>` — `T: Sized` (implicitly non-null)
 - F#'s `Option<'T>` — value types allowed, null disallowed
 - Current `Result<TData> where TData : notnull` in same project
-- Current implementation: `src/HelperMonads/Option/Option.cs`
+- Current implementation: `src/Monads/Option/Option.cs`
 
 ## Outcome
 
