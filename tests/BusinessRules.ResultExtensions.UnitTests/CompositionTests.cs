@@ -158,7 +158,7 @@ public class CompositionTests
 
         // Act
         var result = ValidateAge(age)
-            .BindAndTransform(_ => ValidatePassword(password))
+            .Bind(_ => ValidatePassword(password))
             .Map(validPassword => new User { Age = age, Password = validPassword });
 
         // Assert
@@ -178,7 +178,7 @@ public class CompositionTests
 
         // Act
         var result = ValidateAge(age)
-            .BindAndTransform(_ => ValidatePassword(password))
+            .Bind(_ => ValidatePassword(password))
             .Map(validPassword => new User { Age = age, Password = validPassword });
 
         // Assert
@@ -197,7 +197,7 @@ public class CompositionTests
 
         // Act
         var result = ValidateAge(age)
-            .BindAndTransform(_ => ValidatePassword(password))
+            .Bind(_ => ValidatePassword(password))
             .Map(validPassword => new User { Age = age, Password = validPassword });
 
         // Assert
@@ -251,7 +251,7 @@ public class CompositionTests
     private Result<User> CreateUser(string username, int age, string password)
     {
         return ValidateAge(age)
-            .BindAndTransform(_ => ValidatePassword(password))
+            .Bind(_ => ValidatePassword(password))
             .Map(validPassword => new User { Username = username, Age = age, Password = validPassword });
     }
 
@@ -259,7 +259,7 @@ public class CompositionTests
     {
         var ageResult = await ValidateAgeAsync(age);
         var passwordResult =
-            await ageResult.BindAndTransformAsync(async _ => await ValidatePasswordAsync(password));
+            await ageResult.BindAsync(async _ => await ValidatePasswordAsync(password));
 
         return await passwordResult.MapAsync(async validPassword =>
         {

@@ -3,8 +3,7 @@ namespace MaVe.Monads.UnitTests;
 /// <summary>
 /// Contains unit tests for various binding operations on the <see cref="Result{T}" /> class.
 /// <para>
-/// These tests validate the behavior of <c>Then</c>, <c>ThenAsync</c>, <c>BindWithData</c>, <c>BindWithDataAsync</c>,
-/// and <c>BindAndTransform</c>
+/// These tests validate the behavior of <c>Then</c>, <c>ThenAsync</c>, <c>Bind</c>, and <c>BindAsync</c>
 /// methods under different scenarios including success, failure, and cancellation.
 /// </para>
 /// The tests ensure that these methods handle the propagation of success and failure states correctly, as well as pass
@@ -90,16 +89,16 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindWithData method returns a failure result when the initial result is a failure.
+    /// Tests that the Bind method returns a failure result when the initial result is a failure.
     /// </summary>
     [Test]
-    public void BindWithData_ShouldReturnResult_WhenFailure()
+    public void Bind_ShouldReturnResult_WhenFailure()
     {
         // Arrange
         var failureResult = Result<string>.Failure(TestError);
 
         // Act
-        var result = failureResult.BindWithData(_ => Result<string>.Success(NextMessage));
+        var result = failureResult.Bind(_ => Result<string>.Success(NextMessage));
 
         Assert.Multiple(() =>
         {
@@ -110,18 +109,18 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindWithData method invokes the provided function and returns a success result when the initial result
+    /// Tests that the Bind method invokes the provided function and returns a success result when the initial result
     /// is
     /// successful.
     /// </summary>
     [Test]
-    public void BindWithData_ShouldInvokeFunction_WhenSuccess()
+    public void Bind_ShouldInvokeFunction_WhenSuccess()
     {
         // Arrange
         var successResult = Result<string>.Success(SuccessMessage);
 
         // Act
-        var result = successResult.BindWithData(data => Result<string>.Success(data + NextMessage));
+        var result = successResult.Bind(data => Result<string>.Success(data + NextMessage));
 
         Assert.Multiple(() =>
         {
@@ -132,16 +131,16 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindWithDataAsync method returns a success result when the initial result is a success.
+    /// Tests that the BindAsync method returns a success result when the initial result is a success.
     /// </summary>
     [Test]
-    public async Task BindWithDataAsync_ShouldReturnSuccess_WhenResultIsSuccess()
+    public async Task BindAsync_ShouldReturnSuccess_WhenResultIsSuccess()
     {
         // Arrange
         var result = Result<string>.Success(SuccessMessage);
 
         // Act
-        var processedResult = await result.BindWithDataAsync(ProcessData);
+        var processedResult = await result.BindAsync(ProcessData);
 
         Assert.Multiple(() =>
         {
@@ -158,16 +157,16 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindWithDataAsync method returns a failure result when the initial result is a failure.
+    /// Tests that the BindAsync method returns a failure result when the initial result is a failure.
     /// </summary>
     [Test]
-    public async Task BindWithDataAsync_ShouldReturnFailure_WhenResultIsFailure()
+    public async Task BindAsync_ShouldReturnFailure_WhenResultIsFailure()
     {
         // Arrange
         var result = Result<string>.Failure(TestError);
 
         // Act
-        var processedResult = await result.BindWithDataAsync(ProcessData);
+        var processedResult = await result.BindAsync(ProcessData);
 
         Assert.Multiple(() =>
         {
@@ -184,16 +183,16 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindWithDataAsync method passes data to the function when the initial result is a success.
+    /// Tests that the BindAsync method passes data to the function when the initial result is a success.
     /// </summary>
     [Test]
-    public async Task BindWithDataAsync_ShouldPassDataToFunction_WhenResultIsSuccess()
+    public async Task BindAsync_ShouldPassDataToFunction_WhenResultIsSuccess()
     {
         // Arrange
         var result = Result<int>.Success(10);
 
         // Act
-        var processedResult = await result.BindWithDataAsync(AddDataToResult);
+        var processedResult = await result.BindAsync(AddDataToResult);
 
         Assert.Multiple(() =>
         {
@@ -210,19 +209,19 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindWithDataAsync method returns a failure result when the initial result is a failure, and a
+    /// Tests that the BindAsync method returns a failure result when the initial result is a failure, and a
     /// cancellation
     /// token is used.
     /// </summary>
     [Test]
-    public async Task BindWithDataAsync_ShouldReturnFailure_WhenResultIsFailure_WithCancellationToken()
+    public async Task BindAsync_ShouldReturnFailure_WhenResultIsFailure_WithCancellationToken()
     {
         // Arrange
         var result = Result<int>.Failure(TestError);
         var cancellationToken = CancellationToken.None;
 
         // Act
-        var processedResult = await result.BindWithDataAsync(ProcessData, cancellationToken);
+        var processedResult = await result.BindAsync(ProcessData, cancellationToken);
 
         Assert.Multiple(() =>
         {
@@ -239,19 +238,19 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindWithDataAsync method returns a success result when the initial result is a success, and a
+    /// Tests that the BindAsync method returns a success result when the initial result is a success, and a
     /// cancellation
     /// token is used.
     /// </summary>
     [Test]
-    public async Task BindWithDataAsync_ShouldReturnSuccess_WhenResultIsSuccess_WithCancellationToken()
+    public async Task BindAsync_ShouldReturnSuccess_WhenResultIsSuccess_WithCancellationToken()
     {
         // Arrange
         var result = Result<string>.Success(SuccessMessage);
         var cancellationToken = CancellationToken.None;
 
         // Act
-        var processedResult = await result.BindWithDataAsync(AppendDataToResult, cancellationToken);
+        var processedResult = await result.BindAsync(AppendDataToResult, cancellationToken);
 
         Assert.Multiple(() =>
         {
@@ -268,10 +267,10 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindWithDataAsync method respects cancellation when the cancellation token is canceled.
+    /// Tests that the BindAsync method respects cancellation when the cancellation token is canceled.
     /// </summary>
     [Test]
-    public void BindWithDataAsync_ShouldRespectCancellation_WhenTokenIsCancelled()
+    public void BindAsync_ShouldRespectCancellation_WhenTokenIsCancelled()
     {
         // Arrange
         var result = Result<string>.Success(SuccessMessage);
@@ -280,7 +279,7 @@ public class ResultBindingTests
 
         // Act & Assert
         Assert.ThrowsAsync<TaskCanceledException>(async () =>
-            _ = await result.BindWithDataAsync(ProcessDataWithCancellation, cancellationTokenSource.Token));
+            _ = await result.BindAsync(ProcessDataWithCancellation, cancellationTokenSource.Token));
         return;
 
         async Task<Result<string>> ProcessDataWithCancellation(string data, CancellationToken cancellationToken)
@@ -501,16 +500,16 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindAndTransform method returns a failure result when the initial result is a failure.
+    /// Tests that the Bind method returns a failure result when the initial result is a failure while transforming types.
     /// </summary>
     [Test]
-    public void BindAndTransform_ShouldReturnResult_WhenFailure()
+    public void Bind_ShouldReturnResult_WhenFailure_WithTypeTransform()
     {
         // Arrange
         var failureResult = Result<string>.Failure(TestError);
 
         // Act
-        var result = failureResult.BindAndTransform(_ => Result<int>.Success(1));
+        var result = failureResult.Bind(_ => Result<int>.Success(1));
 
         Assert.Multiple(() =>
         {
@@ -521,18 +520,18 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindAndTransform method invokes the provided function and returns a success result when the initial
+    /// Tests that the Bind method invokes the provided function and returns a success result when the initial
     /// result is
     /// successful.
     /// </summary>
     [Test]
-    public void BindAndTransform_ShouldInvokeFunction_WhenSuccess()
+    public void Bind_ShouldInvokeFunction_WhenSuccess_WithTypeTransform()
     {
         // Arrange
         var successResult = Result<string>.Success(SuccessMessage);
 
         // Act
-        var result = successResult.BindAndTransform(_ => Result<int>.Success(1));
+        var result = successResult.Bind(_ => Result<int>.Success(1));
 
         Assert.Multiple(() =>
         {
@@ -543,16 +542,17 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindAndTransformAsync method returns a success result when the initial result is a success.
+    /// Tests that the BindAsync method returns a success result when the initial result is a success while transforming
+    /// types.
     /// </summary>
     [Test]
-    public async Task BindAndTransformAsync_ShouldReturnSuccess_WhenResultIsSuccess()
+    public async Task BindAsync_ShouldReturnSuccess_WhenResultIsSuccess_WithTypeTransform()
     {
         // Arrange
         var result = Result<string>.Success(SuccessMessage);
 
         // Act
-        var processedResult = await result.BindAndTransformAsync(ProcessData);
+        var processedResult = await result.BindAsync(ProcessData);
 
         Assert.Multiple(() =>
         {
@@ -569,16 +569,17 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindAndTransformAsync method returns a failure result when the initial result is a failure.
+    /// Tests that the BindAsync method returns a failure result when the initial result is a failure while transforming
+    /// types.
     /// </summary>
     [Test]
-    public async Task BindAndTransformAsync_ShouldReturnFailure_WhenResultIsFailure()
+    public async Task BindAsync_ShouldReturnFailure_WhenResultIsFailure_WithTypeTransform()
     {
         // Arrange
         var result = Result<string>.Failure(TestError);
 
         // Act
-        var processedResult = await result.BindAndTransformAsync(ProcessData);
+        var processedResult = await result.BindAsync(ProcessData);
 
         Assert.Multiple(() =>
         {
@@ -595,16 +596,17 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindAndTransformAsync method passes data to the function when the initial result is a success.
+    /// Tests that the BindAsync method passes data to the function when the initial result is a success while transforming
+    /// types.
     /// </summary>
     [Test]
-    public async Task BindAndTransformAsync_ShouldPassDataToFunction_WhenResultIsSuccess()
+    public async Task BindAsync_ShouldPassDataToFunction_WhenResultIsSuccess_WithTypeTransform()
     {
         // Arrange
         var result = Result<string>.Success(SuccessMessage);
 
         // Act
-        var processedResult = await result.BindAndTransformAsync(AddDataToResult);
+        var processedResult = await result.BindAsync(AddDataToResult);
 
         Assert.Multiple(() =>
         {
@@ -621,19 +623,19 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindAndTransformAsync method returns a failure result when the initial result is a failure, and a
+    /// Tests that the BindAsync method returns a failure result when the initial result is a failure, and a
     /// cancellation
     /// token is used.
     /// </summary>
     [Test]
-    public async Task BindAndTransformAsync_ShouldReturnFailure_WhenResultIsFailure_WithCancellationToken()
+    public async Task BindAsync_ShouldReturnFailure_WhenResultIsFailure_WithCancellationToken_WithTypeTransform()
     {
         // Arrange
         var result = Result<string>.Failure(TestError);
         var cancellationToken = CancellationToken.None;
 
         // Act
-        var processedResult = await result.BindAndTransformAsync(ProcessData, cancellationToken);
+        var processedResult = await result.BindAsync(ProcessData, cancellationToken);
 
         Assert.Multiple(() =>
         {
@@ -650,19 +652,19 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindAndTransformAsync method returns a success result when the initial result is a success, and a
+    /// Tests that the BindAsync method returns a success result when the initial result is a success, and a
     /// cancellation
     /// token is used.
     /// </summary>
     [Test]
-    public async Task BindAndTransformAsync_ShouldReturnSuccess_WhenResultIsSuccess_WithCancellationToken()
+    public async Task BindAsync_ShouldReturnSuccess_WhenResultIsSuccess_WithCancellationToken_WithTypeTransform()
     {
         // Arrange
         var result = Result<string>.Success(SuccessMessage);
         var cancellationToken = CancellationToken.None;
 
         // Act
-        var processedResult = await result.BindAndTransformAsync(AppendDataToResult, cancellationToken);
+        var processedResult = await result.BindAsync(AppendDataToResult, cancellationToken);
 
         Assert.Multiple(() =>
         {
@@ -679,10 +681,11 @@ public class ResultBindingTests
     }
 
     /// <summary>
-    /// Tests that the BindAndTransformAsync method respects cancellation when the cancellation token is canceled.
+    /// Tests that the BindAsync method respects cancellation when the cancellation token is canceled while transforming
+    /// types.
     /// </summary>
     [Test]
-    public void BindAndTransformAsync_ShouldRespectCancellation_WhenTokenIsCancelled()
+    public void BindAsync_ShouldRespectCancellation_WhenTokenIsCancelled_WithTypeTransform()
     {
         // Arrange
         var result = Result<string>.Success(SuccessMessage);
@@ -691,7 +694,7 @@ public class ResultBindingTests
 
         // Act & Assert
         Assert.ThrowsAsync<TaskCanceledException>(async () =>
-            _ = await result.BindAndTransformAsync(ProcessDataWithCancellation, cancellationTokenSource.Token));
+            _ = await result.BindAsync(ProcessDataWithCancellation, cancellationTokenSource.Token));
         return;
 
         async Task<Result<int>> ProcessDataWithCancellation(string data, CancellationToken cancellationToken)

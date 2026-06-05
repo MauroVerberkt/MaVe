@@ -101,36 +101,28 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
     }
 
     /// <summary>
-    /// Chains with another operation, passing the current data, if successful.
-    /// </summary>
-    /// <param name="function">The function to invoke with the current data on success.</param>
-    [Pure]
-    public Result<TData> BindWithData(Func<TData, Result<TData>> function)
-    {
-        return IsSuccess ? function(Data) : this;
-    }
-
-    /// <summary>
     /// Chains with an operation that transforms to a different result type, passing the current data.
     /// </summary>
     /// <typeparam name="TNewData">The type of the new data to transform to.</typeparam>
     /// <param name="function">The function that receives the current data and produces a new result.</param>
     [Pure]
-    public Result<TNewData> BindAndTransform<TNewData>(Func<TData, Result<TNewData>> function)
+    public Result<TNewData> Bind<TNewData>(Func<TData, Result<TNewData>> function)
         where TNewData : notnull
     {
         return IsSuccess ? function(Data) : Result<TNewData>.Failure(Error);
     }
 
-    /// <inheritdoc cref="Result{TData}.BindAndTransform{TNewData}(System.Func{TData, Result{TNewData}})" />
-    public async Task<Result<TNewData>> BindAndTransformAsync<TNewData>(Func<TData, Task<Result<TNewData>>> function)
+    /// <inheritdoc cref="Result{TData}.Bind{TNewData}(System.Func{TData, Result{TNewData}})" />
+    [Pure]
+    public async Task<Result<TNewData>> BindAsync<TNewData>(Func<TData, Task<Result<TNewData>>> function)
         where TNewData : notnull
     {
         return IsSuccess ? await function(Data).ConfigureAwait(false) : Result<TNewData>.Failure(Error);
     }
 
-    /// <inheritdoc cref="Result{TData}.BindAndTransform{TNewData}(System.Func{TData, Result{TNewData}})" />
-    public async Task<Result<TNewData>> BindAndTransformAsync<TNewData>(
+    /// <inheritdoc cref="Result{TData}.Bind{TNewData}(System.Func{TData, Result{TNewData}})" />
+    [Pure]
+    public async Task<Result<TNewData>> BindAsync<TNewData>(
         Func<TData, CancellationToken, Task<Result<TNewData>>> function, CancellationToken cancellationToken)
         where TNewData : notnull
     {
@@ -236,21 +228,6 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
         isSuccess = IsSuccess;
         data = Data;
         error = Error;
-    }
-
-    /// <inheritdoc cref="BindWithData(Func{TData, Result{TData}})" />
-    [Pure]
-    public async Task<Result<TData>> BindWithDataAsync(Func<TData, Task<Result<TData>>> function)
-    {
-        return IsSuccess ? await function(Data).ConfigureAwait(false) : this;
-    }
-
-    /// <inheritdoc cref="BindWithData(Func{TData, Result{TData}})" />
-    [Pure]
-    public async Task<Result<TData>> BindWithDataAsync(
-        Func<TData, CancellationToken, Task<Result<TData>>> function, CancellationToken cancellationToken)
-    {
-        return IsSuccess ? await function(Data, cancellationToken).ConfigureAwait(false) : this;
     }
 
     /// <inheritdoc cref="Then(Func{Result{TData}})" />
