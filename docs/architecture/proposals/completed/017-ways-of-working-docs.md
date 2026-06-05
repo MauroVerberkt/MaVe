@@ -6,7 +6,7 @@ tags: [docs]
 
 # PROP-017: Ways of Working Docs in Docusaurus
 
-**Status:** ready  
+**Status:** done  
 **Size:** small  
 **Created:** 2026-06-02  
 
@@ -177,4 +177,9 @@ All resolved:
 
 ## Outcome
 
-_Filled when status changes to done/parked. Link to resulting ADR(s) if applicable._
+Implemented in full. Six pages added under `docs/architecture/ways-of-working/`:
+`developer-setup`, `branching-and-prs`, `ci-pipeline`, `build-and-packaging`,
+`versioning-and-releases`, and `docs-deployment`. The sidebar and
+`architectureDocsDataPlugin` were updated to include the new section.
+`CONTRIBUTING.md` received a forward-reference link. Shipped via
+`docs/ways-of-working` → merged to `main` 2026-06-05. No ADR required.
