@@ -17,3 +17,10 @@ MaVe.Monads.Result<TData>.ThenAsync<TNewData>(System.Func<System.Threading.Tasks
 MaVe.Monads.Result<TData>.Bind<TNewData>(System.Func<TData, MaVe.Monads.Result<TNewData>!>! function) -> MaVe.Monads.Result<TNewData>!
 MaVe.Monads.Result<TData>.BindAsync<TNewData>(System.Func<TData, System.Threading.CancellationToken, System.Threading.Tasks.Task<MaVe.Monads.Result<TNewData>!>!>! function, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<MaVe.Monads.Result<TNewData>!>!
 MaVe.Monads.Result<TData>.BindAsync<TNewData>(System.Func<TData, System.Threading.Tasks.Task<MaVe.Monads.Result<TNewData>!>!>! function) -> System.Threading.Tasks.Task<MaVe.Monads.Result<TNewData>!>!
+MaVe.Monads.Result<TData>.Match<TResult>(System.Func<TData, TResult>! onSuccess, System.Func<MaVe.Monads.Error!, TResult>! onFailure) -> TResult
+MaVe.Monads.Result<TData>.MatchAsync<TResult>(System.Func<TData, System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>!>! onSuccess, System.Func<MaVe.Monads.Error!, System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>!>! onFailure, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResult>!
+MaVe.Monads.Result<TData>.MatchAsync<TResult>(System.Func<TData, System.Threading.Tasks.Task<TResult>!>! onSuccess, System.Func<MaVe.Monads.Error!, System.Threading.Tasks.Task<TResult>!>! onFailure) -> System.Threading.Tasks.Task<TResult>!
+MaVe.Monads.Result<TData>.Select<TNewData>(System.Func<TData, TNewData>! selector) -> MaVe.Monads.Result<TNewData>!
+MaVe.Monads.Result<TData>.SelectMany<TNewData, TResult>(System.Func<TData, MaVe.Monads.Result<TNewData>!>! selector, System.Func<TData, TNewData, TResult>! resultSelector) -> MaVe.Monads.Result<TResult>!
+static MaVe.Monads.Result<TData>.operator !=(MaVe.Monads.Result<TData>? left, MaVe.Monads.Result<TData>? right) -> bool
+static MaVe.Monads.Result<TData>.operator ==(MaVe.Monads.Result<TData>? left, MaVe.Monads.Result<TData>? right) -> bool
