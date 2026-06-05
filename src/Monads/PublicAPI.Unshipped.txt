@@ -1,1 +1,10 @@
 #nullable enable
+*REMOVED*MaVe.Monads.Result<TData>.Bind(System.Func<MaVe.Monads.Result<TData>!>! function) -> MaVe.Monads.Result<TData>!
+*REMOVED*MaVe.Monads.Result<TData>.BindAsync(System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task<MaVe.Monads.Result<TData>!>!>! function, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<MaVe.Monads.Result<TData>!>!
+*REMOVED*MaVe.Monads.Result<TData>.BindAsync(System.Func<System.Threading.Tasks.Task<MaVe.Monads.Result<TData>!>!>! function) -> System.Threading.Tasks.Task<MaVe.Monads.Result<TData>!>!
+MaVe.Monads.Result<TData>.Then(System.Func<MaVe.Monads.Result<TData>!>! function) -> MaVe.Monads.Result<TData>!
+MaVe.Monads.Result<TData>.Then<TNewData>(System.Func<MaVe.Monads.Result<TNewData>!>! function) -> MaVe.Monads.Result<TNewData>!
+MaVe.Monads.Result<TData>.ThenAsync(System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task<MaVe.Monads.Result<TData>!>!>! function, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<MaVe.Monads.Result<TData>!>!
+MaVe.Monads.Result<TData>.ThenAsync(System.Func<System.Threading.Tasks.Task<MaVe.Monads.Result<TData>!>!>! function) -> System.Threading.Tasks.Task<MaVe.Monads.Result<TData>!>!
+MaVe.Monads.Result<TData>.ThenAsync<TNewData>(System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task<MaVe.Monads.Result<TNewData>!>!>! function, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<MaVe.Monads.Result<TNewData>!>!
+MaVe.Monads.Result<TData>.ThenAsync<TNewData>(System.Func<System.Threading.Tasks.Task<MaVe.Monads.Result<TNewData>!>!>! function) -> System.Threading.Tasks.Task<MaVe.Monads.Result<TNewData>!>!
