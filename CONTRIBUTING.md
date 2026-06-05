@@ -133,3 +133,8 @@ Key points:
 - Prefer `Result<T>` / `Option<T>` over exceptions in HelperMonads
 - Source generators over runtime reflection
 - Each NuGet package must be independently consumable
+
+For a deep-dive reference on the CI pipeline, versioning model, release
+process, and build conventions, see the
+[Ways of Working](https://mauroverberkt.github.io/DotnetHelpers/architecture/ways-of-working/developer-setup)
+section in the documentation site.
