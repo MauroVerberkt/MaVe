@@ -84,8 +84,8 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
     {
         return this switch
         {
-            Some<TValue> someOption => await some(someOption.Value),
-            None<TValue> => await none(),
+            Some<TValue> someOption => await some(someOption.Value).ConfigureAwait(false),
+            None<TValue> => await none().ConfigureAwait(false),
             _ => throw new OptionNotPresentException()
         };
     }
@@ -97,8 +97,8 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
     {
         return this switch
         {
-            Some<TValue> someOption => await some(someOption.Value, cancellationToken),
-            None<TValue> => await none(cancellationToken),
+            Some<TValue> someOption => await some(someOption.Value, cancellationToken).ConfigureAwait(false),
+            None<TValue> => await none(cancellationToken).ConfigureAwait(false),
             _ => throw new OptionNotPresentException()
         };
     }
