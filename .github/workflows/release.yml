@@ -3,7 +3,9 @@ name: Release
 on:
   push:
     tags:
-      - "v*"
+      - "monads/v*"
+      - "businessrules/v*"
+      - "unions/v*"
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -19,11 +21,14 @@ jobs:
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  verify-tag-on-main:
+  verify-and-filter-release-packages:
     needs: [build-and-test]
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    outputs:
+      tag-prefix: ${{ steps.parse-tag.outputs.tag-prefix }}
+      tag-version: ${{ steps.parse-tag.outputs.tag-version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -35,6 +40,36 @@ jobs:
             echo "::error::Tag commit is not on main"
             exit 1
           fi
+      - name: Parse release tag
+        id: parse-tag
+        run: |
+          TAG_REF="${GITHUB_REF#refs/tags/}"
+          TAG_PREFIX="${TAG_REF%%/v*}"
+          TAG_VERSION="${TAG_REF#*/v}"
+
+          if [ "$TAG_PREFIX" = "$TAG_REF" ] || [ -z "$TAG_VERSION" ]; then
+            echo "::error::Tag must match '<package>/v<semver>' format. Got: $TAG_REF"
+            exit 1
+          fi
+
+          echo "tag-prefix=$TAG_PREFIX" >> "$GITHUB_OUTPUT"
+          echo "tag-version=$TAG_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Enforce minimum stable version
+        run: |
+          TAG_VERSION="${{ steps.parse-tag.outputs.tag-version }}"
+          MAJOR_VERSION="${TAG_VERSION%%.*}"
+
+          if ! [[ "$MAJOR_VERSION" =~ ^[0-9]+$ ]]; then
+            echo "::error::Unable to parse major version from tag version: $TAG_VERSION"
+            exit 1
+          fi
+
+          if [ "$MAJOR_VERSION" -lt 1 ]; then
+            echo "::error::NuGet.org release requires major version >= 1. Got: $TAG_VERSION"
+            exit 1
+          fi
+
       # Release safety check:
       # Compare release tag version against the exact tested .nupkg artifacts
       # produced by build-and-test. This guarantees stable publish uses the same
@@ -44,9 +79,33 @@ jobs:
         with:
           name: packages
           path: ./artifacts
-      - name: Verify tag matches built package versions
+
+      - name: Verify tag matches target package versions
         run: |
-          TAG_VERSION="${GITHUB_REF#refs/tags/v}"
+          TAG_PREFIX="${{ steps.parse-tag.outputs.tag-prefix }}"
+          TAG_VERSION="${{ steps.parse-tag.outputs.tag-version }}"
+
+          # Keep in sync with the pack step in .github/workflows/_build-and-test.yml.
+          # Adding a new package there requires a matching entry here.
+          case "$TAG_PREFIX" in
+            monads)
+              EXPECTED_PACKAGES=("MaVe.Monads")
+              ;;
+            businessrules)
+              EXPECTED_PACKAGES=(
+                "MaVe.BusinessRules"
+                "MaVe.BusinessRules.ResultExtensions"
+                "MaVe.BusinessRules.Wcf"
+              )
+              ;;
+            unions)
+              EXPECTED_PACKAGES=("MaVe.Unions")
+              ;;
+            *)
+              echo "::error::Unsupported release tag prefix: $TAG_PREFIX"
+              exit 1
+              ;;
+          esac
 
           mapfile -t PACKAGES < <(find ./artifacts -maxdepth 1 -type f -name '*.nupkg' ! -name '*.snupkg' | sort)
 
@@ -57,42 +116,75 @@ jobs:
 
           MISMATCH=0
 
-          for PKG in "${PACKAGES[@]}"; do
-            FILE_NAME="$(basename "$PKG")"
-            PACKAGE_VERSION="$(echo "$FILE_NAME" | grep -oP '[0-9]+\.[0-9]+\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?(?=\.nupkg$)')"
+          for EXPECTED_PACKAGE in "${EXPECTED_PACKAGES[@]}"; do
+            MATCHING_FILES=("./artifacts/${EXPECTED_PACKAGE}.${TAG_VERSION}.nupkg")
 
-            if [ -z "$PACKAGE_VERSION" ]; then
-              echo "::error::Could not parse version from package filename: $FILE_NAME"
-              MISMATCH=1
-              continue
-            fi
-
-            if [ "$PACKAGE_VERSION" != "$TAG_VERSION" ]; then
-              echo "::error::Tag version ($TAG_VERSION) does not match package version ($PACKAGE_VERSION) in $FILE_NAME"
+            if [ ! -f "${MATCHING_FILES[0]}" ]; then
+              echo "::error::Expected package not found: ${EXPECTED_PACKAGE}.${TAG_VERSION}.nupkg"
               MISMATCH=1
             fi
           done
 
+          for PKG in "${PACKAGES[@]}"; do
+            FILE_NAME="$(basename "$PKG")"
+            KEEP_FILE=0
+            for EXPECTED_PACKAGE in "${EXPECTED_PACKAGES[@]}"; do
+              if [ "$FILE_NAME" = "${EXPECTED_PACKAGE}.${TAG_VERSION}.nupkg" ]; then
+                KEEP_FILE=1
+                break
+              fi
+            done
+
+            if [ "$KEEP_FILE" -eq 0 ]; then
+              rm "$PKG"
+            fi
+          done
+
+          mapfile -t SYMBOLS < <(find ./artifacts -maxdepth 1 -type f -name '*.snupkg' | sort)
+          for SYMBOL in "${SYMBOLS[@]}"; do
+            SYMBOL_NAME="$(basename "$SYMBOL")"
+            KEEP_SYMBOL=0
+            for EXPECTED_PACKAGE in "${EXPECTED_PACKAGES[@]}"; do
+              if [ "$SYMBOL_NAME" = "${EXPECTED_PACKAGE}.${TAG_VERSION}.snupkg" ]; then
+                KEEP_SYMBOL=1
+                break
+              fi
+            done
+
+            if [ "$KEEP_SYMBOL" -eq 0 ]; then
+              rm "$SYMBOL"
+            fi
+          done
+
           if [ "$MISMATCH" -ne 0 ]; then
-            echo "::error::Release tag must match all built package versions."
+            echo "::error::Release tag must match all target package versions."
             exit 1
           fi
 
+      - name: Upload filtered package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-packages
+          path: ./artifacts
+          if-no-files-found: error
+
   publish-nuget:
-    needs: [verify-tag-on-main]
+    needs: [verify-and-filter-release-packages]
     permissions:
       contents: read
     uses: ./.github/workflows/_publish-packages.yml
     with:
       feed: nuget
+      artifact-name: release-packages
     secrets:
       NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
   create-github-release:
-    needs: [publish-nuget]
+    needs: [publish-nuget, verify-and-filter-release-packages]
     runs-on: ubuntu-latest
     steps:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          name: ${{ needs.verify-and-filter-release-packages.outputs.tag-prefix }} v${{ needs.verify-and-filter-release-packages.outputs.tag-version }}
           generate_release_notes: true
