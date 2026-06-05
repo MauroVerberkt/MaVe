@@ -3,8 +3,7 @@
 		"path": "MaVe.sln",
 		"projects": [
 			"src\\Monads\\Monads.csproj",
-			"tests\\Monads.UnitTests\\Monads.UnitTests.csproj",
-			"tools\\Monads.Package\\Monads.Package.csproj"
+			"tests\\Monads.UnitTests\\Monads.UnitTests.csproj"
 		]
 	}
 }
