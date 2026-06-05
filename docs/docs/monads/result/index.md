@@ -28,8 +28,9 @@ The `Result<TData>` class provides:
 
 - **Success and Failure States**: Indicates if the operation was successful or failed
 - **Data and Error Handling**: Holds data on success or error information on failure
-- **Functional Operations**: Methods for transforming data (`Map`), chaining operations (`Bind`), and performing side effects (`OnSuccess`, `OnFailure`)
+- **Functional Operations**: Methods for transforming data (`Map`), chaining operations (`Then`, `Bind<TNew>`), exhaustive matching (`Match`), and performing side effects (`OnSuccess`, `OnFailure`)
 - **Asynchronous Support**: Async versions of all transformation and chaining functions
+- **LINQ Support**: `Select` and `SelectMany` enable LINQ query syntax over results
 
 ## Use Cases
 
@@ -48,12 +49,15 @@ The `Result<TData>` class provides:
 | `Error` | The error from a failed operation |
 | `Map` | Transforms data if successful |
 | `MapAsync` | Async version of `Map` (with `CancellationToken` overload) |
-| `Bind` | Chains with another operation (doesn't pass data) |
-| `BindAsync` | Async version of `Bind` (with `CancellationToken` overload) |
-| `BindWithData` | Chains with another operation, passing current data (same return type) |
-| `BindWithDataAsync` | Async version of `BindWithData` (with `CancellationToken` overload) |
-| `BindAndTransform` | Chains and transforms, passing `Data` to the function (different return type) |
-| `BindAndTransformAsync` | Async version of `BindAndTransform` (with `CancellationToken` overload) |
+| `Then` | Chains with another same-typed operation (does not pass data) |
+| `ThenAsync` | Async version of `Then` (with `CancellationToken` overload) |
+| `Bind<TNew>` | Chains with another operation, passing current data (may change type) |
+| `BindAsync<TNew>` | Async version of `Bind<TNew>` (with `CancellationToken` overload) |
+| `Match<TResult>` | Exhaustively handles both success and failure, returning a value |
+| `MatchAsync<TResult>` | Async version of `Match` (with `CancellationToken` overload) |
+| `Select<TNew>` | Transforms data (enables LINQ `select`) |
+| `SelectMany<TNew, TResult>` | Chains results (enables LINQ `from … from`) |
+| `operator ==` / `!=` | Value equality based on `Data` or `Error` |
 | `OnSuccess` | Executes an action if successful |
 | `OnFailure` | Executes an action if failed |
 | `Tap` | Executes an action regardless of outcome (useful for logging) |
@@ -101,7 +105,7 @@ public static async Task ExampleAsync()
 
     var transformedResult = await result
         .MapAsync(async data => await Task.FromResult(data * 2))
-        .BindAsync(async () => await AnotherAsyncOperation());
+        .ThenAsync(async () => await AnotherAsyncOperation());
 
     if (transformedResult.IsSuccess)
     {
@@ -152,7 +156,7 @@ public Result<Order> ProcessOrder(OrderRequest request)
 {
     return ValidateOrder(request)
         .Tap(r => _logger.LogInformation("Validation result: {Success}", r.IsSuccess))
-        .BindWithData(order => SaveOrder(order))
+        .Bind(order => SaveOrder(order))
         .Tap(r => _metrics.RecordOrderAttempt(r.IsSuccess));
 }
 ```
@@ -174,24 +178,76 @@ else
 }
 ```
 
-## BindWithData — Chaining with Access to Current Data
+## Match — Exhaustive Handling
 
-`BindWithData` is like `Bind`, but passes the current `Data` to the next operation. Use it when the next operation needs the current value and returns the **same type**:
+`Match` forces you to handle both success and failure, returning a value from each branch. Unlike `IsSuccess`/`IsFailure` checks, `Match` is exhaustive — the compiler ensures both cases are covered:
 
-```csharp title="BindWithDataExample.cs"
+```csharp title="MatchExample.cs"
+Result<User> result = GetUser(userId);
+
+string message = result.Match(
+    onSuccess: user => $"Welcome, {user.Name}!",
+    onFailure: error => $"Error: {error.Message}"
+);
+```
+
+Use `MatchAsync` when the handlers need to perform async work:
+
+```csharp title="MatchAsyncExample.cs"
+string response = await GetUser(userId).MatchAsync(
+    onSuccess: async user => await RenderProfileAsync(user),
+    onFailure: async error => await RenderErrorPageAsync(error)
+);
+```
+
+## Then vs Bind — Chaining Patterns
+
+Two chaining methods cover different composition scenarios:
+
+**`Then` — chain an independent operation (no data forwarded)**
+
+Use `Then` when the next step does not need the current result's data:
+
+```csharp title="ThenExample.cs"
 public Result<Order> FulfillOrder(int orderId)
 {
     return GetOrder(orderId)
-        .BindWithData(order => ValidateInventory(order))   // receives Order, returns Result<Order>
-        .BindWithData(order => ApplyDiscount(order))       // same — still Result<Order>
-        .BindWithData(order => ChargePayment(order));      // same type throughout
+        .Then(() => CheckSystemAvailability())    // doesn't need the order
+        .Bind(order => ValidateInventory(order))  // does need the order
+        .Bind(order => ChargePayment(order));
 }
+```
 
-// Compare with Bind (no data passed — for independent operations):
-// .Bind(() => NotifyWarehouse())    // doesn't need the order data
+**`Bind<TNew>` — chain and pass data (may change type)**
 
-// Compare with BindAndTransform (data passed — for type changes):
-// .BindAndTransform(order => CreateShipment(order))  // Order → Result<Shipment>
+Use `Bind<TNew>` when the next step receives the current data. The type parameter is inferred from the return type:
+
+```csharp title="BindExample.cs"
+public Result<Shipment> CreateShipment(int orderId)
+{
+    return GetOrder(orderId)                          // Result<Order>
+        .Bind(order => ValidateInventory(order))      // Result<Order>  (same type)
+        .Bind(order => BuildShipment(order));         // Result<Shipment> (type changes)
+}
+```
+
+## LINQ Query Syntax
+
+`Select` and `SelectMany` enable LINQ query syntax, which can read more naturally for multi-step pipelines:
+
+```csharp title="LinqExample.cs"
+var result =
+    from user in GetUser(userId)
+    from profile in GetProfile(user.ProfileId)
+    select $"{user.Name}: {profile.Bio}";
+```
+
+This is equivalent to:
+
+```csharp
+var result = GetUser(userId)
+    .Bind(user => GetProfile(user.ProfileId)
+        .Map(profile => $"{user.Name}: {profile.Bio}"));
 ```
 
 ## CancellationToken Support
@@ -203,18 +259,18 @@ public async Task<Result<OrderConfirmation>> ProcessOrderAsync(
     OrderRequest request, CancellationToken ct)
 {
     return await ValidateOrderAsync(request, ct)
-        .BindWithDataAsync(
+        .BindAsync(
             async (order, token) => await SaveOrderAsync(order, token), ct)
-        .BindAndTransformAsync(
+        .BindAsync(
             async (order, token) => await ConfirmOrderAsync(order, token), ct);
 }
 ```
 
 Available `CancellationToken` overloads:
-- `MapAsync(Func<TData, CancellationToken, Task<TNewData>>, CancellationToken)`
-- `BindAsync(Func<CancellationToken, Task<Result<TData>>>, CancellationToken)`
-- `BindWithDataAsync(Func<TData, CancellationToken, Task<Result<TData>>>, CancellationToken)`
-- `BindAndTransformAsync(Func<TData, CancellationToken, Task<Result<TNewData>>>, CancellationToken)`
+- `MapAsync(Func<TData, CancellationToken, Task<TNew>>, CancellationToken)`
+- `ThenAsync(Func<CancellationToken, Task<Result<TData>>>, CancellationToken)`
+- `BindAsync<TNew>(Func<TData, CancellationToken, Task<Result<TNew>>>, CancellationToken)`
+- `MatchAsync<TResult>(Func<TData, CancellationToken, Task<TResult>>, Func<Error, CancellationToken, Task<TResult>>, CancellationToken)`
 
 :::info
 

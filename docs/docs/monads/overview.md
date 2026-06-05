@@ -60,8 +60,10 @@ string greeting = name.Match(
 |----------|-----|
 | Operation might fail with an error | `Result<T>` |
 | Value might not exist (no error) | `Option<T>` |
-| Need to chain fallible operations | `Result<T>` with `Bind`/`Map` |
-| Need pattern matching on presence | `Option<T>` with `Match` |
+| Need to chain fallible operations | `Result<T>` with `Then`/`Bind`/`Map` |
+| Need to transform optional values | `Option<T>` with `Map`/`Bind` |
+| Need exhaustive matching on outcome | `Result<T>.Match` or `Option<T>.Match` |
+| Prefer LINQ query syntax | Both — `Select`/`SelectMany` on both types |
 
 :::tip[C# to Functional Mapping]
 

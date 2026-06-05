@@ -83,19 +83,18 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
     /// </summary>
     /// <param name="function">The function to invoke on success.</param>
     [Pure]
-    public Result<TData> Bind(Func<Result<TData>> function)
+    public Result<TData> Then(Func<Result<TData>> function)
     {
         return IsSuccess ? function() : this;
     }
 
-    /// <summary>
-    /// Chains with another operation, passing the current data, if successful.
-    /// </summary>
-    /// <param name="function">The function to invoke with the current data on success.</param>
+    /// <inheritdoc cref="Then" />
+    /// <typeparam name="TNewData">The type of the new data to transform to.</typeparam>
     [Pure]
-    public Result<TData> BindWithData(Func<TData, Result<TData>> function)
+    public Result<TNewData> Then<TNewData>(Func<Result<TNewData>> function)
+        where TNewData : notnull
     {
-        return IsSuccess ? function(Data) : this;
+        return IsSuccess ? function() : Result<TNewData>.Failure(Error);
     }
 
     /// <summary>
@@ -104,26 +103,26 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
     /// <typeparam name="TNewData">The type of the new data to transform to.</typeparam>
     /// <param name="function">The function that receives the current data and produces a new result.</param>
     [Pure]
-    public Result<TNewData> BindAndTransform<TNewData>(Func<TData, Result<TNewData>> function)
+    public Result<TNewData> Bind<TNewData>(Func<TData, Result<TNewData>> function)
         where TNewData : notnull
     {
         return IsSuccess ? function(Data) : Result<TNewData>.Failure(Error);
     }
 
-    /// <inheritdoc cref="Result{TData}.BindAndTransform{TNewData}(System.Func{TData, Result{TNewData}})" />
-    public async Task<Result<TNewData>> BindAndTransformAsync<TNewData>(Func<TData, Task<Result<TNewData>>> function)
+    /// <inheritdoc cref="Bind" />
+    public async Task<Result<TNewData>> BindAsync<TNewData>(Func<TData, Task<Result<TNewData>>> function)
         where TNewData : notnull
     {
-        return IsSuccess ? await function(Data) : Result<TNewData>.Failure(Error);
+        return IsSuccess ? await function(Data).ConfigureAwait(false) : Result<TNewData>.Failure(Error);
     }
 
-    /// <inheritdoc cref="Result{TData}.BindAndTransform{TNewData}(System.Func{TData, Result{TNewData}})" />
-    public async Task<Result<TNewData>> BindAndTransformAsync<TNewData>(
+    /// <inheritdoc cref="Bind" />
+    public async Task<Result<TNewData>> BindAsync<TNewData>(
         Func<TData, CancellationToken, Task<Result<TNewData>>> function, CancellationToken cancellationToken)
         where TNewData : notnull
     {
         return IsSuccess
-            ? await function(Data, cancellationToken)
+            ? await function(Data, cancellationToken).ConfigureAwait(false)
             : Result<TNewData>.Failure(Error);
     }
 
@@ -144,8 +143,7 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
         return Result<TNewData>.Success(newData);
     }
 
-    /// <inheritdoc cref="Result{TData}.Map{TNewData}(Func{TData, TNewData})" />
-    [Pure]
+    /// <inheritdoc cref="Map" />
     public async Task<Result<TNewData>> MapAsync<TNewData>(Func<TData, Task<TNewData>> transform)
         where TNewData : notnull
     {
@@ -154,12 +152,11 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
             return Result<TNewData>.Failure(Error);
         }
 
-        var newData = await transform(Data);
+        var newData = await transform(Data).ConfigureAwait(false);
         return Result<TNewData>.Success(newData);
     }
 
-    /// <inheritdoc cref="Result{TData}.Map{TNewData}(Func{TData, TNewData})" />
-    [Pure]
+    /// <inheritdoc cref="Map" />
     public async Task<Result<TNewData>> MapAsync<TNewData>(
         Func<TData, CancellationToken, Task<TNewData>> transform, CancellationToken cancellationToken)
         where TNewData : notnull
@@ -169,8 +166,47 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
             return Result<TNewData>.Failure(Error);
         }
 
-        var newData = await transform(Data, cancellationToken);
+        var newData = await transform(Data, cancellationToken).ConfigureAwait(false);
         return Result<TNewData>.Success(newData);
+    }
+
+    /// <summary>
+    /// Projects the data into a new form. Enables LINQ <c>select</c> syntax.
+    /// </summary>
+    /// <param name="selector">The projection function.</param>
+    [Pure]
+    public Result<TNewData> Select<TNewData>(Func<TData, TNewData> selector) where TNewData : notnull
+    {
+        return Map(selector);
+    }
+
+    /// <summary>
+    /// Projects the data into an intermediate result and applies a result selector.
+    /// Enables LINQ <c>from x in ... from y in ... select ...</c> syntax.
+    /// </summary>
+    /// <param name="selector">The function that projects to an intermediate result.</param>
+    /// <param name="resultSelector">The function that combines original and intermediate data.</param>
+    [Pure]
+    public Result<TResult> SelectMany<TNewData, TResult>(
+        Func<TData, Result<TNewData>> selector,
+        Func<TData, TNewData, TResult> resultSelector)
+        where TNewData : notnull
+        where TResult : notnull
+    {
+        if (IsFailure)
+        {
+            return Result<TResult>.Failure(Error);
+        }
+
+        var intermediate = selector(Data);
+
+        if (intermediate.IsFailure)
+        {
+            return Result<TResult>.Failure(intermediate.Error);
+        }
+
+        var result = resultSelector(Data, intermediate.Data);
+        return Result<TResult>.Success(result);
     }
 
     /// <summary>
@@ -226,46 +262,91 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
         error = Error;
     }
 
-    /// <inheritdoc cref="BindWithData(Func{TData, Result{TData}})" />
+    /// <summary>
+    /// Applies a function based on whether this result is a success or failure.
+    /// </summary>
+    /// <param name="onSuccess">The function to invoke for success.</param>
+    /// <param name="onFailure">The function to invoke for failure.</param>
     [Pure]
-    public async Task<Result<TData>> BindWithDataAsync(Func<TData, Task<Result<TData>>> function)
+    public TResult Match<TResult>(Func<TData, TResult> onSuccess, Func<Error, TResult> onFailure)
     {
-        return IsSuccess ? await function(Data) : this;
+        return IsSuccess ? onSuccess(Data) : onFailure(Error);
     }
 
-    /// <inheritdoc cref="BindWithData(Func{TData, Result{TData}})" />
-    [Pure]
-    public async Task<Result<TData>> BindWithDataAsync(
-        Func<TData, CancellationToken, Task<Result<TData>>> function, CancellationToken cancellationToken)
+    /// <inheritdoc cref="Match" />
+    public async Task<TResult> MatchAsync<TResult>(
+        Func<TData, Task<TResult>> onSuccess,
+        Func<Error, Task<TResult>> onFailure)
     {
-        return IsSuccess ? await function(Data, cancellationToken) : this;
+        return IsSuccess
+            ? await onSuccess(Data).ConfigureAwait(false)
+            : await onFailure(Error).ConfigureAwait(false);
     }
 
-    /// <inheritdoc cref="Bind(Func{Result{TData}})" />
-    [Pure]
-    public async Task<Result<TData>> BindAsync(Func<Task<Result<TData>>> function)
+    /// <inheritdoc cref="Match" />
+    public async Task<TResult> MatchAsync<TResult>(
+        Func<TData, CancellationToken, Task<TResult>> onSuccess,
+        Func<Error, CancellationToken, Task<TResult>> onFailure,
+        CancellationToken cancellationToken)
     {
-        return IsSuccess ? await function() : this;
+        return IsSuccess
+            ? await onSuccess(Data, cancellationToken).ConfigureAwait(false)
+            : await onFailure(Error, cancellationToken).ConfigureAwait(false);
     }
 
-    /// <inheritdoc cref="Bind(Func{Result{TData}})" />
-    [Pure]
-    public async Task<Result<TData>> BindAsync(
+    /// <inheritdoc cref="Then" />
+    public async Task<Result<TData>> ThenAsync(Func<Task<Result<TData>>> function)
+    {
+        return IsSuccess ? await function().ConfigureAwait(false) : this;
+    }
+
+    /// <inheritdoc cref="Then" />
+    public async Task<Result<TData>> ThenAsync(
         Func<CancellationToken, Task<Result<TData>>> function, CancellationToken cancellationToken)
     {
-        return IsSuccess ? await function(cancellationToken) : this;
+        return IsSuccess ? await function(cancellationToken).ConfigureAwait(false) : this;
+    }
+
+    /// <inheritdoc cref="Then" />
+    /// <typeparam name="TNewData">The type of the new data to transform to.</typeparam>
+    public async Task<Result<TNewData>> ThenAsync<TNewData>(Func<Task<Result<TNewData>>> function)
+        where TNewData : notnull
+    {
+        return IsSuccess ? await function().ConfigureAwait(false) : Result<TNewData>.Failure(Error);
+    }
+
+    /// <inheritdoc cref="Then" />
+    /// <typeparam name="TNewData">The type of the new data to transform to.</typeparam>
+    public async Task<Result<TNewData>> ThenAsync<TNewData>(
+        Func<CancellationToken, Task<Result<TNewData>>> function, CancellationToken cancellationToken)
+        where TNewData : notnull
+    {
+        return IsSuccess ? await function(cancellationToken).ConfigureAwait(false) : Result<TNewData>.Failure(Error);
     }
 
     /// <inheritdoc />
     [Pure]
     public override bool Equals(object? obj)
     {
-        if (obj is Result<TData> other)
-        {
-            return Equals(other);
-        }
+        return obj is Result<TData> other && Equals(other);
+    }
 
-        return false;
+    /// <summary>
+    /// Determines whether two <see cref="Result{TData}" /> instances are equal.
+    /// </summary>
+    [Pure]
+    public static bool operator ==(Result<TData>? left, Result<TData>? right)
+    {
+        return left?.Equals(right) ?? right is null;
+    }
+
+    /// <summary>
+    /// Determines whether two <see cref="Result{TData}" /> instances are not equal.
+    /// </summary>
+    [Pure]
+    public static bool operator !=(Result<TData>? left, Result<TData>? right)
+    {
+        return !(left == right);
     }
 
     /// <inheritdoc />

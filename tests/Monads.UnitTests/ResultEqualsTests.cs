@@ -187,4 +187,59 @@ public class ResultEqualsTests
         // Assert
         Assert.That(isEqual, Is.False);
     }
+
+    [Test]
+    public void OperatorEquals_ShouldReturnTrue_WhenBothAreEqual()
+    {
+        var left = Result.Success(SuccessMessage);
+        var right = Result.Success(SuccessMessage);
+
+#pragma warning disable NUnit2010
+        Assert.That(left == right, Is.True);
+#pragma warning restore NUnit2010
+    }
+
+    [Test]
+    public void OperatorEquals_ShouldReturnFalse_WhenDifferent()
+    {
+        var left = Result.Success(SuccessMessage);
+        var right = Result.Success(NextMessage);
+
+#pragma warning disable NUnit2010
+        Assert.That(left == right, Is.False);
+#pragma warning restore NUnit2010
+    }
+
+    [Test]
+    public void OperatorEquals_ShouldHandleNulls()
+    {
+        Result<string>? left = null;
+        Result<string>? right = null;
+        var value = Result.Success(SuccessMessage);
+
+#pragma warning disable NUnit2010
+        Assert.Multiple(() =>
+        {
+            Assert.That(left == right, Is.True);
+            Assert.That(left == value, Is.False);
+            Assert.That(value == left, Is.False);
+        });
+#pragma warning restore NUnit2010
+    }
+
+    [Test]
+    public void OperatorNotEquals_ShouldReturnOppositeOfEquals()
+    {
+        var left = Result.Success(SuccessMessage);
+        var same = Result.Success(SuccessMessage);
+        var different = Result.Success(NextMessage);
+
+#pragma warning disable NUnit2010
+        Assert.Multiple(() =>
+        {
+            Assert.That(left != same, Is.False);
+            Assert.That(left != different, Is.True);
+        });
+#pragma warning restore NUnit2010
+    }
 }

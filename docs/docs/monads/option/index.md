@@ -42,6 +42,13 @@ The abstract base class with these key features:
 | `Value` | The value inside the option (only accessible if `HasValue` is true) |
 | `Match<TResult>` | Apply a function based on whether a value is present or not |
 | `MatchAsync<TResult>` | Async version of `Match` (with `CancellationToken` overload) |
+| `Map<TNew>` | Transforms the value if present, returning a new `Option<TNew>` |
+| `MapAsync<TNew>` | Async version of `Map` (with `CancellationToken` overload) |
+| `Bind<TNew>` | Chains with another operation returning `Option<TNew>` |
+| `BindAsync<TNew>` | Async version of `Bind` (with `CancellationToken` overload) |
+| `Select<TNew>` | Transforms the value (enables LINQ `select`) |
+| `SelectMany<TNew, TResult>` | Chains options (enables LINQ `from … from`) |
+| `operator ==` / `!=` | Value equality |
 
 ### `Some<TValue>`
 
@@ -49,12 +56,11 @@ Represents an option that **contains a value**. Overrides `HasValue` to return `
 
 ### `None<TValue>`
 
-Represents an **empty option**. Overrides `HasValue` to return `false` and throws an exception if `Value` is accessed.
+Represents an **empty option**. Overrides `HasValue` to return `false` and throws `OptionIsNoneException` if `Value` is accessed.
 
 ### Exceptions
 
-- `OptionIsNoneException` - Thrown when accessing value of None
-- `OptionNotPresentException` - Thrown for invalid operations on empty options
+- `OptionIsNoneException` — Thrown when accessing `Value` on a `None`, or when an invalid state is reached in a chain
 
 ## Use Cases
 
@@ -158,16 +164,77 @@ UserProfile profile = await maybeUserId.MatchAsync(
 );
 ```
 
+## Map — Transform Without Unwrapping
+
+`Map` applies a function to the value inside the option, returning a new option. If the option is `None`, `Map` returns `None` without calling the function:
+
+```csharp title="MapExample.cs"
+Option<string> maybeName = GetUserName(userId);
+
+// Transform the value if present
+Option<int> maybeLength = maybeName.Map(name => name.Length);
+
+// Chain maps
+Option<string> maybeUpper = maybeName
+    .Map(name => name.Trim())
+    .Map(name => name.ToUpperInvariant());
+```
+
+Use `MapAsync` for async transformations:
+
+```csharp title="MapAsyncExample.cs"
+Option<int> maybeUserId = GetCurrentUserId();
+
+Option<UserProfile> maybeProfile = await maybeUserId
+    .MapAsync(async id => await _userService.GetProfileAsync(id));
+```
+
+## Bind — Chaining Optional Operations
+
+`Bind` is for chaining operations that themselves return an `Option`. Where `Map` wraps the result automatically, `Bind` expects the function to return an `Option<TNew>` directly — preventing double-wrapping:
+
+```csharp title="BindExample.cs"
+Option<User> maybeUser = FindUser(userId);
+
+// GetPrimaryAddress returns Option<Address> — use Bind, not Map
+Option<Address> maybeAddress = maybeUser
+    .Bind(user => GetPrimaryAddress(user.Id));
+
+// Chain multiple optional lookups
+Option<string> maybeCity = FindUser(userId)
+    .Bind(user => GetPrimaryAddress(user.Id))
+    .Bind(address => GetCity(address.PostalCode));
+```
+
+## LINQ Query Syntax
+
+`Select` and `SelectMany` enable LINQ query syntax, which can read more naturally for multi-step pipelines:
+
+```csharp title="LinqOptionExample.cs"
+var maybeCity =
+    from user in FindUser(userId)
+    from address in GetPrimaryAddress(user.Id)
+    select address.City;
+```
+
+This is equivalent to:
+
+```csharp
+var maybeCity = FindUser(userId)
+    .Bind(user => GetPrimaryAddress(user.Id)
+        .Map(address => address.City));
+```
+
 ## Benefits
 
 - **Null Safety**: Explicitly avoids `null` values, preventing `NullReferenceException`
-- **Cleaner Code**: Self-documenting - indicates a value might be missing and forces explicit handling
+- **Cleaner Code**: Self-documenting — indicates a value might be missing and forces explicit handling
 - **Functional Style**: Leverages pattern matching for handling complex flows with optional values
 - **Type Safety**: The compiler ensures you handle both Some and None cases
 
 :::warning[Accessing Value Directly]
 
-Never access `.Value` without first checking `.HasValue`. If you access `Value` on a `None`, an `OptionIsNoneException` will be thrown. Always prefer using `Match` instead.
+Never access `.Value` without first checking `.HasValue`. If you access `Value` on a `None`, an `OptionIsNoneException` will be thrown. Always prefer using `Match`, `Map`, or `Bind` instead.
 
 :::
 
