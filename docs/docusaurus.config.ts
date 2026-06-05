@@ -149,7 +149,7 @@ const config: Config = {
             }
           }
 
-          for (const category of ['proposals', 'decisions', 'design']) {
+          for (const category of ['proposals', 'decisions', 'design', 'ways-of-working']) {
             scanDirectory(path.join(architecturePath, category), category);
           }
 
