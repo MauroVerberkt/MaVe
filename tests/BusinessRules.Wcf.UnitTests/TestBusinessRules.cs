@@ -1,4 +1,4 @@
-namespace BusinessRules.Wcf.UnitTests;
+namespace MaVe.BusinessRules.Wcf.UnitTests;
 
 // Test business rules for unit testing
 public class TestUserMustBeAdult() : BusinessRule<TestUserMustBeAdult>(

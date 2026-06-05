@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace BusinessRulesAnalyzer;
+namespace MaVe.BusinessRulesAnalyzer;
 
 /// <summary>
 /// Analyzer (BR004): Warns when a method throws a business rule exception
@@ -39,11 +39,11 @@ public class ThrowWithoutValidationAnalyzer : DiagnosticAnalyzer
         {
             var validatesAttrSymbol =
                 compilationContext.Compilation.GetTypeByMetadataName(
-                    "BusinessRules.Attributes.ImplementsBusinessRuleAttribute");
+                    "MaVe.BusinessRules.Attributes.ImplementsBusinessRuleAttribute");
             var businessRuleFaultSymbol =
-                compilationContext.Compilation.GetTypeByMetadataName("BusinessRules.BusinessRuleFault");
+                compilationContext.Compilation.GetTypeByMetadataName("MaVe.BusinessRules.BusinessRuleFault");
             var businessRuleViolationSymbol =
-                compilationContext.Compilation.GetTypeByMetadataName("BusinessRules.BusinessRuleViolationException");
+                compilationContext.Compilation.GetTypeByMetadataName("MaVe.BusinessRules.BusinessRuleViolationException");
 
             if (validatesAttrSymbol == null || (businessRuleFaultSymbol == null && businessRuleViolationSymbol == null))
             {

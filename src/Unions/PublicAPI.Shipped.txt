@@ -1,0 +1,3 @@
+#nullable enable
+MaVe.Unions.UnionAttribute
+MaVe.Unions.UnionAttribute.UnionAttribute() -> void

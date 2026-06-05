@@ -1,20 +1,20 @@
 using System.Collections.Immutable;
 using System.Reflection;
 using System.ServiceModel;
-using BusinessRulesAnalyzer;
+using MaVe.BusinessRulesAnalyzer;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 
-namespace BusinessRules.UnitTests.Analyzers;
+namespace MaVe.BusinessRules.UnitTests.Analyzers;
 
 [TestFixture]
 public class ComposedAnalyzerTests
 {
-    private const string TestBusinessRulesJson = """
+    private const string TestMaVeBusinessRulesJson = """
                                                  {
-                                                   "businessRules": [
+                                                   "MaVe.BusinessRules": [
                                                      {
                                                        "className": "UserMustBeAuthenticated",
                                                        "key": "USER_AUTH",
@@ -100,7 +100,7 @@ public class ComposedAnalyzerTests
             [..analyzers],
             new AnalyzerOptions(
             [
-                new InMemoryAdditionalText("Test.BusinessRules.json", TestBusinessRulesJson)
+                new InMemoryAdditionalText("Test.MaVe.BusinessRules.json", TestMaVeBusinessRulesJson)
             ]));
 
         var diagnostics = await compilationWithAnalyzers.GetAllDiagnosticsAsync();
@@ -111,7 +111,7 @@ public class ComposedAnalyzerTests
     public async Task AllAnalyzers_ValidCode_NoDiagnostics()
     {
         const string source = """
-                              using BusinessRules.Attributes;
+                              using MaVe.BusinessRules.Attributes;
 
                               public class GlobalValidators
                               {
@@ -146,9 +146,9 @@ public class ComposedAnalyzerTests
     public async Task AllAnalyzers_FullPipeline_ReportsExpectedDiagnostics()
     {
         const string source = """
-                              using BusinessRules;
-                              using BusinessRules.Attributes;
-                              using BusinessRules.Rules.Authentication;
+                              using MaVe.BusinessRules;
+                              using MaVe.BusinessRules.Attributes;
+                              using MaVe.BusinessRules.Rules.Authentication;
 
                               public class Validators
                               {
@@ -198,7 +198,7 @@ public class ComposedAnalyzerTests
     public async Task BR001_And_BR002_Combined_InvalidKey_And_MissingValidator()
     {
         const string source = """
-                              using BusinessRules.Attributes;
+                              using MaVe.BusinessRules.Attributes;
 
                               public class TestClass
                               {
@@ -220,7 +220,7 @@ public class ComposedAnalyzerTests
     public async Task BR003_EnforceFalse_ReportsWarning()
     {
         const string source = """
-                              using BusinessRules.Attributes;
+                              using MaVe.BusinessRules.Attributes;
 
                               public class TestClass
                               {
@@ -239,7 +239,7 @@ public class ComposedAnalyzerTests
     public async Task BR004_ThrowWithoutAttribute_ReportsWarning()
     {
         const string source = """
-                              using BusinessRules;
+                              using MaVe.BusinessRules;
 
                               public class TestClass
                               {

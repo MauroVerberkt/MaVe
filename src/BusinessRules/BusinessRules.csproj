@@ -1,10 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageId>BusinessRulesManagement</PackageId>
+    <PackageId>MaVe.BusinessRules</PackageId>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Title>BusinessRules Management Framework</Title>
     <Description>A code generation-based framework for defining, managing, and enforcing business rules with Source Generators and Roslyn Analyzers</Description>
@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="BusinessRules.Wcf"/>
-    <InternalsVisibleTo Include="BusinessRules.Wcf.UnitTests"/>
+    <InternalsVisibleTo Include="MaVe.BusinessRules.Wcf"/>
+    <InternalsVisibleTo Include="MaVe.BusinessRules.Wcf.UnitTests"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -30,17 +30,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\BusinessRulesAnalyzer\bin\$(Configuration)\netstandard2.0\BusinessRulesAnalyzer.dll"
+    <None Include="..\BusinessRulesAnalyzer\bin\$(Configuration)\netstandard2.0\MaVe.BusinessRulesAnalyzer.dll"
           Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
-    <None Include="..\BusinessRulesFixProvider\bin\$(Configuration)\netstandard2.0\BusinessRulesFixProvider.dll"
+    <None Include="..\BusinessRulesFixProvider\bin\$(Configuration)\netstandard2.0\MaVe.BusinessRulesFixProvider.dll"
           Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
-    <None Include="..\BusinessRulesGenerator\bin\$(Configuration)\netstandard2.0\BusinessRulesGenerator.dll"
+    <None Include="..\BusinessRulesGenerator\bin\$(Configuration)\netstandard2.0\MaVe.BusinessRulesGenerator.dll"
           Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
   </ItemGroup>
 
   <ItemGroup>
     <None Include="schemas\businessrules-schema.json" Pack="true" PackagePath="schemas\"/>
-    <None Include="packaging/BusinessRulesManagement.props" Pack="true" PackagePath="build/$(PackageId).props"/>
+    <None Include="packaging/MaVe.BusinessRules.props" Pack="true" PackagePath="build/$(PackageId).props"/>
   </ItemGroup>
 
 </Project>

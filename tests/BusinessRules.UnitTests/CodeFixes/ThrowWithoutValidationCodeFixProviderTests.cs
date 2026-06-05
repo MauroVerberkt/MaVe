@@ -1,11 +1,11 @@
-using BusinessRules.UnitTests.TestHelpers;
-using BusinessRules.UnitTests.Verifiers;
-using BusinessRulesAnalyzer;
-using BusinessRulesFixProvider;
+using MaVe.BusinessRules.UnitTests.TestHelpers;
+using MaVe.BusinessRules.UnitTests.Verifiers;
+using MaVe.BusinessRulesAnalyzer;
+using MaVe.BusinessRulesFixProvider;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Testing;
 
-namespace BusinessRules.UnitTests.CodeFixes;
+namespace MaVe.BusinessRules.UnitTests.CodeFixes;
 
 [TestFixture]
 public class ThrowWithoutValidationCodeFixProviderTests
@@ -14,8 +14,8 @@ public class ThrowWithoutValidationCodeFixProviderTests
     public async Task CodeFix_AddsAttributeWithClassName_ToException()
     {
         const string source = """
-                              using BusinessRules;
-                              using BusinessRules.Rules.Authentication;
+                              using MaVe.BusinessRules;
+                              using MaVe.BusinessRules.Rules.Authentication;
 
                               public class TestClass
                               {
@@ -27,9 +27,9 @@ public class ThrowWithoutValidationCodeFixProviderTests
                               """;
 
         const string fixedSource = """
-                                   using BusinessRules;
-                                   using BusinessRules.Rules.Authentication;
-                                   using BusinessRules.Attributes;
+                                   using MaVe.BusinessRules;
+                                   using MaVe.BusinessRules.Rules.Authentication;
+                                   using MaVe.BusinessRules.Attributes;
 
                                    public class TestClass
                                    {
@@ -55,8 +55,8 @@ public class ThrowWithoutValidationCodeFixProviderTests
     public async Task CodeFix_AddsAttributeWithClassName_DifferentRuleClass()
     {
         const string source = """
-                              using BusinessRules;
-                              using BusinessRules.Rules.Authorization;
+                              using MaVe.BusinessRules;
+                              using MaVe.BusinessRules.Rules.Authorization;
 
                               public class TestClass
                               {
@@ -68,9 +68,9 @@ public class ThrowWithoutValidationCodeFixProviderTests
                               """;
 
         const string fixedSource = """
-                                   using BusinessRules;
-                                   using BusinessRules.Rules.Authorization;
-                                   using BusinessRules.Attributes;
+                                   using MaVe.BusinessRules;
+                                   using MaVe.BusinessRules.Rules.Authorization;
+                                   using MaVe.BusinessRules.Attributes;
 
                                    public class TestClass
                                    {
@@ -96,8 +96,8 @@ public class ThrowWithoutValidationCodeFixProviderTests
     public async Task CodeFix_AddsAttributeWithClassName_ToExceptionWithMessage()
     {
         const string source = """
-                              using BusinessRules;
-                              using BusinessRules.Rules.Authentication;
+                              using MaVe.BusinessRules;
+                              using MaVe.BusinessRules.Rules.Authentication;
 
                               public class TestClass
                               {
@@ -109,9 +109,9 @@ public class ThrowWithoutValidationCodeFixProviderTests
                               """;
 
         const string fixedSource = """
-                                   using BusinessRules;
-                                   using BusinessRules.Rules.Authentication;
-                                   using BusinessRules.Attributes;
+                                   using MaVe.BusinessRules;
+                                   using MaVe.BusinessRules.Rules.Authentication;
+                                   using MaVe.BusinessRules.Attributes;
 
                                    public class TestClass
                                    {
@@ -137,8 +137,8 @@ public class ThrowWithoutValidationCodeFixProviderTests
     public async Task CodeFix_PreservesExistingAttributes()
     {
         const string source = """
-                              using BusinessRules;
-                              using BusinessRules.Rules.Authentication;
+                              using MaVe.BusinessRules;
+                              using MaVe.BusinessRules.Rules.Authentication;
                               using System;
 
                               public class TestClass
@@ -152,10 +152,10 @@ public class ThrowWithoutValidationCodeFixProviderTests
                               """;
 
         const string fixedSource = """
-                                   using BusinessRules;
-                                   using BusinessRules.Rules.Authentication;
+                                   using MaVe.BusinessRules;
+                                   using MaVe.BusinessRules.Rules.Authentication;
                                    using System;
-                                   using BusinessRules.Attributes;
+                                   using MaVe.BusinessRules.Attributes;
 
                                    public class TestClass
                                    {
@@ -184,8 +184,8 @@ public class ThrowWithoutValidationCodeFixProviderTests
         // When throwing via new BusinessRuleViolationException(variable),
         // the code fix cannot extract the rule key/class, so no fix is registered.
         const string source = """
-                              using BusinessRules;
-                              using BusinessRules.Rules.Authentication;
+                              using MaVe.BusinessRules;
+                              using MaVe.BusinessRules.Rules.Authentication;
 
                               public class TestClass
                               {
@@ -227,9 +227,9 @@ public class ThrowWithoutValidationCodeFixProviderTests
     public async Task CodeFix_MultipleThrowsInMethod_FixesFirst()
     {
         const string source = """
-                              using BusinessRules;
-                              using BusinessRules.Rules.Authentication;
-                              using BusinessRules.Rules.Authorization;
+                              using MaVe.BusinessRules;
+                              using MaVe.BusinessRules.Rules.Authentication;
+                              using MaVe.BusinessRules.Rules.Authorization;
 
                               public class TestClass
                               {
@@ -241,10 +241,10 @@ public class ThrowWithoutValidationCodeFixProviderTests
                               """;
 
         const string fixedSource = """
-                                   using BusinessRules;
-                                   using BusinessRules.Rules.Authentication;
-                                   using BusinessRules.Rules.Authorization;
-                                   using BusinessRules.Attributes;
+                                   using MaVe.BusinessRules;
+                                   using MaVe.BusinessRules.Rules.Authentication;
+                                   using MaVe.BusinessRules.Rules.Authorization;
+                                   using MaVe.BusinessRules.Attributes;
 
                                    public class TestClass
                                    {

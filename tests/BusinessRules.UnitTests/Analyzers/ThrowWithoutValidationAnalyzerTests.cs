@@ -1,8 +1,8 @@
-using BusinessRules.UnitTests.Verifiers;
-using BusinessRulesAnalyzer;
+using MaVe.BusinessRules.UnitTests.Verifiers;
+using MaVe.BusinessRulesAnalyzer;
 using Microsoft.CodeAnalysis;
 
-namespace BusinessRules.UnitTests.Analyzers;
+namespace MaVe.BusinessRules.UnitTests.Analyzers;
 
 [TestFixture]
 public class ThrowWithoutValidationAnalyzerTests
@@ -11,9 +11,9 @@ public class ThrowWithoutValidationAnalyzerTests
     public async Task ThrowBusinessRuleException_WithAttribute_NoDiagnostic()
     {
         const string test = """
-                            using BusinessRules;
-                            using BusinessRules.Attributes;
-                            using BusinessRules.Rules.Authentication;
+                            using MaVe.BusinessRules;
+                            using MaVe.BusinessRules.Attributes;
+                            using MaVe.BusinessRules.Rules.Authentication;
 
                             public class TestClass
                             {
@@ -32,8 +32,8 @@ public class ThrowWithoutValidationAnalyzerTests
     public async Task ThrowBusinessRuleException_WithoutAttribute_ReportsWarning()
     {
         const string test = """
-                            using BusinessRules;
-                            using BusinessRules.Rules.Authentication;
+                            using MaVe.BusinessRules;
+                            using MaVe.BusinessRules.Rules.Authentication;
 
                             public class TestClass
                             {
@@ -76,9 +76,9 @@ public class ThrowWithoutValidationAnalyzerTests
     public async Task MultipleThrows_OnlyBusinessRuleFlagged()
     {
         const string test = """
-                            using BusinessRules;
-                            using BusinessRules.Attributes;
-                            using BusinessRules.Rules.Authentication;
+                            using MaVe.BusinessRules;
+                            using MaVe.BusinessRules.Attributes;
+                            using MaVe.BusinessRules.Rules.Authentication;
                             using System;
 
                             public class TestClass

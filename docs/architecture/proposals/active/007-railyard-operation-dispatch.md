@@ -284,7 +284,7 @@ error-handling pipeline without requiring a full framework like Hangfire or Wolv
 - **Wolverine** — convention-based message handling. Heavier, targets full messaging scenarios.
 - **ASP.NET Minimal APIs** — source-generated request binding (similar compile-time philosophy)
 - **MCP Tool Protocol** — name + JSON schema + execute. Railyard's manifest aligns naturally.
-- **HelperMonads** — `Result<T>` and `Option<T>` from this repo, the foundation Railyard builds on.
+- **Monads** — `Result<T>` and `Option<T>` from this repo, the foundation Railyard builds on.
 
 ## Outcome
 

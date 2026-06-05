@@ -1,10 +1,10 @@
-# BusinessRulesManagement
+# MaVe.BusinessRules
 
 Code-generation based framework for defining and evaluating business rules.
 
 ## Package
 
-- NuGet: `BusinessRulesManagement`
+- NuGet: `MaVe.BusinessRules`
 
 ## Highlights
 

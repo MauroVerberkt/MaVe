@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 
-namespace BusinessRulesGenerator.UnitTests;
+namespace MaVe.BusinessRulesGenerator.UnitTests;
 
 internal static class ModuleInitializer
 {

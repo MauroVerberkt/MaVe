@@ -1,8 +1,8 @@
-using BusinessRules.UnitTests.Verifiers;
-using BusinessRulesAnalyzer;
+using MaVe.BusinessRules.UnitTests.Verifiers;
+using MaVe.BusinessRulesAnalyzer;
 using Microsoft.CodeAnalysis;
 
-namespace BusinessRules.UnitTests.Analyzers;
+namespace MaVe.BusinessRules.UnitTests.Analyzers;
 
 [TestFixture]
 public class RequiresValidationAnalyzerTests
@@ -11,7 +11,7 @@ public class RequiresValidationAnalyzerTests
     public async Task BusinessRuleWithValidator_NoDiagnostic()
     {
         const string test = """
-                            using BusinessRules.Attributes;
+                            using MaVe.BusinessRules.Attributes;
 
                             public class Validators
                             {
@@ -33,7 +33,7 @@ public class RequiresValidationAnalyzerTests
     public async Task BusinessRuleWithoutValidator_EnforceTrue_ReportsError()
     {
         const string test = """
-                            using BusinessRules.Attributes;
+                            using MaVe.BusinessRules.Attributes;
 
                             public class UsageClass
                             {
@@ -55,7 +55,7 @@ public class RequiresValidationAnalyzerTests
     public async Task BusinessRuleWithoutValidator_DefaultEnforce_ReportsError()
     {
         const string test = """
-                            using BusinessRules.Attributes;
+                            using MaVe.BusinessRules.Attributes;
 
                             public class UsageClass
                             {
@@ -77,7 +77,7 @@ public class RequiresValidationAnalyzerTests
     public async Task BusinessRuleWithoutValidator_EnforceFalse_ReportsWarning()
     {
         const string test = """
-                            using BusinessRules.Attributes;
+                            using MaVe.BusinessRules.Attributes;
 
                             public class UsageClass
                             {
@@ -99,7 +99,7 @@ public class RequiresValidationAnalyzerTests
     public async Task BusinessRuleOnClass_WithoutValidator_ReportsError()
     {
         const string test = """
-                            using BusinessRules.Attributes;
+                            using MaVe.BusinessRules.Attributes;
 
                             [BusinessRule({|#0:"CLASS_RULE"|})]
                             public class UsageClass
@@ -121,7 +121,7 @@ public class RequiresValidationAnalyzerTests
     public async Task MultipleBusinessRules_SomeWithValidators_ReportsOnlyMissing()
     {
         const string test = """
-                            using BusinessRules.Attributes;
+                            using MaVe.BusinessRules.Attributes;
 
                             public class Validators
                             {
@@ -162,7 +162,7 @@ public class RequiresValidationAnalyzerTests
     public async Task ValidatorInDifferentClass_StillValid()
     {
         const string test = """
-                            using BusinessRules.Attributes;
+                            using MaVe.BusinessRules.Attributes;
 
                             public class ValidatorsA
                             {

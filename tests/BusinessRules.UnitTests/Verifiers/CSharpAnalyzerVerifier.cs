@@ -1,12 +1,12 @@
 using System.ServiceModel;
-using BusinessRules.Attributes;
-using BusinessRules.UnitTests.TestHelpers;
+using MaVe.BusinessRules.Attributes;
+using MaVe.BusinessRules.UnitTests.TestHelpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Testing;
 
-namespace BusinessRules.UnitTests.Verifiers;
+namespace MaVe.BusinessRules.UnitTests.Verifiers;
 
 public static class CSharpAnalyzerVerifier<TAnalyzer> where TAnalyzer : DiagnosticAnalyzer, new()
 {
@@ -64,12 +64,12 @@ public static class CSharpAnalyzerVerifier<TAnalyzer> where TAnalyzer : Diagnost
             }
         }
 
-        public void AddBusinessRulesJson(string jsonContent)
+        public void AddMaVeBusinessRulesJson(string jsonContent)
         {
             TestState.AnalyzerConfigFiles.Add(
                 ("/.globalconfig", "is_global = true"));
 
-            TestState.AdditionalFiles.Add(("/Test.BusinessRules.json", jsonContent));
+            TestState.AdditionalFiles.Add(("/Test.MaVe.BusinessRules.json", jsonContent));
         }
     }
 }

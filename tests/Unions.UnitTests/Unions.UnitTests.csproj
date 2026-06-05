@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing.NUnit"/>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeFix.Testing.NUnit"/>
+    <PackageReference Include="Verify.NUnit"/>
+    <PackageReference Include="Verify.SourceGenerators"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Unions\Unions.csproj"/>
+    <ProjectReference Include="..\..\src\UnionsGenerator\UnionsGenerator.csproj" ReferenceOutputAssembly="true"/>
+    <ProjectReference Include="..\..\src\UnionsAnalyzer\UnionsAnalyzer.csproj"/>
+    <ProjectReference Include="..\..\src\UnionsFixProvider\UnionsFixProvider.csproj"/>
+  </ItemGroup>
+
+</Project>

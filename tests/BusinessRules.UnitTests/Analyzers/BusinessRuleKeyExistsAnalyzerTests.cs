@@ -1,14 +1,14 @@
-using BusinessRules.UnitTests.Verifiers;
-using BusinessRulesAnalyzer;
+using MaVe.BusinessRules.UnitTests.Verifiers;
+using MaVe.BusinessRulesAnalyzer;
 
-namespace BusinessRules.UnitTests.Analyzers;
+namespace MaVe.BusinessRules.UnitTests.Analyzers;
 
 [TestFixture]
 public class BusinessRuleKeyExistsAnalyzerTests
 {
-    private const string BusinessRulesJson = """
+    private const string MaVeBusinessRulesJson = """
                                              {
-                                               "businessRules": [
+                                               "MaVe.BusinessRules": [
                                                  {
                                                    "key": "USER_AUTH",
                                                    "description": "User must be authenticated"
@@ -25,7 +25,7 @@ public class BusinessRuleKeyExistsAnalyzerTests
     public async Task ValidRuleKey_InBusinessRuleAttribute_NoDiagnostic()
     {
         const string test = """
-                            using BusinessRules.Attributes;
+                            using MaVe.BusinessRules.Attributes;
 
                             public class TestClass
                             {
@@ -35,7 +35,7 @@ public class BusinessRuleKeyExistsAnalyzerTests
                             """;
 
         var verifier = new CSharpAnalyzerVerifier<BusinessRuleKeyExistsAnalyzer>.Test { TestCode = test };
-        verifier.AddBusinessRulesJson(BusinessRulesJson);
+        verifier.AddMaVeBusinessRulesJson(MaVeBusinessRulesJson);
 
         await verifier.RunAsync();
     }
@@ -44,7 +44,7 @@ public class BusinessRuleKeyExistsAnalyzerTests
     public async Task ValidRuleKey_InImplementsBusinessRuleAttribute_NoDiagnostic()
     {
         const string test = """
-                            using BusinessRules.Attributes;
+                            using MaVe.BusinessRules.Attributes;
 
                             public class TestClass
                             {
@@ -54,7 +54,7 @@ public class BusinessRuleKeyExistsAnalyzerTests
                             """;
 
         var verifier = new CSharpAnalyzerVerifier<BusinessRuleKeyExistsAnalyzer>.Test { TestCode = test };
-        verifier.AddBusinessRulesJson(BusinessRulesJson);
+        verifier.AddMaVeBusinessRulesJson(MaVeBusinessRulesJson);
 
         await verifier.RunAsync();
     }
@@ -63,7 +63,7 @@ public class BusinessRuleKeyExistsAnalyzerTests
     public async Task InvalidRuleKey_InBusinessRuleAttribute_ReportsDiagnostic()
     {
         const string test = """
-                            using BusinessRules.Attributes;
+                            using MaVe.BusinessRules.Attributes;
 
                             public class TestClass
                             {
@@ -81,7 +81,7 @@ public class BusinessRuleKeyExistsAnalyzerTests
         {
             TestCode = test, ExpectedDiagnostics = { expected }
         };
-        verifier.AddBusinessRulesJson(BusinessRulesJson);
+        verifier.AddMaVeBusinessRulesJson(MaVeBusinessRulesJson);
 
         await verifier.RunAsync();
     }
@@ -90,7 +90,7 @@ public class BusinessRuleKeyExistsAnalyzerTests
     public async Task InvalidRuleKey_InImplementsBusinessRuleAttribute_ReportsDiagnostic()
     {
         const string test = """
-                            using BusinessRules.Attributes;
+                            using MaVe.BusinessRules.Attributes;
 
                             public class TestClass
                             {
@@ -108,7 +108,7 @@ public class BusinessRuleKeyExistsAnalyzerTests
         {
             TestCode = test, ExpectedDiagnostics = { expected }
         };
-        verifier.AddBusinessRulesJson(BusinessRulesJson);
+        verifier.AddMaVeBusinessRulesJson(MaVeBusinessRulesJson);
 
         await verifier.RunAsync();
     }
@@ -117,7 +117,7 @@ public class BusinessRuleKeyExistsAnalyzerTests
     public async Task InvalidRuleKey_OnClass_ReportsDiagnostic()
     {
         const string test = """
-                            using BusinessRules.Attributes;
+                            using MaVe.BusinessRules.Attributes;
 
                             [BusinessRule({|#0:"NONEXISTENT"|})]
                             public class TestClass
@@ -135,16 +135,16 @@ public class BusinessRuleKeyExistsAnalyzerTests
         {
             TestCode = test, ExpectedDiagnostics = { expected }
         };
-        verifier.AddBusinessRulesJson(BusinessRulesJson);
+        verifier.AddMaVeBusinessRulesJson(MaVeBusinessRulesJson);
 
         await verifier.RunAsync();
     }
 
     [Test]
-    public async Task NoBusinessRulesJson_ReportsDiagnosticForAllKeys()
+    public async Task NoMaVeBusinessRulesJson_ReportsDiagnosticForAllKeys()
     {
         const string test = """
-                            using BusinessRules.Attributes;
+                            using MaVe.BusinessRules.Attributes;
 
                             public class TestClass
                             {

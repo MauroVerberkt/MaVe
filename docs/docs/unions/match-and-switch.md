@@ -12,7 +12,7 @@ keywords:
 
 # Match and Switch
 
-HelperUnions generates four exhaustive builder APIs for every union type: `Match`, `Switch`, `MatchAsync`, and `SwitchAsync`.
+Unions generates four exhaustive builder APIs for every union type: `Match`, `Switch`, `MatchAsync`, and `SwitchAsync`.
 
 ## Match — Transform to a Value
 

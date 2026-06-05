@@ -12,7 +12,7 @@ keywords:
 
 # Unions Overview
 
-**HelperUnions** provides source-generated discriminated unions for C#. A union is a type that can be exactly one of several named variants — each variant carrying its own payload.
+**Unions** provides source-generated discriminated unions for C#. A union is a type that can be exactly one of several named variants — each variant carrying its own payload.
 
 ## What Is a Discriminated Union?
 
@@ -52,7 +52,7 @@ Option<BusinessParty>          // party may not exist; when present, it is a var
 - **Closed** — the variant set is fixed at declaration time
 - **Zero overhead** — CLR type dispatch, no boxing, no reflection
 - **Native pattern matching** — works with `switch` statements and expressions without custom language support
-- **Single package** — one `dotnet add package HelperUnions` installs the attribute, generator, analyzer, and code fix provider
+- **Single package** — one `dotnet add package MaVe.Unions` installs the attribute, generator, analyzer, and code fix provider
 
 ## See Also
 

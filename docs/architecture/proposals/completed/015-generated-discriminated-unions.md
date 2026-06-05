@@ -1,7 +1,7 @@
 ---
 sidebar_position: 15
 title: "PROP-015: Generated Discriminated Unions"
-tags: [HelperUnions]
+tags: [Unions]
 ---
 
 # PROP-015: Generated Discriminated Unions
@@ -12,7 +12,7 @@ tags: [HelperUnions]
 
 ## Problem / Motivation
 
-DotnetHelpers provides rich functional programming abstractions:
+MaVe provides rich functional programming abstractions:
 
 - **Result** — success and failure
 - **Option** — presence and absence
@@ -197,7 +197,7 @@ Default severity: **Error**.
 ### Package Structure
 
 ```
-dotnet add package HelperUnions
+dotnet add package MaVe.Unions
 ```
 
 Single NuGet package bundles: attribute assembly, source generator, analyzer, and code fix provider.
@@ -223,14 +223,14 @@ See proposal body above for full design.
 
 ## Outcome
 
-Built HelperUnions V1 as a new NuGet package (`HelperUnions`) covering the full planned scope:
+Built Unions V1 as a new NuGet package (`Unions`) covering the full planned scope:
 
 - **`[Union]` attribute** — marks `partial record` declarations as union types
 - **Source generator** — emits abstract base, private constructor, `Is*` properties, `TryGet*` methods, and exhaustive `Match`/`Switch`/`MatchAsync`/`SwitchAsync` builder chains
 - **DNHU0003 analyzer** — compile-time error when `[Union]` is applied to a non-partial or non-record type
 - **DNHU0001 analyzer** — warning when a `switch` statement or expression on a union type does not cover all variants; handles `DeclarationPatternSyntax`, `TypePatternSyntax`, `RecursivePatternSyntax`, and `ConstantPatternSyntax` (Roslyn parses bare qualified nested type names as constant expressions)
 - **Code fix provider** — "Add missing union variant arms" inserts `throw new System.NotImplementedException()` stubs for each missing variant in both switch expressions and statements
-- **Single NuGet package** — bundles all four assemblies; consumers install with `dotnet add package HelperUnions`
+- **Single NuGet package** — bundles all four assemblies; consumers install with `dotnet add package MaVe.Unions`
 
 Deferred to V2 (see [PROP-016](../active/016-helperunions-v2.md)):
 

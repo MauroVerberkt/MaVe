@@ -1,4 +1,4 @@
-namespace BusinessRules;
+namespace MaVe.BusinessRules;
 
 /// <summary>
 /// Exception thrown when a business rule is violated.

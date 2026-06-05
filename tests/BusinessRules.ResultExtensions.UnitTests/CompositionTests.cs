@@ -1,6 +1,6 @@
-using HelperMonads;
+using MaVe.Monads;
 
-namespace BusinessRules.ResultExtensions.UnitTests;
+namespace MaVe.BusinessRules.ResultExtensions.UnitTests;
 
 /// <summary>
 /// Composition tests demonstrating multi-step validation scenarios

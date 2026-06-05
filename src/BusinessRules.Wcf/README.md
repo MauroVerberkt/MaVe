@@ -1,10 +1,10 @@
-# BusinessRulesManagement.Wcf
+# MaVe.BusinessRules.Wcf
 
 WCF integration for BusinessRules fault and validation scenarios.
 
 ## Package
 
-- NuGet: `BusinessRulesManagement.Wcf`
+- NuGet: `MaVe.BusinessRules.Wcf`
 
 ## Highlights
 

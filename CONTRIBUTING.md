@@ -1,6 +1,6 @@
-# Contributing to DotnetHelpers
+# Contributing to MaVe
 
-Thank you for your interest in contributing to DotnetHelpers. This document
+Thank you for your interest in contributing to MaVe. This document
 covers the workflow conventions, tooling setup, and guidelines for working in
 this repository.
 
@@ -130,11 +130,11 @@ Key points:
 
 - Follow C# naming conventions (PascalCase public, `_camelCase` private fields)
 - Use nullable reference types and XML documentation on public APIs
-- Prefer `Result<T>` / `Option<T>` over exceptions in HelperMonads
+- Prefer `Result<T>` / `Option<T>` over exceptions in Monads
 - Source generators over runtime reflection
 - Each NuGet package must be independently consumable
 
 For a deep-dive reference on the CI pipeline, versioning model, release
 process, and build conventions, see the
-[Ways of Working](https://mauroverberkt.github.io/DotnetHelpers/architecture/ways-of-working/developer-setup)
+[Ways of Working](https://mauroverberkt.github.io/MaVe/architecture/ways-of-working/developer-setup)
 section in the documentation site.

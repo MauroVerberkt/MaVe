@@ -1,10 +1,9 @@
 {
 	"solution": {
-		"path": "DotnetHelpers.sln",
+		"path": "MaVe.sln",
 		"projects": [
-			"src\\HelperMonads\\HelperMonads.csproj",
-			"tests\\HelperMonads.UnitTests\\HelperMonads.UnitTests.csproj",
-			"tools\\HelperMonads.Package\\HelperMonads.Package.csproj"
+			"src\\Monads\\Monads.csproj",
+			"tests\\Monads.UnitTests\\Monads.UnitTests.csproj"
 		]
 	}
 }

@@ -55,11 +55,11 @@ jobs:
       - name: Pack packages from tested build outputs
         run: |
           mkdir -p ./artifacts
-          dotnet pack ./src/HelperMonads/HelperMonads.csproj --configuration Release --no-build --output ./artifacts
+          dotnet pack ./src/Monads/Monads.csproj --configuration Release --no-build --output ./artifacts
           dotnet pack ./src/BusinessRules/BusinessRules.csproj --configuration Release --no-build --output ./artifacts
           dotnet pack ./src/BusinessRules.ResultExtensions/BusinessRules.ResultExtensions.csproj --configuration Release --no-build --output ./artifacts
           dotnet pack ./src/BusinessRules.Wcf/BusinessRules.Wcf.csproj --configuration Release --no-build --output ./artifacts
-          dotnet pack ./src/HelperUnions/HelperUnions.csproj --configuration Release --no-build --output ./artifacts
+          dotnet pack ./src/Unions/Unions.csproj --configuration Release --no-build --output ./artifacts
 
       - name: Upload package artifacts
         uses: actions/upload-artifact@v4

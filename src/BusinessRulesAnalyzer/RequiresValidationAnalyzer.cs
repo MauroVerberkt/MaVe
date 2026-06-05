@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace BusinessRulesAnalyzer;
+namespace MaVe.BusinessRulesAnalyzer;
 
 /// <summary>
 /// Analyzer (BR002/BR003): Ensures every <c>[BusinessRule]</c> attribute has a corresponding
@@ -53,10 +53,10 @@ public class RequiresValidationAnalyzer : DiagnosticAnalyzer
         {
             var requiresAttrSymbol =
                 compilationContext.Compilation.GetTypeByMetadataName(
-                    "BusinessRules.Attributes.BusinessRuleAttribute");
+                    "MaVe.BusinessRules.Attributes.BusinessRuleAttribute");
             var validatesAttrSymbol =
                 compilationContext.Compilation.GetTypeByMetadataName(
-                    "BusinessRules.Attributes.ImplementsBusinessRuleAttribute");
+                    "MaVe.BusinessRules.Attributes.ImplementsBusinessRuleAttribute");
 
             if (requiresAttrSymbol == null || validatesAttrSymbol == null)
             {

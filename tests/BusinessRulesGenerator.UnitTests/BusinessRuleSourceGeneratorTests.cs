@@ -1,8 +1,8 @@
-using BusinessRulesGenerator.UnitTests.Helpers;
+using MaVe.BusinessRulesGenerator.UnitTests.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace BusinessRulesGenerator.UnitTests;
+namespace MaVe.BusinessRulesGenerator.UnitTests;
 
 [TestFixture]
 public class BusinessRuleSourceGeneratorTests
@@ -31,7 +31,7 @@ public class BusinessRuleSourceGeneratorTests
     {
         const string json = """
                             {
-                              "businessRules": [
+                              "MaVe.BusinessRules": [
                                 {
                                   "className": "UserMustBeAuthenticated",
                                   "key": "USER_AUTH",
@@ -43,7 +43,7 @@ public class BusinessRuleSourceGeneratorTests
                             }
                             """;
 
-        var driver = CreateDriver("BusinessRules.json", json)
+        var driver = CreateDriver("MaVe.BusinessRules.json", json)
             .RunGenerators(CreateCompilation());
 
         return Verify(driver);
@@ -54,7 +54,7 @@ public class BusinessRuleSourceGeneratorTests
     {
         const string json = """
                             {
-                              "businessRules": [
+                              "MaVe.BusinessRules": [
                                 {
                                   "className": "UserMustBeAuthenticated",
                                   "key": "USER_AUTH",
@@ -80,7 +80,7 @@ public class BusinessRuleSourceGeneratorTests
                             }
                             """;
 
-        var driver = CreateDriver("BusinessRules.json", json)
+        var driver = CreateDriver("MaVe.BusinessRules.json", json)
             .RunGenerators(CreateCompilation());
 
         return Verify(driver);
@@ -91,7 +91,7 @@ public class BusinessRuleSourceGeneratorTests
     {
         const string json = """
                             {
-                              "businessRules": [
+                              "MaVe.BusinessRules": [
                                 {
                                   "className": "GenericRule",
                                   "key": "GENERIC",
@@ -110,7 +110,7 @@ public class BusinessRuleSourceGeneratorTests
                             }
                             """;
 
-        var driver = CreateDriver("BusinessRules.json", json)
+        var driver = CreateDriver("MaVe.BusinessRules.json", json)
             .RunGenerators(CreateCompilation());
 
         return Verify(driver);
@@ -121,11 +121,11 @@ public class BusinessRuleSourceGeneratorTests
     {
         const string json = """
                             {
-                              "businessRules": []
+                              "MaVe.BusinessRules": []
                             }
                             """;
 
-        var driver = CreateDriver("BusinessRules.json", json)
+        var driver = CreateDriver("MaVe.BusinessRules.json", json)
             .RunGenerators(CreateCompilation());
 
         var result = driver.GetRunResult();
@@ -138,11 +138,11 @@ public class BusinessRuleSourceGeneratorTests
     {
         const string json = """
                             {
-                              "businessRules": null
+                              "MaVe.BusinessRules": null
                             }
                             """;
 
-        var driver = CreateDriver("BusinessRules.json", json)
+        var driver = CreateDriver("MaVe.BusinessRules.json", json)
             .RunGenerators(CreateCompilation());
 
         var result = driver.GetRunResult();
@@ -155,7 +155,7 @@ public class BusinessRuleSourceGeneratorTests
     {
         const string json = "{ this is not valid json at all }}}}";
 
-        var driver = CreateDriver("BusinessRules.json", json)
+        var driver = CreateDriver("MaVe.BusinessRules.json", json)
             .RunGenerators(CreateCompilation());
 
         var result = driver.GetRunResult();
@@ -169,7 +169,7 @@ public class BusinessRuleSourceGeneratorTests
     {
         const string json = """
                             {
-                              "businessRules": [
+                              "MaVe.BusinessRules": [
                                 {
                                   "className": "RuleWithSpecialChars",
                                   "key": "SPECIAL",
@@ -181,7 +181,7 @@ public class BusinessRuleSourceGeneratorTests
                             }
                             """;
 
-        var driver = CreateDriver("BusinessRules.json", json)
+        var driver = CreateDriver("MaVe.BusinessRules.json", json)
             .RunGenerators(CreateCompilation());
 
         return Verify(driver);
@@ -192,7 +192,7 @@ public class BusinessRuleSourceGeneratorTests
     {
         const string json = """
                             {
-                              "businessRules": [
+                              "MaVe.BusinessRules": [
                                 {
                                   "className": "SanitizedRule",
                                   "key": "SANITIZED",
@@ -204,7 +204,7 @@ public class BusinessRuleSourceGeneratorTests
                             }
                             """;
 
-        var driver = CreateDriver("BusinessRules.json", json)
+        var driver = CreateDriver("MaVe.BusinessRules.json", json)
             .RunGenerators(CreateCompilation());
 
         return Verify(driver);
@@ -215,7 +215,7 @@ public class BusinessRuleSourceGeneratorTests
     {
         const string json = """
                             {
-                              "businessRules": [
+                              "MaVe.BusinessRules": [
                                 {
                                   "className": "SimpleRule",
                                   "key": "SIMPLE",
@@ -227,7 +227,7 @@ public class BusinessRuleSourceGeneratorTests
                             }
                             """;
 
-        var driver = CreateDriver("BusinessRules.json", json)
+        var driver = CreateDriver("MaVe.BusinessRules.json", json)
             .RunGenerators(CreateCompilation("MyCompany.MyApp"));
 
         return Verify(driver);
@@ -238,12 +238,12 @@ public class BusinessRuleSourceGeneratorTests
     {
         const string json = """
                             {
-                              "businessRules": [
+                              "MaVe.BusinessRules": [
                                 {
                                   "className": "ShouldNotGenerate",
                                   "key": "IGNORED",
                                   "requirement": "Should be ignored",
-                                  "description": "File name does not end in BusinessRules.json",
+                                  "description": "File name does not end in MaVe.BusinessRules.json",
                                   "category": "Test"
                                 }
                               ]
@@ -263,7 +263,7 @@ public class BusinessRuleSourceGeneratorTests
     {
         const string json = """
                             {
-                              "BusinessRules": [
+                              "MaVe.BusinessRules": [
                                 {
                                   "ClassName": "PascalCaseRule",
                                   "Key": "PASCAL",
@@ -275,7 +275,7 @@ public class BusinessRuleSourceGeneratorTests
                             }
                             """;
 
-        var driver = CreateDriver("BusinessRules.json", json)
+        var driver = CreateDriver("MaVe.BusinessRules.json", json)
             .RunGenerators(CreateCompilation());
 
         return Verify(driver);

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 11
 title: "ADR-011: Union Inheritance and Linear Match Builders"
-tags: [HelperUnions]
+tags: [Unions]
 ---
 
 # ADR-011: Union Inheritance and Linear Match Builders
@@ -107,13 +107,13 @@ Implicit conversions from variant payload types to the union type (`CustomerInfo
 All four source assemblies are bundled into one consumer-facing package:
 
 ```
-lib/net8.0/HelperUnions.dll                         ← [Union] attribute
-analyzers/dotnet/cs/HelperUnionsGenerator.dll        ← source generator
-analyzers/dotnet/cs/HelperUnionsAnalyzer.dll         ← DNHU0001 + DNHU0003
-analyzers/dotnet/cs/HelperUnionsFixProvider.dll      ← code fix for DNHU0001
+lib/net8.0/Unions.dll                         ← [Union] attribute
+analyzers/dotnet/cs/UnionsGenerator.dll        ← source generator
+analyzers/dotnet/cs/UnionsAnalyzer.dll         ← DNHU0001 + DNHU0003
+analyzers/dotnet/cs/UnionsFixProvider.dll      ← code fix for DNHU0001
 ```
 
-**Why:** Consumers declare a union with `[Union]` and immediately get generation, exhaustiveness checking, and code fixes from one `dotnet add package HelperUnions` invocation. Separate packages would require manual coordination between the attribute and tooling assemblies while offering no additional flexibility to consumers.
+**Why:** Consumers declare a union with `[Union]` and immediately get generation, exhaustiveness checking, and code fixes from one `dotnet add package MaVe.Unions` invocation. Separate packages would require manual coordination between the attribute and tooling assemblies while offering no additional flexibility to consumers.
 
 ## Consequences
 

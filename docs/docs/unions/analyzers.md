@@ -13,7 +13,7 @@ keywords:
 
 # Analyzers
 
-The `HelperUnions` package includes two Roslyn analyzers that catch union-related problems at compile time.
+The `Unions` package includes two Roslyn analyzers that catch union-related problems at compile time.
 
 ## DNHU0001 — Non-Exhaustive Union Match
 
@@ -99,4 +99,4 @@ public partial record BusinessParty
 
 ## Analyzer Release Notes
 
-Both rules are listed in `AnalyzerReleases.Unshipped.md` in the `HelperUnionsAnalyzer` project, as required by the `RS2008` Roslyn analyzer packaging convention.
+Both rules are listed in `AnalyzerReleases.Unshipped.md` in the `UnionsAnalyzer` project, as required by the `RS2008` Roslyn analyzer packaging convention.

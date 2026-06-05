@@ -14,7 +14,7 @@ keywords:
 ## Installation
 
 ```bash
-dotnet add package HelperUnions
+dotnet add package MaVe.Unions
 ```
 
 ## Declare a Union
@@ -22,7 +22,7 @@ dotnet add package HelperUnions
 Mark a `partial record` with `[Union]` and add `sealed record` variants as nested types:
 
 ```csharp title="BusinessParty.cs"
-using HelperUnions;
+using MaVe.Unions;
 
 [Union]
 public partial record BusinessParty
@@ -118,6 +118,6 @@ When you add a new variant, all existing `Match().Result()` and `Switch().Execut
 
 :::tip
 
-Install the `HelperUnions` package once and you immediately get: the `[Union]` attribute, the source generator, the DNHU0001/DNHU0003 analyzers, and the "Add missing variants" code fix — all from a single package reference.
+Install the `Unions` package once and you immediately get: the `[Union]` attribute, the source generator, the DNHU0001/DNHU0003 analyzers, and the "Add missing variants" code fix — all from a single package reference.
 
 :::

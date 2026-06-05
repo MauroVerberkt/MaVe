@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "ADR-001: Result Pattern Over Exceptions"
-tags: [HelperMonads]
+tags: [Monads]
 ---
 
 # ADR-001: Result Pattern Over Exceptions

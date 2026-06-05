@@ -13,14 +13,14 @@ keywords:
 
 # BusinessRules.ResultExtensions
 
-**BusinessRules.ResultExtensions** bridges the BusinessRules framework with the Result monad from HelperMonads. It provides extension methods that enable functional error handling with business rules - composable, declarative validation without exception-based control flow.
+**BusinessRules.ResultExtensions** bridges the BusinessRules framework with the Result monad from Monads. It provides extension methods that enable functional error handling with business rules - composable, declarative validation without exception-based control flow.
 
 ## Installation
 
 ```xml title="Project.csproj"
 <ItemGroup>
   <ProjectReference Include="..\BusinessRules\BusinessRules.csproj" />
-  <ProjectReference Include="..\HelperMonads\HelperMonads.csproj" />
+  <ProjectReference Include="..\Monads\Monads.csproj" />
   <ProjectReference Include="..\BusinessRules.ResultExtensions\BusinessRules.ResultExtensions.csproj" />
 </ItemGroup>
 ```

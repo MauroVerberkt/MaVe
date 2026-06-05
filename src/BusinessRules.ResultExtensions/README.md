@@ -1,10 +1,10 @@
-# BusinessRulesManagement.ResultExtensions
+# MaVe.BusinessRules.ResultExtensions
 
-Bridge package connecting BusinessRules with HelperMonads `Result` workflows.
+Bridge package connecting BusinessRules with Monads `Result` workflows.
 
 ## Package
 
-- NuGet: `BusinessRulesManagement.ResultExtensions`
+- NuGet: `MaVe.BusinessRules.ResultExtensions`
 
 ## Highlights
 
