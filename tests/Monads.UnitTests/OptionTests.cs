@@ -454,7 +454,7 @@ public class OptionTests
     {
         var invalidOption = new Mock<Option<string>>().Object;
 
-        Assert.Throws<OptionNotPresentException>(() => _ = invalidOption.Map(value => value.Length));
+        Assert.Throws<OptionIsNoneException>(() => _ = invalidOption.Map(value => value.Length));
     }
 
     [Test]
@@ -462,7 +462,7 @@ public class OptionTests
     {
         var invalidOption = new Mock<Option<string>>().Object;
 
-        Assert.Throws<OptionNotPresentException>(() => _ = invalidOption.Bind(value => Option<int>.Some(value.Length)));
+        Assert.Throws<OptionIsNoneException>(() => _ = invalidOption.Bind(value => Option<int>.Some(value.Length)));
     }
 
     [Test]
@@ -470,7 +470,7 @@ public class OptionTests
     {
         var invalidOption = new Mock<Option<string>>().Object;
 
-        Assert.ThrowsAsync<OptionNotPresentException>(async () =>
+        Assert.ThrowsAsync<OptionIsNoneException>(async () =>
             await invalidOption.MapAsync(value => Task.FromResult(value.Length)));
     }
 
@@ -479,7 +479,7 @@ public class OptionTests
     {
         var invalidOption = new Mock<Option<string>>().Object;
 
-        Assert.ThrowsAsync<OptionNotPresentException>(async () =>
+        Assert.ThrowsAsync<OptionIsNoneException>(async () =>
             await invalidOption.BindAsync(value => Task.FromResult(Option<int>.Some(value.Length))));
     }
 
@@ -488,7 +488,7 @@ public class OptionTests
     {
         var invalidOption = new Mock<Option<string>>().Object;
 
-        Assert.ThrowsAsync<OptionNotPresentException>(async () =>
+        Assert.ThrowsAsync<OptionIsNoneException>(async () =>
             await invalidOption.MapAsync((value, _) => Task.FromResult(value.Length), CancellationToken.None));
     }
 
@@ -497,7 +497,7 @@ public class OptionTests
     {
         var invalidOption = new Mock<Option<string>>().Object;
 
-        Assert.ThrowsAsync<OptionNotPresentException>(async () =>
+        Assert.ThrowsAsync<OptionIsNoneException>(async () =>
             await invalidOption.BindAsync((value, _) => Task.FromResult(Option<int>.Some(value.Length)),
                 CancellationToken.None));
     }
@@ -508,7 +508,7 @@ public class OptionTests
         var option = Option<string>.Some(ValidValue);
         var invalidIntermediate = new Mock<Option<int>>().Object;
 
-        Assert.Throws<OptionNotPresentException>(() =>
+        Assert.Throws<OptionIsNoneException>(() =>
             _ = option.SelectMany(_ => invalidIntermediate, (_, value) => value));
     }
 
@@ -524,10 +524,10 @@ public class OptionTests
         var mockOption = new Mock<Option<string>>();
 
         mockOption.Setup(m => m.HasValue).Returns(false);
-        mockOption.Setup(m => m.Value).Throws<OptionNotPresentException>();
+        mockOption.Setup(m => m.Value).Throws(() => new OptionIsNoneException(typeof(string).Name));
 
         // Act & Assert
-        Assert.Throws<OptionNotPresentException>(TestDelegate);
+        Assert.Throws<OptionIsNoneException>(TestDelegate);
         return;
 
         void TestDelegate()
@@ -549,10 +549,10 @@ public class OptionTests
         var mockOption = new Mock<Option<string>>();
 
         mockOption.Setup(m => m.HasValue).Returns(false);
-        mockOption.Setup(m => m.Value).Throws<OptionNotPresentException>();
+        mockOption.Setup(m => m.Value).Throws(() => new OptionIsNoneException(typeof(string).Name));
 
         // Act & Assert
-        Assert.ThrowsAsync<OptionNotPresentException>(AsyncTestDelegate);
+        Assert.ThrowsAsync<OptionIsNoneException>(AsyncTestDelegate);
         return;
 
         async Task AsyncTestDelegate()
@@ -574,10 +574,10 @@ public class OptionTests
         var mockOption = new Mock<Option<string>>();
 
         mockOption.Setup(m => m.HasValue).Returns(false);
-        mockOption.Setup(m => m.Value).Throws<OptionNotPresentException>();
+        mockOption.Setup(m => m.Value).Throws(() => new OptionIsNoneException(typeof(string).Name));
 
         // Act & Assert
-        Assert.ThrowsAsync<OptionNotPresentException>(AsyncTestDelegate);
+        Assert.ThrowsAsync<OptionIsNoneException>(AsyncTestDelegate);
         return;
 
         async Task AsyncTestDelegate()

@@ -8,6 +8,10 @@ namespace MaVe.Monads;
 /// <typeparam name="TValue">The type of the value, which must be a reference type (class).</typeparam>
 public sealed class None<TValue> : Option<TValue> where TValue : notnull
 {
+    internal None()
+    {
+    }
+
     /// <summary>
     /// Gets a value indicating that the option does not contain a value.
     /// </summary>

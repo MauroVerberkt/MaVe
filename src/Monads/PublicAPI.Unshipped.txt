@@ -34,3 +34,7 @@ MaVe.Monads.Option<TValue>.Select<TNewValue>(System.Func<TValue, TNewValue>! sel
 MaVe.Monads.Option<TValue>.SelectMany<TNewValue, TResult>(System.Func<TValue, MaVe.Monads.Option<TNewValue>!>! selector, System.Func<TValue, TNewValue, TResult>! resultSelector) -> MaVe.Monads.Option<TResult>!
 static MaVe.Monads.Option<TValue>.operator !=(MaVe.Monads.Option<TValue>? left, MaVe.Monads.Option<TValue>? right) -> bool
 static MaVe.Monads.Option<TValue>.operator ==(MaVe.Monads.Option<TValue>? left, MaVe.Monads.Option<TValue>? right) -> bool
+*REMOVED*MaVe.Monads.OptionNotPresentException
+*REMOVED*MaVe.Monads.OptionNotPresentException.OptionNotPresentException() -> void
+*REMOVED*MaVe.Monads.None<TValue>.None() -> void
+*REMOVED*MaVe.Monads.Some<TValue>.Some(TValue value) -> void

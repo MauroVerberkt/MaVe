@@ -55,7 +55,7 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
     /// <param name="some">The function to apply if the option contains a value.</param>
     /// <param name="none">The function to apply if the option does not contain a value.</param>
     /// <returns>The result of the appropriate function based on the option's value presence.</returns>
-    /// <exception cref="OptionNotPresentException">
+    /// <exception cref="OptionIsNoneException">
     /// Thrown if the option is in an invalid state and neither a <see cref="Some{TValue}" /> nor <see cref="None{TValue}" />.
     /// </exception>
     public TResult Match<TResult>(Func<TValue, TResult> some, Func<TResult> none)
@@ -67,7 +67,7 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
         {
             Some<TValue> someOption => some(someOption.Value),
             None<TValue> => none(),
-            _ => throw new OptionNotPresentException()
+            _ => throw new OptionIsNoneException(typeof(TValue).Name)
         };
     }
 
@@ -80,7 +80,7 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
     /// <param name="none">The asynchronous function to apply if the option does not contain a value.</param>
     /// <typeparam name="TResult">The result type of the match function.</typeparam>
     /// <returns>A task representing the result of the appropriate function based on the option's value presence.</returns>
-    /// <exception cref="OptionNotPresentException">
+    /// <exception cref="OptionIsNoneException">
     /// Thrown if the option is in an invalid state and neither a <see cref="Some{TValue}" /> nor <see cref="None{TValue}" />.
     /// </exception>
     public async Task<TResult> MatchAsync<TResult>(Func<TValue, Task<TResult>> some, Func<Task<TResult>> none)
@@ -92,7 +92,7 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
         {
             Some<TValue> someOption => await some(someOption.Value).ConfigureAwait(false),
             None<TValue> => await none().ConfigureAwait(false),
-            _ => throw new OptionNotPresentException()
+            _ => throw new OptionIsNoneException(typeof(TValue).Name)
         };
     }
 
@@ -108,7 +108,7 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
         {
             Some<TValue> someOption => await some(someOption.Value, cancellationToken).ConfigureAwait(false),
             None<TValue> => await none(cancellationToken).ConfigureAwait(false),
-            _ => throw new OptionNotPresentException()
+            _ => throw new OptionIsNoneException(typeof(TValue).Name)
         };
     }
 
@@ -127,7 +127,7 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
         {
             Some<TValue> someOption => Option<TNewValue>.Some(transform(someOption.Value)),
             None<TValue> => Option<TNewValue>.None,
-            _ => throw new OptionNotPresentException()
+            _ => throw new OptionIsNoneException(typeof(TValue).Name)
         };
     }
 
@@ -141,7 +141,7 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
         {
             Some<TValue> someOption => Option<TNewValue>.Some(await transform(someOption.Value).ConfigureAwait(false)),
             None<TValue> => Option<TNewValue>.None,
-            _ => throw new OptionNotPresentException()
+            _ => throw new OptionIsNoneException(typeof(TValue).Name)
         };
     }
 
@@ -158,7 +158,7 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
             Some<TValue> someOption =>
                 Option<TNewValue>.Some(await transform(someOption.Value, cancellationToken).ConfigureAwait(false)),
             None<TValue> => Option<TNewValue>.None,
-            _ => throw new OptionNotPresentException()
+            _ => throw new OptionIsNoneException(typeof(TValue).Name)
         };
     }
 
@@ -177,7 +177,7 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
         {
             Some<TValue> someOption => function(someOption.Value),
             None<TValue> => Option<TNewValue>.None,
-            _ => throw new OptionNotPresentException()
+            _ => throw new OptionIsNoneException(typeof(TValue).Name)
         };
     }
 
@@ -191,7 +191,7 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
         {
             Some<TValue> someOption => await function(someOption.Value).ConfigureAwait(false),
             None<TValue> => Option<TNewValue>.None,
-            _ => throw new OptionNotPresentException()
+            _ => throw new OptionIsNoneException(typeof(TValue).Name)
         };
     }
 
@@ -207,7 +207,7 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
         {
             Some<TValue> someOption => await function(someOption.Value, cancellationToken).ConfigureAwait(false),
             None<TValue> => Option<TNewValue>.None,
-            _ => throw new OptionNotPresentException()
+            _ => throw new OptionIsNoneException(typeof(TValue).Name)
         };
     }
 
@@ -241,14 +241,16 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
 
         if (this is not Some<TValue> someOption)
         {
-            return this is None<TValue> ? Option<TResult>.None : throw new OptionNotPresentException();
+            return this is None<TValue> ? Option<TResult>.None : throw new OptionIsNoneException(typeof(TValue).Name);
         }
 
         var intermediate = selector(someOption.Value);
 
         if (intermediate is not Some<TNewValue> intermediateSome)
         {
-            return intermediate is None<TNewValue> ? Option<TResult>.None : throw new OptionNotPresentException();
+            return intermediate is None<TNewValue>
+                ? Option<TResult>.None
+                : throw new OptionIsNoneException(typeof(TNewValue).Name);
         }
 
         var result = resultSelector(someOption.Value, intermediateSome.Value);
