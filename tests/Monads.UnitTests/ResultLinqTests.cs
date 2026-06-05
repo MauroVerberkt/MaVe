@@ -26,8 +26,8 @@ public class ResultLinqTests
         var b = Result.Success(7);
 
         var query = from x in a
-                    from y in b
-                    select x + y;
+            from y in b
+            select x + y;
 
         Assert.Multiple(() =>
         {
@@ -43,8 +43,8 @@ public class ResultLinqTests
         var a = Result.Failure<int>(outerError);
 
         var query = from x in a
-                    from y in Result.Success(7)
-                    select x + y;
+            from y in Result.Success(7)
+            select x + y;
 
         Assert.Multiple(() =>
         {
@@ -60,8 +60,8 @@ public class ResultLinqTests
         var a = Result.Success(3);
 
         var query = from x in a
-                    from y in Result.Failure<int>(innerError)
-                    select x + y;
+            from y in Result.Failure<int>(innerError)
+            select x + y;
 
         Assert.Multiple(() =>
         {

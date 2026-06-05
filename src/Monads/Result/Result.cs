@@ -110,7 +110,6 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
     }
 
     /// <inheritdoc cref="Bind" />
-    [Pure]
     public async Task<Result<TNewData>> BindAsync<TNewData>(Func<TData, Task<Result<TNewData>>> function)
         where TNewData : notnull
     {
@@ -118,7 +117,6 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
     }
 
     /// <inheritdoc cref="Bind" />
-    [Pure]
     public async Task<Result<TNewData>> BindAsync<TNewData>(
         Func<TData, CancellationToken, Task<Result<TNewData>>> function, CancellationToken cancellationToken)
         where TNewData : notnull
@@ -146,7 +144,6 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
     }
 
     /// <inheritdoc cref="Map" />
-    [Pure]
     public async Task<Result<TNewData>> MapAsync<TNewData>(Func<TData, Task<TNewData>> transform)
         where TNewData : notnull
     {
@@ -160,7 +157,6 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
     }
 
     /// <inheritdoc cref="Map" />
-    [Pure]
     public async Task<Result<TNewData>> MapAsync<TNewData>(
         Func<TData, CancellationToken, Task<TNewData>> transform, CancellationToken cancellationToken)
         where TNewData : notnull
@@ -285,7 +281,6 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
     }
 
     /// <inheritdoc cref="Match" />
-    [Pure]
     public async Task<TResult> MatchAsync<TResult>(
         Func<TData, Task<TResult>> onSuccess,
         Func<Error, Task<TResult>> onFailure)
@@ -299,7 +294,6 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
     }
 
     /// <inheritdoc cref="Match" />
-    [Pure]
     public async Task<TResult> MatchAsync<TResult>(
         Func<TData, CancellationToken, Task<TResult>> onSuccess,
         Func<Error, CancellationToken, Task<TResult>> onFailure,
@@ -314,14 +308,12 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
     }
 
     /// <inheritdoc cref="Then" />
-    [Pure]
     public async Task<Result<TData>> ThenAsync(Func<Task<Result<TData>>> function)
     {
         return IsSuccess ? await function().ConfigureAwait(false) : this;
     }
 
     /// <inheritdoc cref="Then" />
-    [Pure]
     public async Task<Result<TData>> ThenAsync(
         Func<CancellationToken, Task<Result<TData>>> function, CancellationToken cancellationToken)
     {
@@ -330,7 +322,6 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
 
     /// <inheritdoc cref="Then" />
     /// <typeparam name="TNewData">The type of the new data to transform to.</typeparam>
-    [Pure]
     public async Task<Result<TNewData>> ThenAsync<TNewData>(Func<Task<Result<TNewData>>> function)
         where TNewData : notnull
     {
@@ -339,7 +330,6 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
 
     /// <inheritdoc cref="Then" />
     /// <typeparam name="TNewData">The type of the new data to transform to.</typeparam>
-    [Pure]
     public async Task<Result<TNewData>> ThenAsync<TNewData>(
         Func<CancellationToken, Task<Result<TNewData>>> function, CancellationToken cancellationToken)
         where TNewData : notnull
@@ -360,7 +350,7 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
     [Pure]
     public static bool operator ==(Result<TData>? left, Result<TData>? right)
     {
-        return left?.Equals(right) ?? (right is null);
+        return left?.Equals(right) ?? right is null;
     }
 
     /// <summary>

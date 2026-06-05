@@ -10,7 +10,7 @@ public class ResultMatchTests
     {
         var result = Result.Success("hello");
 
-        var value = result.Match(onSuccess: data => data.Length, onFailure: _ => -1);
+        var value = result.Match(data => data.Length, _ => -1);
 
         Assert.That(value, Is.EqualTo(5));
     }
@@ -20,7 +20,7 @@ public class ResultMatchTests
     {
         var result = Result.Failure<string>(TestError);
 
-        var value = result.Match(onSuccess: data => data.Length, onFailure: _ => -1);
+        var value = result.Match(data => data.Length, _ => -1);
 
         Assert.That(value, Is.EqualTo(-1));
     }
@@ -30,7 +30,7 @@ public class ResultMatchTests
     {
         var result = Result.Success("hello");
 
-        var value = await result.MatchAsync(onSuccess: data => Task.FromResult(data.Length), onFailure: _ => Task.FromResult(-1));
+        var value = await result.MatchAsync(data => Task.FromResult(data.Length), _ => Task.FromResult(-1));
 
         Assert.That(value, Is.EqualTo(5));
     }
@@ -40,7 +40,7 @@ public class ResultMatchTests
     {
         var result = Result.Failure<string>(TestError);
 
-        var value = await result.MatchAsync(onSuccess: data => Task.FromResult(data.Length), onFailure: _ => Task.FromResult(-1));
+        var value = await result.MatchAsync(data => Task.FromResult(data.Length), _ => Task.FromResult(-1));
 
         Assert.That(value, Is.EqualTo(-1));
     }
@@ -54,13 +54,13 @@ public class ResultMatchTests
         var tokenObserved = false;
 
         _ = await result.MatchAsync(
-            onSuccess: (_, ct) =>
+            (_, ct) =>
             {
                 tokenObserved = ct.IsCancellationRequested;
                 return Task.FromResult(1);
             },
-            onFailure: (_, _) => Task.FromResult(-1),
-            cancellationToken: tokenSource.Token);
+            (_, _) => Task.FromResult(-1),
+            tokenSource.Token);
 
         Assert.That(tokenObserved, Is.True);
     }
