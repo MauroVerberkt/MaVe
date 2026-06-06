@@ -6,7 +6,7 @@ tags: [infra, packaging, Monads, BusinessRules]
 
 # PROP-011: Package Versioning and Publishing
 
-**Status:** exploring  
+**Status:** done  
 **Size:** medium  
 **Created:** 2026-05-27  
 
@@ -173,4 +173,20 @@ Handled automatically by NBGV:
 
 ## Outcome
 
-_Filled when status changes to done/parked. Link to ADR(s) if applicable._
+Implemented June 2026 (commits `fdad7b1` PR #18, `b3fc6cd` PR #19, `b4d8670` PR #27, `5c0f30b` PR #30, `0ce53bc` PR #31).
+
+**Versioning (NBGV):**
+- `Nerdbank.GitVersioning` added to `Directory.Packages.props`.
+- Per-package `version.json` files created under `src/Monads/`, `src/BusinessRules/`, `src/BusinessRules.ResultExtensions/`, `src/BusinessRules.Wcf/`, and `src/Unions/`, each with `pathFilters: ["."]` for independent patch increments.
+- Root `version.json` holds shared defaults; package files inherit `publicReleaseRefSpec` (patched in PRs #30 and #31 to include release tag patterns alongside `main`).
+- Initial version set to `0.1` across all packages (pre-stable).
+
+**SourceLink & symbols:**
+- `Microsoft.SourceLink.GitHub`, `EmbedUntrackedSources`, `IncludeSymbols`, and `SymbolPackageFormat=snupkg` configured in `src/Directory.Build.props`, scoped to `IsPackable == true` projects.
+
+**Release pipeline:**
+- `.github/workflows/release.yml` — triggered by per-package tags (`monads/v*`, `businessrules/v*`, `unions/v*`). Runs build+test, then routes to the appropriate publish job based on tag prefix.
+- `.github/workflows/_publish-packages.yml` — reusable publish workflow: restore → build → pack → push to GitHub Packages (skips duplicates via HTTP 409).
+- `.github/workflows/RELEASE-FLOW.md` — documents the end-to-end release process.
+
+**NuGet feed:** GitHub Packages (sole target; public nuget.org not in scope).

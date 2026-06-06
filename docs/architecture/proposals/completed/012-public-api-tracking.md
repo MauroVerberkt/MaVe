@@ -6,7 +6,7 @@ tags: [infra, packaging, Monads, BusinessRules]
 
 # PROP-012: Public API Tracking
 
-**Status:** exploring  
+**Status:** done  
 **Size:** small  
 **Created:** 2026-05-27  
 
@@ -126,4 +126,10 @@ This complements the versioning strategy:
 
 ## Outcome
 
-_Filled when status changes to done/parked. Link to ADR(s) if applicable._
+Implemented June 2026 (commits `fdad7b1` PR #18, `b3fc6cd` PR #19).
+
+- `Microsoft.CodeAnalysis.PublicApiAnalyzers` (v3.11.0) added to `Directory.Packages.props` and referenced in `src/Directory.Build.props` scoped to `IsPackable == true` projects — analyzer/generator projects are correctly excluded.
+- All packable projects (`Monads`, `BusinessRules`, `BusinessRules.ResultExtensions`, `BusinessRules.Wcf`, `Unions`) bootstrapped with `PublicAPI.Shipped.txt` and `PublicAPI.Unshipped.txt`.
+- Bootstrap state (PR #18): all current public APIs placed in `Unshipped.txt`, `Shipped.txt` empty (header only) — correct for `0.x` pre-stable packages.
+- First release baseline (PR #19): all `Unshipped.txt` entries moved to `Shipped.txt` as part of the initial v0.1 release artifacts.
+- Generated public APIs (from `BusinessRulesGenerator`) listed explicitly in the txt files (option 1 from the sketch).
