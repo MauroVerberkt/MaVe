@@ -1,31 +1,33 @@
-[![CI](https://github.com/MauroVerberkt/DotnetHelpers/actions/workflows/ci.yml/badge.svg)](https://github.com/MauroVerberkt/DotnetHelpers/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/github/MauroVerberkt/DotnetHelpers/graph/badge.svg)](https://app.codecov.io/github/MauroVerberkt/DotnetHelpers)
+[![CI](https://github.com/MauroVerberkt/MaVe/actions/workflows/ci.yml/badge.svg)](https://github.com/MauroVerberkt/MaVe/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/github/MauroVerberkt/MaVe/graph/badge.svg)](https://app.codecov.io/github/MauroVerberkt/MaVe)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-8.0+-purple.svg)](https://dotnet.microsoft.com)
 
-# DotnetHelpers
+# MaVe
 
-Functional building blocks for .NET: explicit error handling with **Result\<T\>**, null-safe optionals with **Option\<T\>**, and compile-time validated **Business Rules** powered by source generators and Roslyn analyzers.
+Functional building blocks for .NET: explicit error handling with **Result\<T\>**, null-safe optionals with **Option\<T\>**, compile-time validated **Business Rules** powered by source generators and Roslyn analyzers, and
+source-generated **discriminated unions** with exhaustive matching.
 
 No runtime reflection. No exceptions for control flow. Strong typing all the way down.
 
 ## Packages
 
-| Package | Description |
-|---------|-------------|
-| **HelperMonads** | `Result<T>` and `Option<T>` monadic types — Map, Bind, Match with full async and CancellationToken support |
-| **BusinessRulesManagement** | Define business rules in JSON, get strongly-typed classes at compile time via source generation |
-| **BusinessRules.ResultExtensions** | Bridge between BusinessRules validation and the Result pattern |
-| **BusinessRules.Wcf** | WCF `FaultException` support for business rule violations |
+| Package                                 | Description                                                                                                |
+|-----------------------------------------|------------------------------------------------------------------------------------------------------------|
+| **MaVe.Monads**                         | `Result<T>` and `Option<T>` monadic types — Map, Bind, Match with full async and CancellationToken support |
+| **MaVe.BusinessRules**                  | Define business rules in JSON, get strongly-typed classes at compile time via source generation            |
+| **MaVe.Unions**                         | Source-generated discriminated unions with exhaustive Match/Switch builders and Roslyn analyzer support    |
+| **MaVe.BusinessRules.ResultExtensions** | Bridge between BusinessRules validation and the Result pattern                                             |
+| **MaVe.BusinessRules.Wcf**              | WCF `FaultException` support for business rule violations                                                  |
 
 ## Getting Started
 
 ```bash
-dotnet add package HelperMonads
+dotnet add package MaVe.Monads
 ```
 
 ```csharp
-using HelperMonads;
+using MaVe.Monads;
 
 // Explicit success/failure — no exceptions for expected error paths
 public Result<User> GetUser(int id)
@@ -56,7 +58,7 @@ conventions, commit message format, and CI workflow details.
 
 ## Documentation
 
-📖 **[Read the docs](https://mauroverberkt.github.io/DotnetHelpers/)**
+📖 **[Read the docs](https://mauroverberkt.github.io/MaVe/)**
 
 To run locally:
 

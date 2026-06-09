@@ -1,6 +1,6 @@
-HelperMonads:
-  label: HelperMonads
-  description: Relates to the HelperMonads library (Result, Option)
+Monads:
+  label: Monads
+  description: Relates to the Monads library (Result, Option)
 
 BusinessRules:
   label: BusinessRules
@@ -30,6 +30,10 @@ packaging:
   label: Packaging
   description: Relates to NuGet packaging, versioning, and distribution
 
-HelperUnions:
-  label: HelperUnions
-  description: Relates to the HelperUnions library (discriminated unions)
+Unions:
+  label: Unions
+  description: Relates to the Unions library (discriminated unions)
+
+Railyard:
+  label: Railyard
+  description: Relates to the Railyard compile-time operation dispatch framework

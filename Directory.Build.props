@@ -1,18 +1,26 @@
 <Project>
   <PropertyGroup>
-    <Version>0.0.1</Version>
     <Authors>Mauro Verberkt</Authors>
     <Copyright>Copyright (c) Mauro Verberkt</Copyright>
-    <RepositoryUrl>https://github.com/MauroVerberkt/DotnetHelpers</RepositoryUrl>
+    <RootNamespace>MaVe.$(MSBuildProjectName)</RootNamespace>
+    <AssemblyName>MaVe.$(MSBuildProjectName)</AssemblyName>
+    <RepositoryUrl>https://github.com/MauroVerberkt/MaVe</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <TreatWarningsAsErrors Condition="'$(Configuration)' != 'Debug'">true</TreatWarningsAsErrors>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nerdbank.GitVersioning" PrivateAssets="all"/>
+    <PackageReference Include="Roslynator.Analyzers" PrivateAssets="all"/>
+  </ItemGroup>
 </Project>

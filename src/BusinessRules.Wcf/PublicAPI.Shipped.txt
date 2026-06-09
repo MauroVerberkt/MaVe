@@ -1,0 +1,20 @@
+#nullable enable
+MaVe.BusinessRules.Wcf.BusinessRuleFault
+MaVe.BusinessRules.Wcf.BusinessRuleFault.BusinessRule.get -> MaVe.BusinessRules.BusinessRuleBase!
+MaVe.BusinessRules.Wcf.BusinessRuleFault.BusinessRule.init -> void
+MaVe.BusinessRules.Wcf.BusinessRuleFault.BusinessRuleFault(MaVe.BusinessRules.BusinessRuleBase! BusinessRule) -> void
+MaVe.BusinessRules.Wcf.BusinessRuleFault.BusinessRuleFault(MaVe.BusinessRules.Wcf.BusinessRuleFault! original) -> void
+MaVe.BusinessRules.Wcf.BusinessRuleFault.Deconstruct(out MaVe.BusinessRules.BusinessRuleBase! BusinessRule) -> void
+MaVe.BusinessRules.Wcf.BusinessRuleWcfExtensions
+override MaVe.BusinessRules.Wcf.BusinessRuleFault.Equals(object? obj) -> bool
+override MaVe.BusinessRules.Wcf.BusinessRuleFault.GetHashCode() -> int
+override MaVe.BusinessRules.Wcf.BusinessRuleFault.ToString() -> string!
+static MaVe.BusinessRules.Wcf.BusinessRuleFault.operator !=(MaVe.BusinessRules.Wcf.BusinessRuleFault? left, MaVe.BusinessRules.Wcf.BusinessRuleFault? right) -> bool
+static MaVe.BusinessRules.Wcf.BusinessRuleFault.operator ==(MaVe.BusinessRules.Wcf.BusinessRuleFault? left, MaVe.BusinessRules.Wcf.BusinessRuleFault? right) -> bool
+static MaVe.BusinessRules.Wcf.BusinessRuleWcfExtensions.ToFaultException(this MaVe.BusinessRules.BusinessRuleBase! businessRule) -> System.ServiceModel.FaultException<MaVe.BusinessRules.Wcf.BusinessRuleFault!>!
+static MaVe.BusinessRules.Wcf.BusinessRuleWcfExtensions.ToFaultException(this MaVe.BusinessRules.BusinessRuleViolationException! exception) -> System.ServiceModel.FaultException<MaVe.BusinessRules.Wcf.BusinessRuleFault!>!
+static MaVe.BusinessRules.Wcf.BusinessRuleWcfExtensions.ToFaultException<T>() -> System.ServiceModel.FaultException<MaVe.BusinessRules.Wcf.BusinessRuleFault!>!
+virtual MaVe.BusinessRules.Wcf.BusinessRuleFault.<Clone>$() -> MaVe.BusinessRules.Wcf.BusinessRuleFault!
+virtual MaVe.BusinessRules.Wcf.BusinessRuleFault.EqualityContract.get -> System.Type!
+virtual MaVe.BusinessRules.Wcf.BusinessRuleFault.Equals(MaVe.BusinessRules.Wcf.BusinessRuleFault? other) -> bool
+virtual MaVe.BusinessRules.Wcf.BusinessRuleFault.PrintMembers(System.Text.StringBuilder! builder) -> bool

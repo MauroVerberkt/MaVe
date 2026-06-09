@@ -1,0 +1,23 @@
+#nullable enable
+MaVe.BusinessRules.Attributes.BusinessRuleAttribute
+MaVe.BusinessRules.Attributes.BusinessRuleAttribute.BusinessRuleAttribute(string! ruleKey, bool enforceValidation = true) -> void
+MaVe.BusinessRules.Attributes.BusinessRuleAttribute.EnforceValidation.get -> bool
+MaVe.BusinessRules.Attributes.BusinessRuleAttribute.RuleKey.get -> string!
+MaVe.BusinessRules.Attributes.ImplementsBusinessRuleAttribute
+MaVe.BusinessRules.Attributes.ImplementsBusinessRuleAttribute.ImplementsBusinessRuleAttribute(string! ruleKey) -> void
+MaVe.BusinessRules.Attributes.ImplementsBusinessRuleAttribute.RuleKey.get -> string!
+MaVe.BusinessRules.BusinessRule<T>
+MaVe.BusinessRules.BusinessRule<T>.BusinessRule(string! key, string! requirement, string! description = "", string! category = "") -> void
+MaVe.BusinessRules.BusinessRuleBase
+MaVe.BusinessRules.BusinessRuleBase.BusinessRuleBase() -> void
+MaVe.BusinessRules.BusinessRuleViolationException
+MaVe.BusinessRules.BusinessRuleViolationException.BusinessRule.get -> MaVe.BusinessRules.BusinessRuleBase!
+MaVe.BusinessRules.BusinessRuleViolationException.BusinessRuleViolationException(MaVe.BusinessRules.BusinessRuleBase! businessRule, string! message, System.Exception! innerException) -> void
+MaVe.BusinessRules.BusinessRuleViolationException.BusinessRuleViolationException(MaVe.BusinessRules.BusinessRuleBase! businessRule, string! message) -> void
+MaVe.BusinessRules.BusinessRuleViolationException.BusinessRuleViolationException(MaVe.BusinessRules.BusinessRuleBase! businessRule) -> void
+MaVe.BusinessRules.BusinessRuleViolationException.Category.get -> string!
+MaVe.BusinessRules.BusinessRuleViolationException.Description.get -> string!
+MaVe.BusinessRules.BusinessRuleViolationException.Key.get -> string!
+MaVe.BusinessRules.BusinessRuleViolationException.Requirement.get -> string!
+static MaVe.BusinessRules.BusinessRule<T>.ToException() -> MaVe.BusinessRules.BusinessRuleViolationException!
+static MaVe.BusinessRules.BusinessRule<T>.ToException(string! message) -> MaVe.BusinessRules.BusinessRuleViolationException!

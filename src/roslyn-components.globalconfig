@@ -1,0 +1,7 @@
+is_global = true
+global_level = 200
+
+# Source generator and analyzer implementation patterns
+dotnet_diagnostic.IDE0058.severity = none
+dotnet_diagnostic.RCS1201.severity = none
+dotnet_diagnostic.RCS1170.severity = none

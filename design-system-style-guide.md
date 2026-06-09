@@ -1,4 +1,5 @@
 # Design System & Visual Identity
+
 ## Portfolio + Package Documentation Platform
 
 Version: 1.0  
@@ -14,6 +15,7 @@ The platform should communicate:
 > Enterprise-grade engineering with modern product intuition.
 
 The experience should feel:
+
 - refined
 - architectural
 - systems-oriented
@@ -24,6 +26,7 @@ This is not a flashy portfolio.
 This is an engineering platform with exceptional presentation quality.
 
 The visual language should imply:
+
 - strong engineering judgment
 - scalability thinking
 - architectural maturity
@@ -34,11 +37,13 @@ The visual language should imply:
 # 2. Core Brand Attributes
 
 ## Primary Traits
+
 - Enterprise-grade
 - Refined
 - Cutting-edge
 
 ## Secondary Traits
+
 - Precise
 - Architectural
 - High-signal
@@ -57,11 +62,13 @@ Within the first 5 seconds, visitors should think:
 - "This resembles internal tooling from a sophisticated startup."
 
 The design should balance:
+
 - stability
-with
+  with
 - innovation
 
 without feeling:
+
 - corporate
 - trendy
 - flashy
@@ -76,12 +83,14 @@ without feeling:
 ### Quietly Advanced
 
 The interface should:
+
 - avoid unnecessary noise
 - prioritize clarity
 - use restraint intentionally
 - reward attention to detail
 
 The UI should feel:
+
 - optimized
 - engineered
 - fast
@@ -92,6 +101,7 @@ The UI should feel:
 # 5. Audience
 
 Primary audiences:
+
 - startup engineering leadership
 - senior engineers
 - platform engineers
@@ -100,6 +110,7 @@ Primary audiences:
 - technically sophisticated recruiters
 
 Secondary audiences:
+
 - OSS contributors
 - package consumers
 - architecture-focused developers
@@ -118,6 +129,7 @@ The design direction blends inspiration from:
 - modern infrastructure tooling
 
 without becoming:
+
 - marketing-heavy
 - startup-generic
 - cyberpunk
@@ -130,11 +142,13 @@ without becoming:
 ## Philosophy
 
 Color should:
+
 - communicate hierarchy
 - guide attention
 - signal system state
 
 Color should NOT:
+
 - dominate the interface
 - create visual fatigue
 - become decorative noise
@@ -155,6 +169,7 @@ Color should NOT:
 ```
 
 ### Notes
+
 - Foundations use cool-toned dark neutrals
 - Pure black should be avoided
 - Layering creates depth without shadows
@@ -170,6 +185,7 @@ Color should NOT:
 ```
 
 ### Rules
+
 - Primary text must remain highly readable
 - Muted text should never become low-contrast
 - White is reserved for important emphasis
@@ -187,7 +203,9 @@ Color should NOT:
 ```
 
 ### Usage
+
 Used for:
+
 - active navigation
 - links
 - primary actions
@@ -196,7 +214,9 @@ Used for:
 - interactive highlights
 
 ### Meaning
+
 Signals:
+
 - technical sophistication
 - modernity
 - intelligence
@@ -217,6 +237,7 @@ Lime is a precision accent.
 It must remain rare.
 
 Use for:
+
 - benchmark improvements
 - success states
 - live indicators
@@ -225,12 +246,15 @@ Use for:
 - system status indicators
 
 Do NOT use for:
+
 - large surfaces
 - major CTAs
 - dominant UI sections
 
 ### Meaning
+
 Signals:
+
 - energy
 - activity
 - system intelligence
@@ -242,12 +266,12 @@ Signals:
 
 Approximate UI balance:
 
-| Type | Ratio |
-|------|------|
-| Dark neutrals | 88% |
-| Typography | 8% |
-| Indigo accents | 3% |
-| Lime accents | 1% |
+| Type           | Ratio |
+|----------------|-------|
+| Dark neutrals  | 88%   |
+| Typography     | 8%    |
+| Indigo accents | 3%    |
+| Lime accents   | 1%    |
 
 Restraint is mandatory.
 
@@ -260,6 +284,7 @@ Restraint is mandatory.
 ### Geist
 
 Reasons:
+
 - modern technical aesthetic
 - refined proportions
 - startup-grade sophistication
@@ -272,6 +297,7 @@ Reasons:
 ### JetBrains Mono
 
 Reasons:
+
 - engineering credibility
 - highly readable code
 - modern developer tooling feel
@@ -283,11 +309,13 @@ Reasons:
 ## Philosophy
 
 Typography should:
+
 - prioritize hierarchy
 - feel calm
 - avoid excessive size jumps
 
 The interface should feel:
+
 - mature
 - balanced
 - architectural
@@ -316,6 +344,7 @@ Mono:    14px
 Balanced to spacious.
 
 The platform should:
+
 - breathe
 - avoid clutter
 - remain information-dense where useful
@@ -339,6 +368,7 @@ Readable line lengths are mandatory.
 ## Philosophy
 
 Rounded corners should:
+
 - soften the interface slightly
 - maintain seriousness
 - avoid playful aesthetics
@@ -361,6 +391,7 @@ Rounded corners should:
 ## Philosophy
 
 Motion should feel:
+
 - fast
 - precise
 - nearly invisible
@@ -393,6 +424,7 @@ cubic-bezier(0.16, 1, 0.3, 1)
 ## Philosophy
 
 Glow effects are:
+
 - controlled
 - intentional
 - subtle
@@ -404,11 +436,13 @@ No aggressive neon aesthetics.
 ## Allowed Effects
 
 ### Indigo
+
 - subtle focus glows
 - active navigation glow
 - soft code emphasis
 
 ### Lime
+
 - tiny status highlights
 - graph emphasis
 - success indicators
@@ -420,6 +454,7 @@ No aggressive neon aesthetics.
 ## Philosophy
 
 Depth should come primarily from:
+
 - layering
 - contrast
 - borders
@@ -445,6 +480,7 @@ box-shadow:
 Tokyo Night inspired.
 
 ### Desired Feel
+
 - sophisticated
 - cool-toned
 - modern
@@ -452,6 +488,7 @@ Tokyo Night inspired.
 - calm
 
 Code blocks should feel:
+
 - production-grade
 - IDE-inspired
 - technically premium
@@ -466,6 +503,7 @@ Portfolio-first.
 Documentation immediately accessible.
 
 The platform should feel like:
+
 - a professional engineering environment
 - not a marketing site
 
@@ -474,6 +512,7 @@ The platform should feel like:
 ## Documentation Priorities
 
 ### Include
+
 - architecture decisions
 - ADRs
 - benchmarks
@@ -484,6 +523,7 @@ The platform should feel like:
 - code coverage
 
 ### Avoid
+
 - excessive marketing copy
 - buzzwords
 - inflated claims
@@ -493,12 +533,14 @@ The platform should feel like:
 # 21. Component Philosophy
 
 Components should:
+
 - feel engineered
 - avoid visual excess
 - prioritize hierarchy
 - communicate state clearly
 
 The system should feel:
+
 - cohesive
 - modular
 - intentional
@@ -508,15 +550,19 @@ The system should feel:
 # 22. Interaction Principles
 
 ## Hover States
+
 Subtle elevation or tint changes only.
 
 ## Active States
+
 Clear but restrained.
 
 ## Focus States
+
 Strong accessibility with indigo emphasis.
 
 ## Success States
+
 Lime only where meaningful.
 
 ---
@@ -526,17 +572,20 @@ Lime only where meaningful.
 Metrics are a strategic differentiator.
 
 Benchmarks should feel:
+
 - scientific
 - trustworthy
 - measurable
 
 Use:
+
 - tables
 - charts
 - concise annotations
 - subtle lime highlights
 
 Avoid:
+
 - exaggerated visuals
 - celebratory animations
 
@@ -547,12 +596,14 @@ Avoid:
 Architecture content is core to the brand.
 
 This content should demonstrate:
+
 - systems thinking
 - tradeoff awareness
 - engineering maturity
 - scalability considerations
 
 Preferred formats:
+
 - ADRs
 - diagrams
 - rationale sections
@@ -574,6 +625,7 @@ The platform must NOT feel:
 - trendy for trend's sake
 
 Avoid:
+
 - giant gradients
 - oversaturated neon
 - excessive blur
@@ -587,15 +639,17 @@ Avoid:
 This platform should position Mauro as:
 
 > A senior engineer with strong systems thinking,
-modern product intuition,
-and production-grade engineering standards.
+> modern product intuition,
+> and production-grade engineering standards.
 
 Not:
+
 - a design influencer
 - a frontend stylist
 - a generic portfolio owner
 
 But:
+
 - an engineering architect with refined execution.
 
 ---

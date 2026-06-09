@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\BusinessRules.Wcf\BusinessRules.Wcf.csproj" />
-    <ProjectReference Include="..\..\src\BusinessRules\BusinessRules.csproj" />
+    <ProjectReference Include="..\..\src\BusinessRules.Wcf\BusinessRules.Wcf.csproj"/>
+    <ProjectReference Include="..\..\src\BusinessRules\BusinessRules.csproj"/>
   </ItemGroup>
 
 </Project>

@@ -2,7 +2,7 @@
 sidebar_position: 5
 title: Build Infrastructure
 description: MSBuild property hierarchy, Central Package Management, and compiler settings
-tags: [HelperMonads, BusinessRules]
+tags: [Monads, BusinessRules]
 keywords:
   - msbuild
   - directory.build.props
@@ -24,7 +24,7 @@ The solution uses a layered MSBuild property hierarchy to enforce consistency ac
 graph TD
     Root["Directory.Build.props<br/><i>root</i>"] --> Src["src/Directory.Build.props"]
     Root --> Tests["tests/Directory.Build.props"]
-    Src --> Proj1["HelperMonads.csproj"]
+    Src --> Proj1["Monads.csproj"]
     Src --> Proj2["BusinessRules.csproj"]
     Src --> Proj3["BusinessRulesAnalyzer.csproj<br/><i>overrides TFM</i>"]
     Src --> Proj4["BusinessRulesGenerator.csproj<br/><i>overrides TFM</i>"]

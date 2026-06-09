@@ -1,17 +1,17 @@
 {
-  "solution": {
-    "path": "DotnetHelpers.sln",
-    "projects": [
-      "src\\BusinessRules\\BusinessRules.csproj",
-      "src\\BusinessRules.ResultExtensions\\BusinessRules.ResultExtensions.csproj",
-      "src\\BusinessRules.Wcf\\BusinessRules.Wcf.csproj",
-      "src\\BusinessRulesAnalyzer\\BusinessRulesAnalyzer.csproj",
-      "src\\BusinessRulesGenerator\\BusinessRulesGenerator.csproj",
-      "src\\BusinessRulesFixProvider\\BusinessRulesFixProvider.csproj",
-      "tests\\BusinessRules.UnitTests\\BusinessRules.UnitTests.csproj",
-      "tests\\BusinessRules.ResultExtensions.UnitTests\\BusinessRules.ResultExtensions.UnitTests.csproj",
-      "tests\\BusinessRules.Wcf.UnitTests\\BusinessRules.Wcf.UnitTests.csproj",
-      "tests\\BusinessRulesGenerator.UnitTests\\BusinessRulesGenerator.UnitTests.csproj"
-    ]
-  }
+	"solution": {
+		"path": "MaVe.sln",
+		"projects": [
+			"src\\BusinessRules\\BusinessRules.csproj",
+			"src\\BusinessRules.ResultExtensions\\BusinessRules.ResultExtensions.csproj",
+			"src\\BusinessRules.Wcf\\BusinessRules.Wcf.csproj",
+			"src\\BusinessRulesAnalyzer\\BusinessRulesAnalyzer.csproj",
+			"src\\BusinessRulesGenerator\\BusinessRulesGenerator.csproj",
+			"src\\BusinessRulesFixProvider\\BusinessRulesFixProvider.csproj",
+			"tests\\BusinessRules.UnitTests\\BusinessRules.UnitTests.csproj",
+			"tests\\BusinessRules.ResultExtensions.UnitTests\\BusinessRules.ResultExtensions.UnitTests.csproj",
+			"tests\\BusinessRules.Wcf.UnitTests\\BusinessRules.Wcf.UnitTests.csproj",
+			"tests\\BusinessRulesGenerator.UnitTests\\BusinessRulesGenerator.UnitTests.csproj"
+		]
+	}
 }

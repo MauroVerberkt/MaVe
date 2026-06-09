@@ -1,7 +1,7 @@
 ---
 sidebar_position: 9
 title: "ADR-009: Add notnull Constraint and IEquatable to Option<TValue>"
-tags: [HelperMonads]
+tags: [Monads]
 ---
 
 # ADR-009: Add notnull Constraint and IEquatable to Option&lt;TValue&gt;

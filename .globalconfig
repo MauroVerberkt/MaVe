@@ -1,0 +1,67 @@
+is_global = true
+
+# .NET analyzer baseline
+dotnet_analyzer_diagnostic.category-Style.severity = suggestion
+
+# IDE code style rules (moved from .editorconfig)
+dotnet_diagnostic.IDE0007.severity = silent
+dotnet_diagnostic.IDE0008.severity = silent
+dotnet_diagnostic.IDE0011.severity = warning
+dotnet_diagnostic.IDE0016.severity = suggestion
+dotnet_diagnostic.IDE0017.severity = suggestion
+dotnet_diagnostic.IDE0028.severity = suggestion
+dotnet_diagnostic.IDE0029.severity = suggestion
+dotnet_diagnostic.IDE0030.severity = suggestion
+dotnet_diagnostic.IDE0031.severity = suggestion
+dotnet_diagnostic.IDE0044.severity = suggestion
+dotnet_diagnostic.IDE0063.severity = suggestion
+dotnet_diagnostic.IDE0074.severity = suggestion
+dotnet_diagnostic.IDE0090.severity = suggestion
+dotnet_diagnostic.IDE0290.severity = suggestion
+dotnet_diagnostic.IDE0130.severity = none
+
+# .NET code quality analyzers
+dotnet_diagnostic.CA1000.severity = none
+dotnet_diagnostic.CA1716.severity = none
+dotnet_diagnostic.CA1822.severity = suggestion
+dotnet_diagnostic.CA1852.severity = suggestion
+dotnet_diagnostic.CA2007.severity = suggestion
+
+# Roslynator analyzers
+dotnet_diagnostic.RCS1018.severity = warning
+dotnet_diagnostic.RCS1036.severity = suggestion
+dotnet_diagnostic.RCS1037.severity = suggestion
+dotnet_diagnostic.RCS1058.severity = suggestion
+dotnet_diagnostic.RCS1068.severity = suggestion
+dotnet_diagnostic.RCS1077.severity = suggestion
+dotnet_diagnostic.RCS1085.severity = suggestion
+dotnet_diagnostic.RCS1118.severity = suggestion
+dotnet_diagnostic.RCS1123.severity = suggestion
+dotnet_diagnostic.RCS1163.severity = suggestion
+dotnet_diagnostic.RCS1169.severity = suggestion
+dotnet_diagnostic.RCS1170.severity = suggestion
+dotnet_diagnostic.RCS1187.severity = suggestion
+dotnet_diagnostic.RCS1194.severity = none
+dotnet_diagnostic.RCS1196.severity = suggestion
+dotnet_diagnostic.RCS1197.severity = suggestion
+dotnet_diagnostic.RCS1201.severity = suggestion
+dotnet_diagnostic.RCS1205.severity = suggestion
+dotnet_diagnostic.RCS1206.severity = suggestion
+dotnet_diagnostic.RCS1208.severity = suggestion
+dotnet_diagnostic.RCS1211.severity = suggestion
+dotnet_diagnostic.RCS1220.severity = suggestion
+dotnet_diagnostic.RCS1221.severity = suggestion
+dotnet_diagnostic.RCS1225.severity = suggestion
+dotnet_diagnostic.RCS1228.severity = suggestion
+dotnet_diagnostic.RCS1229.severity = suggestion
+dotnet_diagnostic.RCS1235.severity = suggestion
+dotnet_diagnostic.RCS1238.severity = suggestion
+dotnet_diagnostic.RCS1246.severity = suggestion
+dotnet_diagnostic.RCS1248.severity = suggestion
+dotnet_diagnostic.RCS1249.severity = suggestion
+
+# Intentionally disabled Roslynator rules
+dotnet_diagnostic.RCS1021.severity = none
+dotnet_diagnostic.RCS1080.severity = none
+dotnet_diagnostic.RCS1124.severity = none
+dotnet_diagnostic.RCS1181.severity = none

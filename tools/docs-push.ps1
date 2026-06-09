@@ -20,20 +20,23 @@
 $ErrorActionPreference = 'Stop'
 
 # Verify we're on a docs/ branch
-$branch = git symbolic-ref --short HEAD 2>$null
-if (-not $branch) {
+$branch = git symbolic-ref --short HEAD 2> $null
+if (-not $branch)
+{
     Write-Error "Not on a branch (detached HEAD)."
     exit 1
 }
 
-if (-not $branch.StartsWith("docs/")) {
+if (-not $branch.StartsWith("docs/"))
+{
     Write-Error "This script is for docs/ branches only. Current branch: $branch"
     exit 1
 }
 
 # Verify there are no uncommitted changes
 $status = git status --porcelain
-if ($status) {
+if ($status)
+{
     Write-Error "Working tree is not clean. Commit or stash changes first."
     exit 1
 }

@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
-namespace BusinessRules.Wcf;
+namespace MaVe.BusinessRules.Wcf;
 
 /// <summary>
-/// A WCF-compatible fault detail carrying a violated <see cref="BusinessRuleBase"/>.
+/// A WCF-compatible fault detail carrying a violated <see cref="BusinessRuleBase" />.
 /// Use with <c>FaultException&lt;BusinessRuleFault&gt;</c> for service boundary communication.
 /// </summary>
 [DataContract]

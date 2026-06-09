@@ -1,7 +1,7 @@
 ---
 sidebar_position: 13
 title: "PROP-013: OneOrMany Collection & Error Aggregation"
-tags: [HelperMonads]
+tags: [Monads]
 ---
 
 # PROP-013: OneOrMany Collection & Error Aggregation
@@ -45,7 +45,7 @@ public Error Error => Errors[0];          // convenience shorthand
 
 ## Open Questions
 
-- Is this a standalone type in HelperMonads, or its own package?
+- Is this a standalone type in Monads, or its own package?
 - Performance benchmarks: what's the actual cost of the single-element array vs. the struct overhead?
 - Does this overlap with `System.Collections.Immutable` patterns?
 

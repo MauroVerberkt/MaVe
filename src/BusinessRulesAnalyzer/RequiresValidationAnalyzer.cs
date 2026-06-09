@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace BusinessRulesAnalyzer;
+namespace MaVe.BusinessRulesAnalyzer;
 
 /// <summary>
 /// Analyzer (BR002/BR003): Ensures every <c>[BusinessRule]</c> attribute has a corresponding
@@ -18,7 +18,7 @@ public class RequiresValidationAnalyzer : DiagnosticAnalyzer
     private const string DiagnosticIdWarning = "BR003";
     private const string Category = "Usage";
 
-    private static readonly DiagnosticDescriptor ErrorRule = new(
+    private static readonly DiagnosticDescriptor _errorRule = new(
         DiagnosticIdError,
         "Missing ImplementsBusinessRule attribute",
         "Business rule '{0}' is required but not validated anywhere in the compilation",
@@ -29,7 +29,7 @@ public class RequiresValidationAnalyzer : DiagnosticAnalyzer
         customTags: [WellKnownDiagnosticTags.CompilationEnd]
     );
 
-    private static readonly DiagnosticDescriptor WarningRule = new(
+    private static readonly DiagnosticDescriptor _warningRule = new(
         DiagnosticIdWarning,
         "Missing ImplementsBusinessRule attribute",
         "Business rule '{0}' is required but not validated anywhere in the compilation",
@@ -41,7 +41,7 @@ public class RequiresValidationAnalyzer : DiagnosticAnalyzer
     );
 
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [ErrorRule, WarningRule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [_errorRule, _warningRule];
 
     /// <inheritdoc />
     public override void Initialize(AnalysisContext context)
@@ -53,13 +53,15 @@ public class RequiresValidationAnalyzer : DiagnosticAnalyzer
         {
             var requiresAttrSymbol =
                 compilationContext.Compilation.GetTypeByMetadataName(
-                    "BusinessRules.Attributes.BusinessRuleAttribute");
+                    "MaVe.BusinessRules.Attributes.BusinessRuleAttribute");
             var validatesAttrSymbol =
                 compilationContext.Compilation.GetTypeByMetadataName(
-                    "BusinessRules.Attributes.ImplementsBusinessRuleAttribute");
+                    "MaVe.BusinessRules.Attributes.ImplementsBusinessRuleAttribute");
 
             if (requiresAttrSymbol == null || validatesAttrSymbol == null)
+            {
                 return;
+            }
 
             var validatedKeys = new ConcurrentDictionary<string, byte>(StringComparer.Ordinal);
             var requiredRules = new ConcurrentBag<(string RuleKey, bool EnforceValidation, Location Location)>();
@@ -78,14 +80,18 @@ public class RequiresValidationAnalyzer : DiagnosticAnalyzer
                 {
                     var type = model.GetTypeInfo(attr).Type as INamedTypeSymbol;
                     if (type == null || !SymbolEqualityComparer.Default.Equals(type, validatesAttrSymbol))
+                    {
                         continue;
+                    }
 
                     var firstArg = attr.ArgumentList?.Arguments.FirstOrDefault();
                     if (firstArg != null)
                     {
                         var constantValue = model.GetConstantValue(firstArg.Expression);
                         if (constantValue.HasValue && constantValue.Value is string ruleKey)
+                        {
                             validatedKeys.TryAdd(ruleKey, 0);
+                        }
                     }
                 }
             }
@@ -100,7 +106,9 @@ public class RequiresValidationAnalyzer : DiagnosticAnalyzer
                 {
                     if (attr.ConstructorArguments.Length == 0 ||
                         !(attr.ConstructorArguments[0].Value is string ruleKey))
+                    {
                         continue;
+                    }
 
                     var enforceValidation = true;
                     if (attr.ConstructorArguments.Length > 1 && attr.ConstructorArguments[1].Value is bool enforce)
@@ -112,22 +120,30 @@ public class RequiresValidationAnalyzer : DiagnosticAnalyzer
                         var namedArg = attr.NamedArguments.FirstOrDefault(kvp =>
                             kvp.Key == "enforceValidation" || kvp.Key == "EnforceValidation");
                         if (namedArg.Key != null && namedArg.Value.Value is bool namedEnforce)
+                        {
                             enforceValidation = namedEnforce;
+                        }
                     }
 
                     var location = attr.ApplicationSyntaxReference?.GetSyntax().GetLocation() ??
                                    symbol.Locations.FirstOrDefault();
-                    if (location == null) continue;
+                    if (location == null)
+                    {
+                        continue;
+                    }
+
                     requiredRules.Add((ruleKey, enforceValidation, location));
 
                     // Partial/live diagnostic
                     var locationSpan = location.GetLineSpan();
                     if (!validatedKeys.ContainsKey(ruleKey) &&
                         reportedKeys.TryAdd((locationSpan, ruleKey), 0))
+                    {
                         symbolContext.ReportDiagnostic(Diagnostic.Create(
-                            enforceValidation ? ErrorRule : WarningRule,
+                            enforceValidation ? _errorRule : _warningRule,
                             location,
                             ruleKey));
+                    }
                 }
             }, SymbolKind.Method, SymbolKind.NamedType);
 
@@ -139,10 +155,12 @@ public class RequiresValidationAnalyzer : DiagnosticAnalyzer
                     var locationSpan = location.GetLineSpan();
                     if (!validatedKeys.ContainsKey(ruleKey) &&
                         reportedKeys.TryAdd((locationSpan, ruleKey), 0))
+                    {
                         endContext.ReportDiagnostic(Diagnostic.Create(
-                            enforceValidation ? ErrorRule : WarningRule,
+                            enforceValidation ? _errorRule : _warningRule,
                             location,
                             ruleKey));
+                    }
                 }
             });
         });

@@ -1,0 +1,27 @@
+is_global = true
+global_level = 200
+
+# Tests do not require XML API documentation.
+dotnet_diagnostic.CS1591.severity = none
+dotnet_diagnostic.CA1707.severity = none
+
+# Test fixture and theory parameters are often intentionally unused.
+dotnet_diagnostic.IDE0060.severity = none
+dotnet_diagnostic.IDE0058.severity = none
+dotnet_diagnostic.RCS1163.severity = none
+
+# ConfigureAwait guidance is not enforced in test projects.
+dotnet_diagnostic.CA2007.severity = none
+dotnet_diagnostic.RCS1090.severity = none
+
+# Nullability diagnostics are relaxed in tests for null-path coverage.
+dotnet_diagnostic.CS8600.severity = suggestion
+dotnet_diagnostic.CS8602.severity = suggestion
+dotnet_diagnostic.CS8604.severity = suggestion
+
+# Test code frequently uses simplified string operations and generic abstractions.
+dotnet_diagnostic.CA1304.severity = none
+dotnet_diagnostic.CA1305.severity = none
+dotnet_diagnostic.CA1311.severity = none
+dotnet_diagnostic.CA1859.severity = none
+dotnet_diagnostic.CA1865.severity = none

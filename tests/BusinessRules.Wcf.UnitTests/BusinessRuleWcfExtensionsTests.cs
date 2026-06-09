@@ -1,6 +1,6 @@
 using System.ServiceModel;
 
-namespace BusinessRules.Wcf.UnitTests;
+namespace MaVe.BusinessRules.Wcf.UnitTests;
 
 [TestFixture]
 public class BusinessRuleWcfExtensionsTests
@@ -19,7 +19,8 @@ public class BusinessRuleWcfExtensionsTests
             Assert.That(faultException.Detail, Is.Not.Null);
             Assert.That(faultException.Detail.BusinessRule, Is.Not.Null);
             Assert.That(faultException.Detail.BusinessRule.InternalKey, Is.EqualTo("TEST_USER_AGE_MIN"));
-            Assert.That(faultException.Detail.BusinessRule.InternalRequirement, Is.EqualTo("User must be at least 18 years old"));
+            Assert.That(faultException.Detail.BusinessRule.InternalRequirement,
+                Is.EqualTo("User must be at least 18 years old"));
             Assert.That(faultException.Reason.ToString(), Is.EqualTo("User must be at least 18 years old"));
             Assert.That(faultException.Code.Name, Is.EqualTo("TEST_USER_AGE_MIN"));
         });
@@ -35,7 +36,8 @@ public class BusinessRuleWcfExtensionsTests
         Assert.Multiple(() =>
         {
             Assert.That(faultException.Detail.BusinessRule.InternalKey, Is.EqualTo("TEST_PWD_MIN_LENGTH"));
-            Assert.That(faultException.Detail.BusinessRule.InternalRequirement, Is.EqualTo("Password must contain at least 8 characters"));
+            Assert.That(faultException.Detail.BusinessRule.InternalRequirement,
+                Is.EqualTo("Password must contain at least 8 characters"));
             Assert.That(faultException.Reason.ToString(), Is.EqualTo("Password must contain at least 8 characters"));
             Assert.That(faultException.Code.Name, Is.EqualTo("TEST_PWD_MIN_LENGTH"));
         });
@@ -85,7 +87,8 @@ public class BusinessRuleWcfExtensionsTests
         Assert.Multiple(() =>
         {
             Assert.That(faultException.Detail.BusinessRule.InternalKey, Is.EqualTo("TEST_USER_AUTH"));
-            Assert.That(faultException.Detail.BusinessRule.InternalRequirement, Is.EqualTo("User must be authenticated"));
+            Assert.That(faultException.Detail.BusinessRule.InternalRequirement,
+                Is.EqualTo("User must be authenticated"));
             Assert.That(faultException.Reason.ToString(), Is.EqualTo("User must be authenticated"));
             Assert.That(faultException.Code.Name, Is.EqualTo("TEST_USER_AUTH"));
         });
@@ -95,7 +98,7 @@ public class BusinessRuleWcfExtensionsTests
     public void ToFaultException_FromBusinessRuleViolationException_WithCustomMessage_CreatesFaultException()
     {
         // Arrange
-        var customMessage = "Custom authentication error message";
+        const string customMessage = "Custom authentication error message";
         var exception = TestUserMustBeAuthenticated.ToException(customMessage);
 
         // Act
@@ -106,7 +109,7 @@ public class BusinessRuleWcfExtensionsTests
         {
             Assert.That(faultException, Is.Not.Null);
             Assert.That(faultException.Detail.BusinessRule.InternalKey, Is.EqualTo("TEST_USER_AUTH"));
-            
+
             // Note: The custom message is stored in the exception, not the business rule
             Assert.That(exception.Message, Is.EqualTo(customMessage));
         });
@@ -136,7 +139,8 @@ public class BusinessRuleWcfExtensionsTests
         {
             Assert.That(fault.BusinessRule, Is.SameAs(businessRule));
             Assert.That(fault.BusinessRule.InternalKey, Is.EqualTo("TEST_PWD_MIN_LENGTH"));
-            Assert.That(fault.BusinessRule.InternalDescription, Is.EqualTo("Passwords must meet minimum security requirements"));
+            Assert.That(fault.BusinessRule.InternalDescription,
+                Is.EqualTo("Passwords must meet minimum security requirements"));
             Assert.That(fault.BusinessRule.InternalCategory, Is.EqualTo("TestSecurity"));
         });
     }
@@ -176,7 +180,8 @@ public class BusinessRuleWcfExtensionsTests
         {
             Assert.That(caughtFault, Is.Not.Null);
             Assert.That(caughtFault.BusinessRule.InternalKey, Is.EqualTo("TEST_PWD_MIN_LENGTH"));
-            Assert.That(caughtFault.BusinessRule.InternalRequirement, Is.EqualTo("Password must contain at least 8 characters"));
+            Assert.That(caughtFault.BusinessRule.InternalRequirement,
+                Is.EqualTo("Password must contain at least 8 characters"));
         });
     }
 }

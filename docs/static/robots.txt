@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mauroverberkt.github.io/MaVe/sitemap.xml
+
+# Note: this file is served at /MaVe/robots.txt due to GitHub Pages project site hosting.
+# Traditional crawlers expect robots.txt at the domain root (/robots.txt) and will not
+# find this file. The sitemap is also linked in the HTML <head> by Docusaurus and can
+# be submitted directly via Google Search Console.

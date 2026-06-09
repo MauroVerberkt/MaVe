@@ -36,6 +36,16 @@ const sidebars: SidebarsConfig = {
         'business-rules/wcf-integration',
       ],
     },
+    {
+      type: 'category',
+      label: 'Unions',
+      items: [
+        'unions/overview',
+        'unions/getting-started',
+        'unions/match-and-switch',
+        'unions/analyzers',
+      ],
+    },
   ],
 };
 

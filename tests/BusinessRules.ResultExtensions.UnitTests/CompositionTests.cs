@@ -1,9 +1,9 @@
-using HelperMonads;
+using MaVe.Monads;
 
-namespace BusinessRules.ResultExtensions.UnitTests;
+namespace MaVe.BusinessRules.ResultExtensions.UnitTests;
 
 /// <summary>
-///     Composition tests demonstrating multi-step validation scenarios
+/// Composition tests demonstrating multi-step validation scenarios
 /// </summary>
 [TestFixture]
 public class CompositionTests
@@ -19,9 +19,9 @@ public class CompositionTests
     public void UserCreation_WithValidData_ReturnsSuccessResult()
     {
         // Arrange
-        var username = "john_doe";
-        var age = 25;
-        var password = "SecurePass123";
+        const string username = "john_doe";
+        const int age = 25;
+        const string password = "SecurePass123";
 
         // Act
         var result = CreateUser(username, age, password);
@@ -40,9 +40,9 @@ public class CompositionTests
     public void UserCreation_WithInvalidAge_ReturnsFailureResult()
     {
         // Arrange
-        var username = "jane_doe";
-        var age = 16;
-        var password = "SecurePass123";
+        const string username = "jane_doe";
+        const int age = 16;
+        const string password = "SecurePass123";
 
         // Act
         var result = CreateUser(username, age, password);
@@ -59,9 +59,9 @@ public class CompositionTests
     public void UserCreation_WithShortPassword_ReturnsFailureResult()
     {
         // Arrange
-        var username = "bob";
-        var age = 30;
-        var password = "short";
+        const string username = "bob";
+        const int age = 30;
+        const string password = "short";
 
         // Act
         var result = CreateUser(username, age, password);
@@ -78,9 +78,9 @@ public class CompositionTests
     public void UserCreation_WithPasswordMissingUppercase_ReturnsFailureResult()
     {
         // Arrange
-        var username = "alice";
-        var age = 28;
-        var password = "password123";
+        const string username = "alice";
+        const int age = 28;
+        const string password = "password123";
 
         // Act
         var result = CreateUser(username, age, password);
@@ -97,9 +97,9 @@ public class CompositionTests
     public void UserCreation_WithPasswordMissingNumber_ReturnsFailureResult()
     {
         // Arrange
-        var username = "charlie";
-        var age = 22;
-        var password = "SecurePassword";
+        const string username = "charlie";
+        const int age = 22;
+        const string password = "SecurePassword";
 
         // Act
         var result = CreateUser(username, age, password);
@@ -116,9 +116,9 @@ public class CompositionTests
     public async Task AsyncUserCreation_WithValidData_ReturnsSuccessResult()
     {
         // Arrange
-        var username = "async_user";
-        var age = 30;
-        var password = "SecurePass123";
+        const string username = "async_user";
+        const int age = 30;
+        const string password = "SecurePass123";
 
         // Act
         var result = await CreateUserAsync(username, age, password);
@@ -135,9 +135,9 @@ public class CompositionTests
     public async Task AsyncUserCreation_WithInvalidAge_ReturnsFailureResult()
     {
         // Arrange
-        var username = "young_user";
-        var age = 15;
-        var password = "SecurePass123";
+        const string username = "young_user";
+        const int age = 15;
+        const string password = "SecurePass123";
 
         // Act
         var result = await CreateUserAsync(username, age, password);
@@ -153,18 +153,14 @@ public class CompositionTests
     public void ChainedValidation_WithValidData_ReturnsSuccessResult()
     {
         // Arrange
-        var age = 25;
-        var password = "SecurePass123";
+        const int age = 25;
+        const string password = "SecurePass123";
 
         // Act
         var result = ValidateAge(age)
-            .BindAndTransform(_ => ValidatePassword(password))
-            .Map(validPassword => new User
-            {
-                Age = age,
-                Password = validPassword
-            });
-        
+            .Bind(_ => ValidatePassword(password))
+            .Map(validPassword => new User { Age = age, Password = validPassword });
+
         // Assert
         Assert.Multiple(() =>
         {
@@ -177,17 +173,13 @@ public class CompositionTests
     public void ChainedValidation_WithInvalidAge_ShortCircuitsAtFirstFailure()
     {
         // Arrange
-        var age = 16;
-        var password = "SecurePass123";
+        const int age = 16;
+        const string password = "SecurePass123";
 
         // Act
         var result = ValidateAge(age)
-            .BindAndTransform(_ => ValidatePassword(password))
-            .Map(validPassword => new User
-            {
-                Age = age,
-                Password = validPassword
-            });
+            .Bind(_ => ValidatePassword(password))
+            .Map(validPassword => new User { Age = age, Password = validPassword });
 
         // Assert
         Assert.That(result.IsFailure, Is.True);
@@ -200,17 +192,13 @@ public class CompositionTests
     public void ChainedValidation_WithValidAgeButInvalidPassword_FailsAtPasswordValidation()
     {
         // Arrange
-        var age = 25;
-        var password = "short";
+        const int age = 25;
+        const string password = "short";
 
         // Act
         var result = ValidateAge(age)
-            .BindAndTransform(_ => ValidatePassword(password))
-            .Map(validPassword => new User
-            {
-                Age = age,
-                Password = validPassword
-            });
+            .Bind(_ => ValidatePassword(password))
+            .Map(validPassword => new User { Age = age, Password = validPassword });
 
         // Assert
         Assert.That(result.IsFailure, Is.True);
@@ -224,15 +212,18 @@ public class CompositionTests
     {
         // Arrange
         var actionExecuted = false;
-        var age = 25;
+        const int age = 25;
 
         // Act
         var result = ValidateAge(age)
             .OnSuccess(_ => actionExecuted = true);
 
         // Assert
-        Assert.That(result.IsSuccess, Is.True);
-        Assert.That(actionExecuted, Is.True);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.IsSuccess, Is.True);
+            Assert.That(actionExecuted, Is.True);
+        });
     }
 
     [Test]
@@ -240,7 +231,7 @@ public class CompositionTests
     {
         // Arrange
         Error? capturedError = null;
-        var age = 16;
+        const int age = 16;
 
         // Act
         var result = ValidateAge(age)
@@ -260,30 +251,20 @@ public class CompositionTests
     private Result<User> CreateUser(string username, int age, string password)
     {
         return ValidateAge(age)
-            .BindAndTransform(_ => ValidatePassword(password))
-            .Map(validPassword => new User
-            {
-                Username = username,
-                Age = age,
-                Password = validPassword
-            });
+            .Bind(_ => ValidatePassword(password))
+            .Map(validPassword => new User { Username = username, Age = age, Password = validPassword });
     }
 
     private async Task<Result<User>> CreateUserAsync(string username, int age, string password)
     {
         var ageResult = await ValidateAgeAsync(age);
         var passwordResult =
-            await ageResult.BindAndTransformAsync(async _ => await ValidatePasswordAsync(password));
+            await ageResult.BindAsync(async _ => await ValidatePasswordAsync(password));
 
         return await passwordResult.MapAsync(async validPassword =>
         {
             await Task.Delay(1); // Simulate async operation
-            return new User
-            {
-                Username = username,
-                Age = age,
-                Password = validPassword
-            };
+            return new User { Username = username, Age = age, Password = validPassword };
         });
     }
 

@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>MaVe.Unions</PackageId>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Title>MaVe Unions</Title>
+    <Description>Source-generated discriminated unions for C# with exhaustive matching support</Description>
+    <PackageTags>union;discriminated-union;source-generator;analyzer;functional</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath=""/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UnionsAnalyzer\UnionsAnalyzer.csproj"
+                      ReferenceOutputAssembly="false"/>
+    <ProjectReference Include="..\UnionsFixProvider\UnionsFixProvider.csproj"
+                      ReferenceOutputAssembly="false"/>
+    <ProjectReference Include="..\UnionsGenerator\UnionsGenerator.csproj"
+                      ReferenceOutputAssembly="false"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\UnionsAnalyzer\bin\$(Configuration)\netstandard2.0\MaVe.UnionsAnalyzer.dll"
+          Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
+    <None Include="..\UnionsFixProvider\bin\$(Configuration)\netstandard2.0\MaVe.UnionsFixProvider.dll"
+          Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
+    <None Include="..\UnionsGenerator\bin\$(Configuration)\netstandard2.0\MaVe.UnionsGenerator.dll"
+          Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
+  </ItemGroup>
+
+</Project>

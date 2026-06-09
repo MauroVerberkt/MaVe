@@ -1,8 +1,8 @@
 ---
 sidebar_position: 1
-title: HelperMonads Design
+title: Monads Design
 description: Internal design of Result<T> and Option<T> - class hierarchies, method chaining, and async patterns
-tags: [HelperMonads]
+tags: [Monads]
 keywords:
   - result
   - option
@@ -11,11 +11,11 @@ keywords:
   - design
 ---
 
-# HelperMonads Design
+# Monads Design
 
 ## Package Overview
 
-HelperMonads provides two monadic types: `Result<TData>` for fallible operations and `Option<TValue>` for optional values. Both are designed for composition and null safety.
+Monads provides two monadic types: `Result<TData>` for fallible operations and `Option<TValue>` for optional values. Both are designed for composition and null safety.
 
 ## Result&lt;T&gt; Class Hierarchy
 
@@ -25,11 +25,17 @@ classDiagram
         +bool IsSuccess
         +bool IsFailure
         +TData? Data
-        +Exception? Error
+        +Error? Error
         +Map~TNew~(Func) Result~TNew~
         +MapAsync~TNew~(Func) Task~Result~TNew~~
-        +Bind(Func) Result~TData~
-        +BindAndTransform~TNew~(Func) Result~TNew~
+        +Then(Func) Result~TData~
+        +ThenAsync(Func) Task~Result~TData~~
+        +Bind~TNew~(Func) Result~TNew~
+        +BindAsync~TNew~(Func) Task~Result~TNew~~
+        +Match~TResult~(Func, Func) TResult
+        +MatchAsync~TResult~(Func, Func) Task~TResult~
+        +Select~TNew~(Func) Result~TNew~
+        +SelectMany~TNew~(Func, Func) Result~TNew~
         +OnSuccess(Action) Result~TData~
         +OnFailure(Action) Result~TData~
         +Tap(Action) Result~TData~
@@ -38,7 +44,7 @@ classDiagram
 
     class Result {
         +Success~T~(T data)$ Result~T~
-        +Failure~T~(Exception error)$ Result~T~
+        +Failure~T~(Error error)$ Result~T~
     }
 
     Result ..> Result~TData~ : creates
@@ -65,11 +71,14 @@ Methods follow a consistent pattern for composition:
 | Category | Methods | Behavior on Failure |
 |----------|---------|-------------------|
 | **Transform** | `Map`, `MapAsync` | Pass through failure unchanged |
-| **Chain** | `Bind`, `BindAndTransform`, `BindAsync`, `BindAndTransformAsync` | Pass through failure unchanged |
+| **Chain (no data)** | `Then`, `ThenAsync` | Pass through failure unchanged |
+| **Chain (with data)** | `Bind<TNew>`, `BindAsync<TNew>` | Pass through failure unchanged |
+| **Match** | `Match`, `MatchAsync` | Calls `onFailure` handler |
+| **LINQ** | `Select`, `SelectMany` | Pass through failure unchanged |
 | **Side effects** | `OnSuccess`, `OnFailure`, `Tap` | Execute conditionally, return `this` |
 | **Destructure** | `Deconstruct` | Returns all three components |
 
-All transform/chain methods **short-circuit on failure** - the function is never called if the Result is already failed.
+All transform/chain methods **short-circuit on failure** — the function is never called if the Result is already failed.
 
 ### Async Patterns
 
@@ -102,6 +111,12 @@ classDiagram
         +TValue Value*
         +Match~TResult~(Func some, Func none) TResult
         +MatchAsync~TResult~(Func some, Func none) Task~TResult~
+        +Map~TNew~(Func) Option~TNew~
+        +MapAsync~TNew~(Func) Task~Option~TNew~~
+        +Bind~TNew~(Func) Option~TNew~
+        +BindAsync~TNew~(Func) Task~Option~TNew~~
+        +Select~TNew~(Func) Option~TNew~
+        +SelectMany~TNew~(Func, Func) Option~TResult~
         +Some(TValue value)$ Option~TValue~
         +None$ Option~TValue~
         +FromNullable(TValue? value)$ Option~TValue~
@@ -110,11 +125,13 @@ classDiagram
     class Some~TValue~ {
         +bool HasValue = true
         +TValue Value
+        ~Some(TValue value)
     }
 
     class None~TValue~ {
         +bool HasValue = false
         +TValue Value [DoesNotReturn]
+        ~None()
     }
 
     Option~TValue~ <|-- Some~TValue~
@@ -125,8 +142,9 @@ classDiagram
 
 Unlike Result (which uses a factory), Option uses **inheritance**:
 
-- `Some<TValue>` - holds the value, `HasValue` returns `true`
-- `None<TValue>` - represents absence, `HasValue` returns `false`, `Value` getter has `[DoesNotReturn]` and throws `OptionIsNoneException`
+- `Some<TValue>` — holds the value, `HasValue` returns `true`
+- `None<TValue>` — represents absence, `HasValue` returns `false`, `Value` getter has `[DoesNotReturn]` and throws `OptionIsNoneException`
+- Both subclass constructors are `internal` — `Option<T>.Some(value)` and `Option<T>.None` are the only valid construction paths
 
 ### Implicit Conversions
 
@@ -160,4 +178,4 @@ This is safer than checking `.HasValue` + `.Value` because the compiler ensures 
 | Private constructor on Result | Prevents invalid states but requires factory pattern knowledge |
 | `[DoesNotReturn]` on None.Value | Clear intent but accessing Value on None still compiles (throws at runtime) |
 | CancellationToken overloads on all async methods | Complete API but doubles the method count |
-| `IEquatable` on Result only | Result equality is well-defined; Option equality is trickier with reference types |
+| `IEquatable` on both Result and Option | Consistent equality contract; added to Option in ADR-009 for collection compatibility |

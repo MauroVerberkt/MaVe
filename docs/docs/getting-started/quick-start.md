@@ -19,7 +19,7 @@ This guide shows you the core patterns in under 5 minutes.
 Use `Result<T>` to represent operations that can succeed or fail without throwing exceptions:
 
 ```csharp title="UserService.cs"
-using HelperMonads;
+using MaVe.Monads;
 
 public Result<User> GetUser(int id)
 {
@@ -85,9 +85,37 @@ public Result<User> CreateUser(string username, int age)
 }
 ```
 
+## Union Types
+
+Model domain alternatives with source-generated discriminated unions:
+
+```csharp title="BusinessParty.cs"
+using MaVe.Unions;
+
+[Union]
+public partial record BusinessParty
+{
+    public sealed record Customer(CustomerInfo Info) : BusinessParty;
+    public sealed record Supplier(SupplierInfo Info) : BusinessParty;
+    public sealed record Prospect() : BusinessParty;
+}
+```
+
+Handle all variants exhaustively — missing one is a compile error:
+
+```csharp title="Handler.cs"
+var name = party
+    .Match()
+    .Customer(info => info.Name)
+    .Supplier(info => info.CompanyName)
+    .Prospect("Unknown")
+    .Result();
+```
+
 :::info[Next Steps]
 
 - Learn more about the [Result monad](../monads/result/index.md)
 - Explore [Business Rules](../business-rules/overview.md) in depth
+- Model domain alternatives with [Unions](../unions/overview.md)
 
 :::

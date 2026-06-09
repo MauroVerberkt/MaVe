@@ -1,0 +1,12 @@
+{
+  "solution": {
+    "path": "MaVe.sln",
+    "projects": [
+      "src\\Unions\\Unions.csproj",
+      "src\\UnionsGenerator\\UnionsGenerator.csproj",
+      "src\\UnionsAnalyzer\\UnionsAnalyzer.csproj",
+      "src\\UnionsFixProvider\\UnionsFixProvider.csproj",
+      "tests\\Unions.UnitTests\\Unions.UnitTests.csproj"
+    ]
+  }
+}

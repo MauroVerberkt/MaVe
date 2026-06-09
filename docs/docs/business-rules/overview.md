@@ -100,7 +100,7 @@ Custom exception encapsulating a violated business rule with properties: `Busine
 </ItemGroup>
 
 <ItemGroup>
-  <PackageReference Include="BusinessRulesManagement" Version="1.0.0" />
+  <PackageReference Include="MaVe.BusinessRules" Version="1.0.0" />
 </ItemGroup>
 ```
 

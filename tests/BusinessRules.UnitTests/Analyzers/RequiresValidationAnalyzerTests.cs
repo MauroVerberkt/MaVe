@@ -1,8 +1,8 @@
-using BusinessRulesAnalyzer;
-using BusinessRules.UnitTests.Verifiers;
+using MaVe.BusinessRules.UnitTests.Verifiers;
+using MaVe.BusinessRulesAnalyzer;
 using Microsoft.CodeAnalysis;
 
-namespace BusinessRules.UnitTests.Analyzers;
+namespace MaVe.BusinessRules.UnitTests.Analyzers;
 
 [TestFixture]
 public class RequiresValidationAnalyzerTests
@@ -10,21 +10,21 @@ public class RequiresValidationAnalyzerTests
     [Test]
     public async Task BusinessRuleWithValidator_NoDiagnostic()
     {
-        var test = """
-            using BusinessRules.Attributes;
+        const string test = """
+                            using MaVe.BusinessRules.Attributes;
 
-            public class Validators
-            {
-                [ImplementsBusinessRule("USER_AUTH")]
-                public void ValidateAuth() { }
-            }
+                            public class Validators
+                            {
+                                [ImplementsBusinessRule("USER_AUTH")]
+                                public void ValidateAuth() { }
+                            }
 
-            public class UsageClass
-            {
-                [BusinessRule("USER_AUTH")]
-                public void TestMethod() { }
-            }
-            """;
+                            public class UsageClass
+                            {
+                                [BusinessRule("USER_AUTH")]
+                                public void TestMethod() { }
+                            }
+                            """;
 
         await CSharpAnalyzerVerifier<RequiresValidationAnalyzer>.VerifyAnalyzerAsync(test);
     }
@@ -32,15 +32,15 @@ public class RequiresValidationAnalyzerTests
     [Test]
     public async Task BusinessRuleWithoutValidator_EnforceTrue_ReportsError()
     {
-        var test = """
-            using BusinessRules.Attributes;
+        const string test = """
+                            using MaVe.BusinessRules.Attributes;
 
-            public class UsageClass
-            {
-                [BusinessRule({|#0:"MISSING_RULE"|}, enforceValidation: true)]
-                public void TestMethod() { }
-            }
-            """;
+                            public class UsageClass
+                            {
+                                [BusinessRule({|#0:"MISSING_RULE"|}, enforceValidation: true)]
+                                public void TestMethod() { }
+                            }
+                            """;
 
         var expected = CSharpAnalyzerVerifier<RequiresValidationAnalyzer>
             .Diagnostic("BR002")
@@ -54,15 +54,15 @@ public class RequiresValidationAnalyzerTests
     [Test]
     public async Task BusinessRuleWithoutValidator_DefaultEnforce_ReportsError()
     {
-        var test = """
-            using BusinessRules.Attributes;
+        const string test = """
+                            using MaVe.BusinessRules.Attributes;
 
-            public class UsageClass
-            {
-                [BusinessRule({|#0:"MISSING_RULE"|})]
-                public void TestMethod() { }
-            }
-            """;
+                            public class UsageClass
+                            {
+                                [BusinessRule({|#0:"MISSING_RULE"|})]
+                                public void TestMethod() { }
+                            }
+                            """;
 
         var expected = CSharpAnalyzerVerifier<RequiresValidationAnalyzer>
             .Diagnostic("BR002")
@@ -76,15 +76,15 @@ public class RequiresValidationAnalyzerTests
     [Test]
     public async Task BusinessRuleWithoutValidator_EnforceFalse_ReportsWarning()
     {
-        var test = """
-            using BusinessRules.Attributes;
+        const string test = """
+                            using MaVe.BusinessRules.Attributes;
 
-            public class UsageClass
-            {
-                [BusinessRule({|#0:"OPTIONAL_RULE"|}, enforceValidation: false)]
-                public void TestMethod() { }
-            }
-            """;
+                            public class UsageClass
+                            {
+                                [BusinessRule({|#0:"OPTIONAL_RULE"|}, enforceValidation: false)]
+                                public void TestMethod() { }
+                            }
+                            """;
 
         var expected = CSharpAnalyzerVerifier<RequiresValidationAnalyzer>
             .Diagnostic("BR003")
@@ -98,15 +98,15 @@ public class RequiresValidationAnalyzerTests
     [Test]
     public async Task BusinessRuleOnClass_WithoutValidator_ReportsError()
     {
-        var test = """
-            using BusinessRules.Attributes;
+        const string test = """
+                            using MaVe.BusinessRules.Attributes;
 
-            [BusinessRule({|#0:"CLASS_RULE"|})]
-            public class UsageClass
-            {
-                public void TestMethod() { }
-            }
-            """;
+                            [BusinessRule({|#0:"CLASS_RULE"|})]
+                            public class UsageClass
+                            {
+                                public void TestMethod() { }
+                            }
+                            """;
 
         var expected = CSharpAnalyzerVerifier<RequiresValidationAnalyzer>
             .Diagnostic("BR002")
@@ -120,27 +120,27 @@ public class RequiresValidationAnalyzerTests
     [Test]
     public async Task MultipleBusinessRules_SomeWithValidators_ReportsOnlyMissing()
     {
-        var test = """
-            using BusinessRules.Attributes;
+        const string test = """
+                            using MaVe.BusinessRules.Attributes;
 
-            public class Validators
-            {
-                [ImplementsBusinessRule("RULE_A")]
-                public void ValidateA() { }
-            }
+                            public class Validators
+                            {
+                                [ImplementsBusinessRule("RULE_A")]
+                                public void ValidateA() { }
+                            }
 
-            public class UsageClass
-            {
-                [BusinessRule("RULE_A")]
-                public void MethodA() { }
+                            public class UsageClass
+                            {
+                                [BusinessRule("RULE_A")]
+                                public void MethodA() { }
 
-                [BusinessRule("RULE_B")]
-                public void MethodB() { }
+                                [BusinessRule("RULE_B")]
+                                public void MethodB() { }
 
-                [BusinessRule("RULE_C")]
-                public void MethodC() { }
-            }
-            """;
+                                [BusinessRule("RULE_C")]
+                                public void MethodC() { }
+                            }
+                            """;
 
         var expected1 = CSharpAnalyzerVerifier<RequiresValidationAnalyzer>
             .Diagnostic("BR002")
@@ -161,30 +161,30 @@ public class RequiresValidationAnalyzerTests
     [Test]
     public async Task ValidatorInDifferentClass_StillValid()
     {
-        var test = """
-            using BusinessRules.Attributes;
+        const string test = """
+                            using MaVe.BusinessRules.Attributes;
 
-            public class ValidatorsA
-            {
-                [ImplementsBusinessRule("AUTH")]
-                public void ValidateAuth() { }
-            }
+                            public class ValidatorsA
+                            {
+                                [ImplementsBusinessRule("AUTH")]
+                                public void ValidateAuth() { }
+                            }
 
-            public class ValidatorsB
-            {
-                [ImplementsBusinessRule("ADMIN")]
-                public void ValidateAdmin() { }
-            }
+                            public class ValidatorsB
+                            {
+                                [ImplementsBusinessRule("ADMIN")]
+                                public void ValidateAdmin() { }
+                            }
 
-            public class UsageClass
-            {
-                [BusinessRule("AUTH")]
-                public void MethodA() { }
+                            public class UsageClass
+                            {
+                                [BusinessRule("AUTH")]
+                                public void MethodA() { }
 
-                [BusinessRule("ADMIN")]
-                public void MethodB() { }
-            }
-            """;
+                                [BusinessRule("ADMIN")]
+                                public void MethodB() { }
+                            }
+                            """;
 
         await CSharpAnalyzerVerifier<RequiresValidationAnalyzer>.VerifyAnalyzerAsync(test);
     }

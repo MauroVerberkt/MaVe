@@ -1,64 +1,65 @@
 using System.Collections.Immutable;
 using System.Reflection;
-using BusinessRulesAnalyzer;
+using System.ServiceModel;
+using MaVe.BusinessRulesAnalyzer;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 
-namespace BusinessRules.UnitTests.Analyzers;
+namespace MaVe.BusinessRules.UnitTests.Analyzers;
 
 [TestFixture]
 public class ComposedAnalyzerTests
 {
-    private const string TestBusinessRulesJson = """
-        {
-          "businessRules": [
-            {
-              "className": "UserMustBeAuthenticated",
-              "key": "USER_AUTH",
-              "requirement": "User must be authenticated",
-              "description": "User must provide valid authentication credentials",
-              "category": "Authentication"
-            },
-            {
-              "className": "UserMustBeAdmin",
-              "key": "USER_ADMIN",
-              "requirement": "User must be admin",
-              "description": "User must have admin role",
-              "category": "Authorization"
-            },
-            {
-              "className": "AgeMinimum",
-              "key": "AGE_MIN",
-              "requirement": "Age minimum",
-              "description": "User must meet minimum age requirement",
-              "category": "Validation"
-            },
-            {
-              "className": "EmailVerified",
-              "key": "EMAIL_VERIFIED",
-              "requirement": "Email verified",
-              "description": "User email must be verified",
-              "category": "Validation"
-            },
-            {
-              "className": "TermsAccepted",
-              "key": "TERMS_ACCEPTED",
-              "requirement": "Terms accepted",
-              "description": "User must accept terms of service",
-              "category": "General"
-            },
-            {
-              "className": "SessionActive",
-              "key": "SESSION_ACTIVE",
-              "requirement": "Session active",
-              "description": "User session must be active",
-              "category": "General"
-            }
-          ]
-        }
-        """;
+    private const string TestMaVeBusinessRulesJson = """
+                                                 {
+                                                   "MaVe.BusinessRules": [
+                                                     {
+                                                       "className": "UserMustBeAuthenticated",
+                                                       "key": "USER_AUTH",
+                                                       "requirement": "User must be authenticated",
+                                                       "description": "User must provide valid authentication credentials",
+                                                       "category": "Authentication"
+                                                     },
+                                                     {
+                                                       "className": "UserMustBeAdmin",
+                                                       "key": "USER_ADMIN",
+                                                       "requirement": "User must be admin",
+                                                       "description": "User must have admin role",
+                                                       "category": "Authorization"
+                                                     },
+                                                     {
+                                                       "className": "AgeMinimum",
+                                                       "key": "AGE_MIN",
+                                                       "requirement": "Age minimum",
+                                                       "description": "User must meet minimum age requirement",
+                                                       "category": "Validation"
+                                                     },
+                                                     {
+                                                       "className": "EmailVerified",
+                                                       "key": "EMAIL_VERIFIED",
+                                                       "requirement": "Email verified",
+                                                       "description": "User email must be verified",
+                                                       "category": "Validation"
+                                                     },
+                                                     {
+                                                       "className": "TermsAccepted",
+                                                       "key": "TERMS_ACCEPTED",
+                                                       "requirement": "Terms accepted",
+                                                       "description": "User must accept terms of service",
+                                                       "category": "General"
+                                                     },
+                                                     {
+                                                       "className": "SessionActive",
+                                                       "key": "SESSION_ACTIVE",
+                                                       "requirement": "Session active",
+                                                       "description": "User session must be active",
+                                                       "category": "General"
+                                                     }
+                                                   ]
+                                                 }
+                                                 """;
 
     private static Compilation CreateCompilation(string source)
     {
@@ -71,12 +72,12 @@ public class ComposedAnalyzerTests
             MetadataReference.CreateFromFile(typeof(BusinessRule<>).Assembly.Location),
             MetadataReference.CreateFromFile(Assembly.Load("System.Runtime").Location),
             MetadataReference.CreateFromFile(Assembly.Load("System.Collections").Location),
-            MetadataReference.CreateFromFile(Assembly.Load("netstandard").Location),
+            MetadataReference.CreateFromFile(Assembly.Load("netstandard").Location)
         };
 
         try
         {
-            references.Add(MetadataReference.CreateFromFile(typeof(System.ServiceModel.FaultException<>).Assembly.Location));
+            references.Add(MetadataReference.CreateFromFile(typeof(FaultException<>).Assembly.Location));
         }
         catch
         {
@@ -90,7 +91,8 @@ public class ComposedAnalyzerTests
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
     }
 
-    private static async Task<ImmutableArray<Diagnostic>> GetDiagnosticsAsync(string source, params DiagnosticAnalyzer[] analyzers)
+    private static async Task<ImmutableArray<Diagnostic>> GetDiagnosticsAsync(string source,
+        params DiagnosticAnalyzer[] analyzers)
     {
         var compilation = CreateCompilation(source);
 
@@ -98,7 +100,7 @@ public class ComposedAnalyzerTests
             [..analyzers],
             new AnalyzerOptions(
             [
-                new InMemoryAdditionalText("Test.BusinessRules.json", TestBusinessRulesJson)
+                new InMemoryAdditionalText("Test.MaVe.BusinessRules.json", TestMaVeBusinessRulesJson)
             ]));
 
         var diagnostics = await compilationWithAnalyzers.GetAllDiagnosticsAsync();
@@ -108,27 +110,27 @@ public class ComposedAnalyzerTests
     [Test]
     public async Task AllAnalyzers_ValidCode_NoDiagnostics()
     {
-        var source = """
-            using BusinessRules.Attributes;
+        const string source = """
+                              using MaVe.BusinessRules.Attributes;
 
-            public class GlobalValidators
-            {
-                [ImplementsBusinessRule("USER_AUTH")]
-                public void ValidateUserAuth() { }
+                              public class GlobalValidators
+                              {
+                                  [ImplementsBusinessRule("USER_AUTH")]
+                                  public void ValidateUserAuth() { }
 
-                [ImplementsBusinessRule("USER_ADMIN")]
-                public void ValidateUserAdmin() { }
-            }
+                                  [ImplementsBusinessRule("USER_ADMIN")]
+                                  public void ValidateUserAdmin() { }
+                              }
 
-            public class ValidCases
-            {
-                [BusinessRule("USER_AUTH")]
-                public void ValidMethod() { }
+                              public class ValidCases
+                              {
+                                  [BusinessRule("USER_AUTH")]
+                                  public void ValidMethod() { }
 
-                [BusinessRule("USER_ADMIN")]
-                public void AnotherValidMethod() { }
-            }
-            """;
+                                  [BusinessRule("USER_ADMIN")]
+                                  public void AnotherValidMethod() { }
+                              }
+                              """;
 
         var diagnostics = await GetDiagnosticsAsync(
             source,
@@ -143,37 +145,37 @@ public class ComposedAnalyzerTests
     [Test]
     public async Task AllAnalyzers_FullPipeline_ReportsExpectedDiagnostics()
     {
-        var source = """
-            using BusinessRules;
-            using BusinessRules.Attributes;
-            using BusinessRules.Rules.Authentication;
+        const string source = """
+                              using MaVe.BusinessRules;
+                              using MaVe.BusinessRules.Attributes;
+                              using MaVe.BusinessRules.Rules.Authentication;
 
-            public class Validators
-            {
-                [ImplementsBusinessRule(UserMustBeAuthenticated.Key)]
-                public void ValidateAuth()
-                {
-                    throw UserMustBeAuthenticated.ToException();
-                }
+                              public class Validators
+                              {
+                                  [ImplementsBusinessRule(UserMustBeAuthenticated.Key)]
+                                  public void ValidateAuth()
+                                  {
+                                      throw UserMustBeAuthenticated.ToException();
+                                  }
 
-                [ImplementsBusinessRule("INVALID_RULE")]
-                public void ValidateInvalid() { }
-            }
+                                  [ImplementsBusinessRule("INVALID_RULE")]
+                                  public void ValidateInvalid() { }
+                              }
 
-            public class Usage
-            {
-                [BusinessRule(UserMustBeAuthenticated.Key)]
-                public void GoodMethod() { }
+                              public class Usage
+                              {
+                                  [BusinessRule(UserMustBeAuthenticated.Key)]
+                                  public void GoodMethod() { }
 
-                [BusinessRule("MISSING_VALIDATOR")]
-                public void BadMethod() { }
+                                  [BusinessRule("MISSING_VALIDATOR")]
+                                  public void BadMethod() { }
 
-                public void ThrowWithoutAttr()
-                {
-                    throw UserMustBeAuthenticated.ToException();
-                }
-            }
-            """;
+                                  public void ThrowWithoutAttr()
+                                  {
+                                      throw UserMustBeAuthenticated.ToException();
+                                  }
+                              }
+                              """;
 
         var diagnostics = await GetDiagnosticsAsync(
             source,
@@ -195,15 +197,15 @@ public class ComposedAnalyzerTests
     [Test]
     public async Task BR001_And_BR002_Combined_InvalidKey_And_MissingValidator()
     {
-        var source = """
-            using BusinessRules.Attributes;
+        const string source = """
+                              using MaVe.BusinessRules.Attributes;
 
-            public class TestClass
-            {
-                [BusinessRule("INVALID_KEY")]
-                public void TestMethod() { }
-            }
-            """;
+                              public class TestClass
+                              {
+                                  [BusinessRule("INVALID_KEY")]
+                                  public void TestMethod() { }
+                              }
+                              """;
 
         var diagnostics = await GetDiagnosticsAsync(
             source,
@@ -217,15 +219,15 @@ public class ComposedAnalyzerTests
     [Test]
     public async Task BR003_EnforceFalse_ReportsWarning()
     {
-        var source = """
-            using BusinessRules.Attributes;
+        const string source = """
+                              using MaVe.BusinessRules.Attributes;
 
-            public class TestClass
-            {
-                [BusinessRule("EMAIL_VERIFIED", enforceValidation: false)]
-                public void TestMethod() { }
-            }
-            """;
+                              public class TestClass
+                              {
+                                  [BusinessRule("EMAIL_VERIFIED", enforceValidation: false)]
+                                  public void TestMethod() { }
+                              }
+                              """;
 
         var diagnostics = await GetDiagnosticsAsync(source, new RequiresValidationAnalyzer());
 
@@ -236,17 +238,17 @@ public class ComposedAnalyzerTests
     [Test]
     public async Task BR004_ThrowWithoutAttribute_ReportsWarning()
     {
-        var source = """
-            using BusinessRules;
+        const string source = """
+                              using MaVe.BusinessRules;
 
-            public class TestClass
-            {
-                public void TestMethod()
-                {
-                    throw new BusinessRuleViolationException("AUTH", "Error");
-                }
-            }
-            """;
+                              public class TestClass
+                              {
+                                  public void TestMethod()
+                                  {
+                                      throw new BusinessRuleViolationException("AUTH", "Error");
+                                  }
+                              }
+                              """;
 
         var diagnostics = await GetDiagnosticsAsync(source, new ThrowWithoutValidationAnalyzer());
 
@@ -260,6 +262,9 @@ public class ComposedAnalyzerTests
 
         public override string Path { get; } = path;
 
-        public override SourceText GetText(CancellationToken cancellationToken = default) => _text;
+        public override SourceText GetText(CancellationToken cancellationToken = default)
+        {
+            return _text;
+        }
     }
 }

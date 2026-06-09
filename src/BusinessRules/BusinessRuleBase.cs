@@ -1,7 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
-namespace BusinessRules;
+namespace MaVe.BusinessRules;
 
 /// <summary>
 /// Abstract base class for all business rules, providing key, requirement, description, and category.
@@ -9,10 +9,12 @@ namespace BusinessRules;
 [DataContract]
 public abstract class BusinessRuleBase
 {
-    [DataMember, Required]
+    [DataMember]
+    [Required]
     internal abstract string InternalKey { get; }
 
-    [DataMember, Required]
+    [DataMember]
+    [Required]
     internal abstract string InternalRequirement { get; }
 
     [DataMember]

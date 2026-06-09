@@ -1,53 +1,19 @@
+using System.ServiceModel;
+using MaVe.BusinessRules.Attributes;
+using MaVe.BusinessRules.UnitTests.TestHelpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Testing;
-using BusinessRules.UnitTests.TestHelpers;
-using BusinessRules.Attributes;
 
-namespace BusinessRules.UnitTests.Verifiers;
+namespace MaVe.BusinessRules.UnitTests.Verifiers;
 
-public static class CSharpAnalyzerVerifier<TAnalyzer>
-    where TAnalyzer : DiagnosticAnalyzer, new()
+public static class CSharpAnalyzerVerifier<TAnalyzer> where TAnalyzer : DiagnosticAnalyzer, new()
 {
-    public class Test : CSharpAnalyzerTest<TAnalyzer, DefaultVerifier>
-    {
-        public Test()
-        {
-            ReferenceAssemblies = ReferenceAssemblies.Net.Net80;
-            
-            var businessRulesRef = MetadataReference.CreateFromFile(typeof(BusinessRuleAttribute).Assembly.Location);
-            if (TestState.AdditionalReferences.All(r => r.Display != businessRulesRef.Display))
-            {
-                TestState.AdditionalReferences.Add(businessRulesRef);
-            }
-
-            // Add System.ServiceModel.Primitives for FaultException support
-            try
-            {
-                var serviceModelRef = MetadataReference.CreateFromFile(typeof(System.ServiceModel.FaultException<>).Assembly.Location);
-                if (TestState.AdditionalReferences.All(r => r.Display != serviceModelRef.Display))
-                {
-                    TestState.AdditionalReferences.Add(serviceModelRef);
-                }
-            }
-            catch
-            {
-                // System.ServiceModel not available - tests using it will fail
-            }
-        }
-
-        public void AddBusinessRulesJson(string jsonContent)
-        {
-            TestState.AnalyzerConfigFiles.Add(
-                ("/.globalconfig", "is_global = true"));
-            
-            TestState.AdditionalFiles.Add(("/Test.BusinessRules.json", jsonContent));
-        }
-    }
-
     public static DiagnosticResult Diagnostic(string diagnosticId)
-        => CSharpAnalyzerVerifier<TAnalyzer, DefaultVerifier>.Diagnostic(diagnosticId);
+    {
+        return CSharpAnalyzerVerifier<TAnalyzer, DefaultVerifier>.Diagnostic(diagnosticId);
+    }
 
     public static async Task VerifyAnalyzerAsync(string source, params DiagnosticResult[] expected)
     {
@@ -62,5 +28,48 @@ public static class CSharpAnalyzerVerifier<TAnalyzer>
         test.TestState.Sources.Add(GeneratedBusinessRules.GetAllGeneratedSources());
         test.ExpectedDiagnostics.AddRange(expected);
         await test.RunAsync();
+    }
+
+    public class Test : CSharpAnalyzerTest<TAnalyzer, DefaultVerifier>
+    {
+        public Test()
+        {
+#if NET9_0_OR_GREATER
+            ReferenceAssemblies = new ReferenceAssemblies(
+                "net9.0",
+                new PackageIdentity("Microsoft.NETCore.App.Ref", "9.0.0"),
+                Path.Combine("ref", "net9.0"));
+#else
+            ReferenceAssemblies = ReferenceAssemblies.Net.Net80;
+#endif
+
+            var businessRulesRef = MetadataReference.CreateFromFile(typeof(BusinessRuleAttribute).Assembly.Location);
+            if (TestState.AdditionalReferences.All(r => r.Display != businessRulesRef.Display))
+            {
+                TestState.AdditionalReferences.Add(businessRulesRef);
+            }
+
+            // Add System.ServiceModel.Primitives for FaultException support
+            try
+            {
+                var serviceModelRef = MetadataReference.CreateFromFile(typeof(FaultException<>).Assembly.Location);
+                if (TestState.AdditionalReferences.All(r => r.Display != serviceModelRef.Display))
+                {
+                    TestState.AdditionalReferences.Add(serviceModelRef);
+                }
+            }
+            catch
+            {
+                // System.ServiceModel not available - tests using it will fail
+            }
+        }
+
+        public void AddMaVeBusinessRulesJson(string jsonContent)
+        {
+            TestState.AnalyzerConfigFiles.Add(
+                ("/.globalconfig", "is_global = true"));
+
+            TestState.AdditionalFiles.Add(("/Test.MaVe.BusinessRules.json", jsonContent));
+        }
     }
 }

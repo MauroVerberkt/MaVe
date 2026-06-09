@@ -65,7 +65,7 @@ function Hero() {
         </Link>
         <span className={styles.ctaSecondary}>
           or view on{' '}
-          <Link href="https://github.com/MauroVerberkt/DotnetHelpers">GitHub</Link>
+          <Link href="https://github.com/MauroVerberkt/MaVe">GitHub</Link>
         </span>
       </div>
     </section>
@@ -131,6 +131,7 @@ function Approach() {
       <div className={styles.approachBody}>
         <p>
           Operations return Result&lt;T&gt; instead of throwing. Values use Option&lt;T&gt; instead of null.
+          Domain alternatives are modeled as source-generated discriminated unions with exhaustive matching.
           Business rules are defined in JSON and generated as strongly-typed C# classes at compile time.
           Roslyn analyzers catch violations before code runs. Source generators eliminate reflection.
         </p>
@@ -148,12 +149,16 @@ function Packages() {
       <span className={styles.sectionLabel}>PACKAGES</span>
       <div className={styles.packagesPrimary}>
         <div className={styles.packageItem}>
-          <Heading as="h3">HelperMonads</Heading>
+          <Heading as="h3">Monads</Heading>
           <p>Result&lt;T&gt; and Option&lt;T&gt; with full async composition, CancellationToken support, and monadic chaining</p>
         </div>
         <div className={styles.packageItem}>
           <Heading as="h3">BusinessRules</Heading>
           <p>JSON-defined rules → source-generated C# classes + Roslyn analyzers for compile-time validation</p>
+        </div>
+        <div className={styles.packageItem}>
+          <Heading as="h3">Unions</Heading>
+          <p>Source-generated discriminated unions with exhaustive Match/Switch builders and compile-time analyzer support</p>
         </div>
       </div>
       <div className={styles.packagesSecondary}>
@@ -174,11 +179,11 @@ function PageFooter() {
   return (
     <section className={styles.pageFooter}>
       <div className={styles.metrics}>
-        <a href="https://github.com/MauroVerberkt/DotnetHelpers/actions/workflows/ci.yml" className={styles.metricLive}>
+        <a href="https://github.com/MauroVerberkt/MaVe/actions/workflows/ci.yml" className={styles.metricLive}>
           <span className={styles.metricDot} />
           CI passing
         </a>
-        <a href="https://app.codecov.io/github/MauroVerberkt/DotnetHelpers" className={styles.metricLive}>
+        <a href="https://app.codecov.io/github/MauroVerberkt/MaVe" className={styles.metricLive}>
           <span className={styles.metricDot} />
           Coverage
         </a>

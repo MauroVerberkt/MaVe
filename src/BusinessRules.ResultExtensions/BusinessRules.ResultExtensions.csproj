@@ -1,16 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <IsPackable>true</IsPackable>
-    <PackageId>BusinessRulesManagement.ResultExtensions</PackageId>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>MaVe.BusinessRules.ResultExtensions</PackageId>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <Title>BusinessRules Result Monad Extensions</Title>
     <Description>Integration library that bridges BusinessRules with the Result monad pattern for functional error handling</Description>
     <PackageTags>businessrules;result;monad;validation;functional</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BusinessRules\BusinessRules.csproj" />
-    <ProjectReference Include="..\HelperMonads\HelperMonads.csproj" />
+    <None Include="README.md" Pack="true" PackagePath=""/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BusinessRules\BusinessRules.csproj"/>
+    <ProjectReference Include="..\Monads\Monads.csproj"/>
   </ItemGroup>
 
 </Project>
