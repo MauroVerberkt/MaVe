@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-
-namespace Railyard;
+namespace MaVe.Railyard;
 
 /// <summary>
 /// Exception thrown when required services are missing from the service collection.

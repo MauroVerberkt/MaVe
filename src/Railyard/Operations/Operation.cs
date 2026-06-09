@@ -1,34 +1,40 @@
 using System.Reflection;
 using System.Text.Json;
-using HelperMonads;
+using MaVe.Monads;
 
-namespace Railyard.Operations;
+namespace MaVe.Railyard.Operations;
 
 /// <inheritdoc />
 internal abstract class Operation<TInput> : IOperation where TInput : class
 {
-    /// <summary>
-    /// Gets a value indicating whether this operation requires an input parameter.
-    /// The default implementation returns true, but can be overridden in derived classes.
-    /// </summary>
-    protected virtual bool HasInput => true;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Operation{TInput}" /> class.
     /// </summary>
     /// <exception cref="Exception">Thrown when <typeparamref name="TInput" /> is not a record type.</exception>
     protected Operation()
     {
-        if (!IsRecord(typeof(TInput))) throw new Exception($"{nameof(TInput)} is not a record.");
+        if (!IsRecord(typeof(TInput)))
+        {
+            throw new Exception($"{nameof(TInput)} is not a record.");
+        }
     }
+
+    /// <summary>
+    /// Gets a value indicating whether this operation requires an input parameter.
+    /// The default implementation returns true, but can be overridden in derived classes.
+    /// </summary>
+    protected virtual bool HasInput => true;
 
     /// <inheritdoc />
     public Result<string> Perform(string inputParameters)
     {
         if (HasInput)
+        {
             return ParseInput(inputParameters)
-                   .BindWithData(Validate)
-                   .BindAndTransform(Execute);
+                .Bind(Validate)
+                .Bind(Execute);
+        }
+
         return Execute(default!); // We can use null suppression here since a record always has a default.
     }
 

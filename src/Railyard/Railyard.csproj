@@ -1,18 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <LangVersion>latest</LangVersion>
-    </PropertyGroup>
-    
-    <ItemGroup>
-        <PackageReference Include="System.Text.Json" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-    </ItemGroup>
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>MaVe.Railyard</PackageId>
+    <Title>MaVe Railyard</Title>
+    <Description>Railway-oriented programming utilities for C#</Description>
+    <PackageTags>railway;pipeline;operations;functional</PackageTags>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\HelperMonads\HelperMonads.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Monads\Monads.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="PublicAPI.Shipped.txt" />
+    <AdditionalFiles Include="PublicAPI.Unshipped.txt" />
+  </ItemGroup>
 
 </Project>

@@ -1,7 +1,6 @@
-﻿
-using HelperMonads;
+﻿using MaVe.Monads;
 
-namespace Railyard.Operations;
+namespace MaVe.Railyard.Operations;
 
 /// <summary>
 /// Contains domain-specific errors used by the Railyard library.
@@ -9,7 +8,7 @@ namespace Railyard.Operations;
 public static class RailyardErrors
 {
     private const string InvalidInputCode = "RY001";
-        
+
     /// <summary>
     /// Creates an error indicating that the provided input could not be recognized
     /// as the expected type.
@@ -18,8 +17,10 @@ public static class RailyardErrors
     /// The expected input type.
     /// </typeparam>
     /// <returns>
-    /// An <see cref="Error"/> with code <c>RY001</c>.
+    /// An <see cref="Error" /> with code <c>RY001</c>.
     /// </returns>
-    public static Error InvalidInput<TExpected>() 
-        => Error.Create($"The input was not recognized as a '{typeof(TExpected).Name}'.", InvalidInputCode);
+    public static Error InvalidInput<TExpected>()
+    {
+        return Error.Create($"The input was not recognized as a '{typeof(TExpected).Name}'.", InvalidInputCode);
+    }
 }

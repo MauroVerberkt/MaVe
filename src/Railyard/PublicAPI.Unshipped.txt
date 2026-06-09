@@ -1,0 +1,21 @@
+﻿#nullable enable
+MaVe.Railyard.InfoDictionary
+MaVe.Railyard.InfoDictionary.Info.get -> System.Collections.Generic.IReadOnlyList<string!>!
+MaVe.Railyard.InfoDictionary.InfoDictionary(System.Collections.Generic.IDictionary<string!, string!>! dictionary) -> void
+MaVe.Railyard.InfoDictionary.Keys.get -> System.Collections.Generic.List<string!>!
+MaVe.Railyard.InfoDictionary.Name.get -> System.Collections.Generic.IReadOnlyList<string!>!
+MaVe.Railyard.InfoDictionary.ToJsonString() -> string!
+MaVe.Railyard.InfoDictionary.Values.get -> System.Collections.Generic.List<string!>!
+MaVe.Railyard.IYard
+MaVe.Railyard.IYard.GetOperationByName(string! operationName) -> MaVe.Monads.Option<MaVe.Railyard.Operations.IOperation!>!
+MaVe.Railyard.IYard.OperationsInfo.get -> MaVe.Railyard.InfoDictionary!
+MaVe.Railyard.MissingServiceException
+MaVe.Railyard.MissingServiceException.MissingServiceException(System.Collections.Generic.IEnumerable<string!>! missingServices, string! delimiter = ", ") -> void
+MaVe.Railyard.Operations.IOperation
+MaVe.Railyard.Operations.IOperation.Perform(string! inputParameters) -> MaVe.Monads.Result<string!>!
+MaVe.Railyard.Operations.RailyardErrors
+MaVe.Railyard.Yard
+MaVe.Railyard.Yard.GetOperationByName(string! operationName) -> MaVe.Monads.Option<MaVe.Railyard.Operations.IOperation!>!
+MaVe.Railyard.Yard.OperationsInfo.get -> MaVe.Railyard.InfoDictionary!
+MaVe.Railyard.Yard.Yard(Microsoft.Extensions.DependencyInjection.IServiceCollection! serviceCollection) -> void
+static MaVe.Railyard.Operations.RailyardErrors.InvalidInput<TExpected>() -> MaVe.Monads.Error!

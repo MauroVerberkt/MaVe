@@ -37,6 +37,7 @@ public Result<string> Perform(string inputParameters)
 ```
 
 Entry point that executes the operation pipeline:
+
 1. Parses JSON input into `TInput`
 2. Validates the parsed input
 3. Executes the operation logic

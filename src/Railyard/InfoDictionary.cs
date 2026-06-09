@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Text.Json;
 
-namespace Railyard;
+namespace MaVe.Railyard;
 
 /// <summary>
 /// Represents a read-only dictionary with string keys (names) and values (infos).
@@ -73,7 +70,7 @@ public class InfoDictionary : ReadOnlyDictionary<string, string>
     public string ToJsonString()
     {
         var dictionary = Name.Zip(Info, (name, info) => new { name, info })
-                             .ToDictionary(x => x.name, x => x.info);
+            .ToDictionary(x => x.name, x => x.info);
 
         return JsonSerializer.Serialize(dictionary);
     }

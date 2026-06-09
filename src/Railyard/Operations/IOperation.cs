@@ -1,6 +1,6 @@
-using HelperMonads;
+using MaVe.Monads;
 
-namespace Railyard.Operations;
+namespace MaVe.Railyard.Operations;
 
 /// <summary>
 /// An operation that can be performed.
@@ -12,5 +12,5 @@ public interface IOperation
     /// </summary>
     /// <param name="inputParameters">The input be processed.</param>
     /// <returns>A Result object indicating the outcome of the operation.</returns>
-    Result<string> Perform(string inputParameters);
+    public Result<string> Perform(string inputParameters);
 }

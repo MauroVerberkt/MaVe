@@ -1,12 +1,12 @@
-using HelperMonads;
-using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using Railyard.Operations;
+using MaVe.Monads;
+using MaVe.Railyard.Operations;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Railyard;
+namespace MaVe.Railyard;
 
 /// <summary>
 /// Provides a collection of operations and allows retrieving them by name.
@@ -52,7 +52,10 @@ public class Yard : IYard
         ValidateServices(serviceCollection);
 
         var operationTypes = GetOperationTypes();
-        foreach (var operationType in operationTypes) serviceCollection.AddTransient(operationType);
+        foreach (var operationType in operationTypes)
+        {
+            serviceCollection.AddTransient(operationType);
+        }
 
         var operationMappings = OperationMappingDictionary(operationTypes);
         _operationMappings = new ReadOnlyDictionary<string, Type>(operationMappings);
@@ -69,7 +72,9 @@ public class Yard : IYard
     public Option<IOperation> GetOperationByName(string operationName)
     {
         if (!_operationMappings.TryGetValue(operationName, out var operationType))
+        {
             return Option<IOperation>.None;
+        }
 
         var operation = _serviceProvider.GetService(operationType) as IOperation;
         return Option<IOperation>.FromNullable(operation);
@@ -88,7 +93,11 @@ public class Yard : IYard
                     serviceCollection.All(descriptor => descriptor.ServiceType != serviceType))
                 .ToList();
 
-        if (!missingServices.Any()) return;
+        if (!missingServices.Any())
+        {
+            return;
+        }
+
         throw new MissingServiceException(missingServices.Select(type => type.Name));
     }
 
@@ -99,15 +108,15 @@ public class Yard : IYard
     private static List<Type> GetOperationTypes()
     {
         return AppDomain.CurrentDomain.GetAssemblies()
-                        .SelectMany(assembly => assembly.GetTypes())
-                        .Where(type =>
-                            typeof(IOperation).IsAssignableFrom(type) &&
-                            type is
-                            {
-                                IsInterface: false,
-                                IsAbstract: false
-                            })
-                        .ToList();
+            .SelectMany(assembly => assembly.GetTypes())
+            .Where(type =>
+                typeof(IOperation).IsAssignableFrom(type) &&
+                type is
+                {
+                    IsInterface: false,
+                    IsAbstract: false
+                })
+            .ToList();
     }
 
     /// <summary>
@@ -142,11 +151,17 @@ public class Yard : IYard
 
         var field = operationType.GetField(fieldName, BindingFlags.Static | BindingFlags.NonPublic);
 
-        if (field == null) throw new MissingFieldException(assertInvalidMessage);
+        if (field == null)
+        {
+            throw new MissingFieldException(assertInvalidMessage);
+        }
 
         var fieldValue = field.GetValue(null);
 
-        if (fieldValue is not string fieldValueString) throw new MissingFieldException(assertInvalidMessage);
+        if (fieldValue is not string fieldValueString)
+        {
+            throw new MissingFieldException(assertInvalidMessage);
+        }
 
         return fieldValueString;
     }
