@@ -6,7 +6,8 @@
 .DESCRIPTION
     A branch is considered safe to delete when BOTH of the following are true:
       1. It does not exist on the remote (origin).
-      2. It is not ahead of main (i.e., all its commits are already in main).
+      2. It has no unique patches not already in main (checked via git cherry,
+         so squash-merged branches are correctly detected as fully merged).
 
     The script always runs 'git fetch --prune' first to ensure the local view
     of remote branches is current before making any decisions.
@@ -107,13 +108,16 @@ foreach ($branch in $localBranches)
         continue
     }
 
-    # Condition 2: not ahead of main (safe to remove)
-    $aheadCount = git rev-list --count "main..$branch" 2>$null
-    $isAheadOfMain = ($aheadCount -gt 0)
+    # Condition 2: no unique patches not in main (safe to remove)
+    # git cherry compares patches rather than commit identity, so this works
+    # correctly after squash merges where commits are rewritten on main.
+    $cherryOutput = git cherry main $branch 2>$null
+    $hasUniquePatches = $cherryOutput | Where-Object { $_ -match '^\+' }
 
-    if ($isAheadOfMain)
+    if ($hasUniquePatches)
     {
-        Write-Keep $branch "$aheadCount commit(s) not in main"
+        $uniqueCount = ($hasUniquePatches | Measure-Object).Count
+        Write-Keep $branch "$uniqueCount unique patch(es) not in main"
         continue
     }
 
