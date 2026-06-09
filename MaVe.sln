@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
@@ -61,6 +61,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{29D12269
 	ProjectSection(SolutionItems) = preProject
 		tools\docs-push.ps1 = tools\docs-push.ps1
 		tools\setup.ps1 = tools\setup.ps1
+		tools\cleanup-branches.ps1 = tools\cleanup-branches.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentation", "{68805024-391A-4332-961F-02929F33E1A0}"

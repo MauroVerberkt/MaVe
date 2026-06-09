@@ -52,3 +52,6 @@ docs/.docusaurus/
 
 # Verify snapshot testing
 *.received.*
+
+# Temporary working files
+.temp/
