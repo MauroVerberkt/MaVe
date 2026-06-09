@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+    <PackageReference Include="Verify.NUnit" />
+    <PackageReference Include="Verify.SourceGenerators" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Railyard\Railyard.csproj" />
+    <ProjectReference Include="..\..\src\RailyardGenerator\RailyardGenerator.csproj" ReferenceOutputAssembly="true" />
+  </ItemGroup>
+
+</Project>

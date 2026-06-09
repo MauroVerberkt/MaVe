@@ -42,7 +42,7 @@ public abstract class Operation<TInput, TOutput> : IOperation
         {
             deserializedInput = JsonSerializer.Deserialize<TInput>(jsonInput, serializerOptions);
         }
-        catch (JsonException exception)
+        catch (Exception exception)
         {
             return Result.Failure<string>(RailyardErrors.InvalidInput(operationName, exception.Message));
         }
@@ -69,7 +69,7 @@ public abstract class Operation<TInput, TOutput> : IOperation
             var serializedOutput = JsonSerializer.Serialize(executionResult.Data, serializerOptions);
             return Result.Success(serializedOutput);
         }
-        catch (JsonException exception)
+        catch (Exception exception)
         {
             return Result.Failure<string>(RailyardErrors.SerializationFailed(operationName, exception.Message));
         }

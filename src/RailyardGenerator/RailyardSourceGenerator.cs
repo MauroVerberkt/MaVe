@@ -15,8 +15,8 @@ namespace MaVe.RailyardGenerator;
 public sealed class RailyardSourceGenerator : IIncrementalGenerator
 {
     private const string OperationAttributeFullyQualifiedName = "MaVe.Railyard.OperationAttribute";
-    private const string OperationBaseFullyQualifiedName = "MaVe.Railyard.Operation`2";
-    private const string SyncOperationBaseFullyQualifiedName = "MaVe.Railyard.SyncOperation`2";
+    private const string OperationBaseFullyQualifiedName = "MaVe.Railyard.Operation<TInput, TOutput>";
+    private const string SyncOperationBaseFullyQualifiedName = "MaVe.Railyard.SyncOperation<TInput, TOutput>";
 
     private static readonly DiagnosticDescriptor DuplicateOperationNameDescriptor = new(
         id: "RY1001",
@@ -180,11 +180,11 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
         foreach (var candidate in candidates)
         {
             builder.AppendLine(
-                $"        global::Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddTransient<{candidate.FullyQualifiedTypeName}>(services);");
+                $"        services.Add(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Transient(typeof({candidate.FullyQualifiedTypeName}), typeof({candidate.FullyQualifiedTypeName})));");
         }
 
         builder.AppendLine(
-            "        global::Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddSingleton<IYard>(services, serviceProvider => new GeneratedYard(serviceProvider));");
+            "        services.Add(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton(typeof(IYard), serviceProvider => new GeneratedYard(serviceProvider)));" );
         builder.AppendLine("        return services;");
         builder.AppendLine("    }");
         builder.AppendLine("}");
@@ -207,7 +207,7 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
         foreach (var candidate in candidates)
         {
             builder.AppendLine(
-                $"            [\"{Escape(candidate.OperationName)}\"] = sp => global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<{candidate.FullyQualifiedTypeName}>(sp),");
+                $"            [\"{Escape(candidate.OperationName)}\"] = sp => (IOperation)(sp.GetService(typeof({candidate.FullyQualifiedTypeName})) ?? throw new global::System.InvalidOperationException(\"Service '{candidate.FullyQualifiedTypeName}' is not registered.\")),");
         }
 
         builder.AppendLine("        };");
