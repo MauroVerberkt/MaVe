@@ -1,0 +1,300 @@
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Text;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
+
+namespace MaVe.RailyardGenerator;
+
+/// <summary>
+/// Generates Railyard DI registration and dispatch implementation.
+/// </summary>
+[Generator]
+public sealed class RailyardSourceGenerator : IIncrementalGenerator
+{
+    private const string OperationAttributeFullyQualifiedName = "MaVe.Railyard.OperationAttribute";
+    private const string OperationBaseFullyQualifiedName = "MaVe.Railyard.Operation`2";
+    private const string SyncOperationBaseFullyQualifiedName = "MaVe.Railyard.SyncOperation`2";
+
+    private static readonly DiagnosticDescriptor DuplicateOperationNameDescriptor = new(
+        id: "RY1001",
+        title: "Duplicate operation name",
+        messageFormat: "Operation name '{0}' is declared more than once",
+        category: "Railyard",
+        defaultSeverity: DiagnosticSeverity.Error,
+        isEnabledByDefault: true);
+
+    private static readonly DiagnosticDescriptor InvalidOperationBaseDescriptor = new(
+        id: "RY1002",
+        title: "Invalid operation base type",
+        messageFormat: "Operation '{0}' must inherit from Operation<TInput, TOutput> or SyncOperation<TInput, TOutput>",
+        category: "Railyard",
+        defaultSeverity: DiagnosticSeverity.Error,
+        isEnabledByDefault: true);
+
+    /// <inheritdoc />
+    public void Initialize(IncrementalGeneratorInitializationContext context)
+    {
+        var operationCandidates = context.SyntaxProvider
+            .CreateSyntaxProvider(
+                static (node, _) => node is ClassDeclarationSyntax { AttributeLists.Count: > 0 },
+                static (syntaxContext, _) => GetOperationCandidate(syntaxContext))
+            .Where(static candidate => candidate is not null)
+            .Select(static (candidate, _) => candidate!);
+
+        context.RegisterSourceOutput(operationCandidates.Collect(), static (productionContext, candidates) =>
+        {
+            Emit(productionContext, candidates);
+        });
+    }
+
+    private static OperationCandidate? GetOperationCandidate(GeneratorSyntaxContext syntaxContext)
+    {
+        if (syntaxContext.Node is not ClassDeclarationSyntax classDeclaration)
+        {
+            return null;
+        }
+
+        if (syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration) is not INamedTypeSymbol classSymbol)
+        {
+            return null;
+        }
+
+        var operationAttribute = classSymbol
+            .GetAttributes()
+            .FirstOrDefault(attribute =>
+                attribute.AttributeClass?.ToDisplayString() == OperationAttributeFullyQualifiedName);
+
+        if (operationAttribute is null)
+        {
+            return null;
+        }
+
+        if (operationAttribute.ConstructorArguments.Length == 0 ||
+            operationAttribute.ConstructorArguments[0].Value is not string operationName)
+        {
+            return null;
+        }
+
+        string? description = null;
+        foreach (var namedArgument in operationAttribute.NamedArguments)
+        {
+            if (namedArgument is { Key: "Description", Value.Value: string value })
+            {
+                description = value;
+                break;
+            }
+        }
+
+        return new OperationCandidate(
+            operationName,
+            description,
+            classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+            classSymbol.Name,
+            classSymbol.Locations.FirstOrDefault(),
+            HasValidOperationBase(classSymbol));
+    }
+
+    private static bool HasValidOperationBase(INamedTypeSymbol classSymbol)
+    {
+        var current = classSymbol;
+        while (current.BaseType is not null)
+        {
+            current = current.BaseType;
+            var baseName = current.OriginalDefinition.ToDisplayString();
+
+            if (baseName is OperationBaseFullyQualifiedName or SyncOperationBaseFullyQualifiedName)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static void Emit(SourceProductionContext context, ImmutableArray<OperationCandidate> candidates)
+    {
+        if (candidates.IsDefaultOrEmpty)
+        {
+            return;
+        }
+
+        foreach (var invalidCandidate in candidates.Where(candidate => !candidate.HasValidBase))
+        {
+            if (invalidCandidate.Location is not null)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(
+                    InvalidOperationBaseDescriptor,
+                    invalidCandidate.Location,
+                    invalidCandidate.ClassName));
+            }
+        }
+
+        var validCandidates = candidates.Where(candidate => candidate.HasValidBase).ToList();
+        var duplicateGroups = validCandidates
+            .GroupBy(candidate => candidate.OperationName, StringComparer.Ordinal)
+            .Where(group => group.Count() > 1)
+            .ToList();
+
+        foreach (var duplicateGroup in duplicateGroups)
+        {
+            foreach (var duplicate in duplicateGroup)
+            {
+                if (duplicate.Location is not null)
+                {
+                    context.ReportDiagnostic(Diagnostic.Create(
+                        DuplicateOperationNameDescriptor,
+                        duplicate.Location,
+                        duplicate.OperationName));
+                }
+            }
+        }
+
+        var duplicateNames = new HashSet<string>(duplicateGroups.Select(group => group.Key), StringComparer.Ordinal);
+        var generationCandidates = validCandidates
+            .Where(candidate => !duplicateNames.Contains(candidate.OperationName))
+            .OrderBy(candidate => candidate.OperationName, StringComparer.Ordinal)
+            .ToList();
+
+        var source = GenerateSource(generationCandidates);
+        context.AddSource("Railyard.Generated.g.cs", SourceText.From(source, Encoding.UTF8));
+    }
+
+    private static string GenerateSource(IReadOnlyList<OperationCandidate> candidates)
+    {
+        var builder = new StringBuilder();
+
+        builder.AppendLine("// <auto-generated />");
+        builder.AppendLine("#nullable enable");
+        builder.AppendLine("namespace MaVe.Railyard;");
+        builder.AppendLine();
+        builder.AppendLine("public static class RailyardServiceCollectionExtensions");
+        builder.AppendLine("{");
+        builder.AppendLine("    public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddRailyard(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services)");
+        builder.AppendLine("    {");
+        builder.AppendLine("        global::System.ArgumentNullException.ThrowIfNull(services);");
+        builder.AppendLine();
+
+        foreach (var candidate in candidates)
+        {
+            builder.AppendLine(
+                $"        global::Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddTransient<{candidate.FullyQualifiedTypeName}>(services);");
+        }
+
+        builder.AppendLine(
+            "        global::Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddSingleton<IYard>(services, serviceProvider => new GeneratedYard(serviceProvider));");
+        builder.AppendLine("        return services;");
+        builder.AppendLine("    }");
+        builder.AppendLine("}");
+        builder.AppendLine();
+        builder.AppendLine("internal sealed class GeneratedYard : IYard");
+        builder.AppendLine("{");
+        builder.AppendLine("    private readonly global::System.IServiceProvider _serviceProvider;");
+        builder.AppendLine(
+            "    private readonly global::System.Collections.Generic.Dictionary<string, global::System.Func<global::System.IServiceProvider, IOperation>> _factoryByName;");
+        builder.AppendLine(
+            "    private readonly global::System.Collections.Generic.Dictionary<string, OperationDescriptor> _descriptorByName;");
+        builder.AppendLine();
+        builder.AppendLine("    public GeneratedYard(global::System.IServiceProvider serviceProvider)");
+        builder.AppendLine("    {");
+        builder.AppendLine("        _serviceProvider = serviceProvider;");
+        builder.AppendLine(
+            "        _factoryByName = new global::System.Collections.Generic.Dictionary<string, global::System.Func<global::System.IServiceProvider, IOperation>>(global::System.StringComparer.Ordinal)");
+        builder.AppendLine("        {");
+
+        foreach (var candidate in candidates)
+        {
+            builder.AppendLine(
+                $"            [\"{Escape(candidate.OperationName)}\"] = sp => global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<{candidate.FullyQualifiedTypeName}>(sp),");
+        }
+
+        builder.AppendLine("        };");
+        builder.AppendLine();
+        builder.AppendLine(
+            "        _descriptorByName = new global::System.Collections.Generic.Dictionary<string, OperationDescriptor>(global::System.StringComparer.Ordinal)");
+        builder.AppendLine("        {");
+
+        foreach (var candidate in candidates)
+        {
+            var descriptionLiteral = candidate.Description is null
+                ? "null"
+                : $"\"{Escape(candidate.Description)}\"";
+
+            builder.AppendLine(
+                $"            [\"{Escape(candidate.OperationName)}\"] = new OperationDescriptor(\"{Escape(candidate.OperationName)}\", {descriptionLiteral}),");
+        }
+
+        builder.AppendLine("        };");
+        builder.AppendLine();
+        builder.AppendLine(
+            "        Manifest = global::System.Array.AsReadOnly(global::System.Linq.Enumerable.ToArray(global::System.Linq.Enumerable.OrderBy(_descriptorByName.Values, descriptor => descriptor.Name, global::System.StringComparer.Ordinal)));" );
+        builder.AppendLine("    }");
+        builder.AppendLine();
+        builder.AppendLine("    public global::System.Collections.Generic.IReadOnlyList<OperationDescriptor> Manifest { get; }");
+        builder.AppendLine();
+        builder.AppendLine("    public OperationDescriptor? TryGetDescriptor(string operationName)");
+        builder.AppendLine("    {");
+        builder.AppendLine("        global::System.ArgumentNullException.ThrowIfNull(operationName);");
+        builder.AppendLine("        return _descriptorByName.TryGetValue(operationName, out var descriptor) ? descriptor : null;");
+        builder.AppendLine("    }");
+        builder.AppendLine();
+        builder.AppendLine(
+            "    public async global::System.Threading.Tasks.Task<global::MaVe.Monads.Result<string>> DispatchAsync(string operationName, string jsonInput, global::System.Threading.CancellationToken ct = default)");
+        builder.AppendLine("    {");
+        builder.AppendLine("        global::System.ArgumentNullException.ThrowIfNull(operationName);");
+        builder.AppendLine("        global::System.ArgumentNullException.ThrowIfNull(jsonInput);");
+        builder.AppendLine();
+        builder.AppendLine("        if (!_factoryByName.TryGetValue(operationName, out var factory))");
+        builder.AppendLine("        {");
+        builder.AppendLine("            return global::MaVe.Monads.Result.Failure<string>(RailyardErrors.OperationNotFound(operationName));");
+        builder.AppendLine("        }");
+        builder.AppendLine();
+        builder.AppendLine("        var operation = factory(_serviceProvider);");
+        builder.AppendLine("        var serializerOptions = _serviceProvider.GetService(typeof(global::System.Text.Json.JsonSerializerOptions)) as global::System.Text.Json.JsonSerializerOptions;");
+        builder.AppendLine("        return await operation.PerformAsync(operationName, jsonInput, serializerOptions, ct).ConfigureAwait(false);");
+        builder.AppendLine("    }");
+        builder.AppendLine("}");
+
+        return builder.ToString();
+    }
+
+    private static string Escape(string value)
+    {
+        return value
+            .Replace("\\", "\\\\")
+            .Replace("\"", "\\\"");
+    }
+
+    private sealed class OperationCandidate
+    {
+        public OperationCandidate(
+            string operationName,
+            string? description,
+            string fullyQualifiedTypeName,
+            string className,
+            Location? location,
+            bool hasValidBase)
+        {
+            OperationName = operationName;
+            Description = description;
+            FullyQualifiedTypeName = fullyQualifiedTypeName;
+            ClassName = className;
+            Location = location;
+            HasValidBase = hasValidBase;
+        }
+
+        public string OperationName { get; }
+
+        public string? Description { get; }
+
+        public string FullyQualifiedTypeName { get; }
+
+        public string ClassName { get; }
+
+        public Location? Location { get; }
+
+        public bool HasValidBase { get; }
+    }
+}

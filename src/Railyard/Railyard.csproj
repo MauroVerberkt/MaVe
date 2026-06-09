@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Monads\Monads.csproj" />
+    <ProjectReference Include="..\RailyardGenerator\RailyardGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>
