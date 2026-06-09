@@ -1,6 +1,6 @@
 ﻿using MaVe.Monads;
 
-namespace MaVe.Railyard.Operations;
+namespace MaVe.Railyard;
 
 /// <summary>
 /// Contains domain-specific errors used by the Railyard library.
@@ -8,19 +8,46 @@ namespace MaVe.Railyard.Operations;
 public static class RailyardErrors
 {
     private const string InvalidInputCode = "RY001";
+    private const string OperationNotFoundCode = "RY002";
+    private const string SerializationFailedCode = "RY003";
 
     /// <summary>
-    /// Creates an error indicating that the provided input could not be recognized
-    /// as the expected type.
+    /// Creates an error indicating that the provided input could not be deserialized.
     /// </summary>
-    /// <typeparam name="TExpected">
-    /// The expected input type.
-    /// </typeparam>
+    /// <param name="operationName">Operation dispatch name.</param>
+    /// <param name="detail">Optional error detail.</param>
     /// <returns>
     /// An <see cref="Error" /> with code <c>RY001</c>.
     /// </returns>
-    public static Error InvalidInput<TExpected>()
+    public static Error InvalidInput(string operationName, string? detail = null)
     {
-        return Error.Create($"The input was not recognized as a '{typeof(TExpected).Name}'.", InvalidInputCode);
+        var detailSuffix = string.IsNullOrWhiteSpace(detail) ? string.Empty : $" {detail}";
+        return Error.Create(
+            $"Input for operation '{operationName}' could not be deserialized.{detailSuffix}",
+            InvalidInputCode);
+    }
+
+    /// <summary>
+    /// Creates an error indicating that no operation was found with the supplied name.
+    /// </summary>
+    /// <param name="operationName">Operation dispatch name.</param>
+    /// <returns>An <see cref="Error" /> with code <c>RY002</c>.</returns>
+    public static Error OperationNotFound(string operationName)
+    {
+        return Error.Create($"No operation registered with name '{operationName}'.", OperationNotFoundCode);
+    }
+
+    /// <summary>
+    /// Creates an error indicating that operation output could not be serialized.
+    /// </summary>
+    /// <param name="operationName">Operation dispatch name.</param>
+    /// <param name="detail">Optional error detail.</param>
+    /// <returns>An <see cref="Error" /> with code <c>RY003</c>.</returns>
+    public static Error SerializationFailed(string operationName, string? detail = null)
+    {
+        var detailSuffix = string.IsNullOrWhiteSpace(detail) ? string.Empty : $" {detail}";
+        return Error.Create(
+            $"Output serialization failed for operation '{operationName}'.{detailSuffix}",
+            SerializationFailedCode);
     }
 }

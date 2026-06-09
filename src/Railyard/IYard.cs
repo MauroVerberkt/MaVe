@@ -1,23 +1,32 @@
 using MaVe.Monads;
-using MaVe.Railyard.Operations;
 
 namespace MaVe.Railyard;
 
 /// <summary>
-/// Defines the contract for a yard that can retrieve operations by name
-/// and provide additional operation information.
+/// Dispatch entry point for Railyard operations.
 /// </summary>
 public interface IYard
 {
     /// <summary>
-    /// Gets a dictionary containing operation names and their corresponding info.
+    /// Dispatches a named operation with a JSON payload.
     /// </summary>
-    public InfoDictionary OperationsInfo { get; }
+    /// <param name="operationName">Operation dispatch name.</param>
+    /// <param name="jsonInput">JSON input payload.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>
+    /// Success with JSON-serialized output, or failure with dispatch/validation/execution error.
+    /// </returns>
+    public Task<Result<string>> DispatchAsync(string operationName, string jsonInput, CancellationToken ct = default);
 
     /// <summary>
-    /// Retrieves an operation by its name.
+    /// Gets all registered operation descriptors.
     /// </summary>
-    /// <param name="operationName">The name of the operation to retrieve.</param>
-    /// <returns>An <see cref="Option{IOperation}" /> containing the operation, or none if not found.</returns>
-    public Option<IOperation> GetOperationByName(string operationName);
+    public IReadOnlyList<OperationDescriptor> Manifest { get; }
+
+    /// <summary>
+    /// Looks up an operation descriptor by name.
+    /// </summary>
+    /// <param name="operationName">Operation dispatch name.</param>
+    /// <returns>The descriptor if found; otherwise <see langword="null" />.</returns>
+    public OperationDescriptor? TryGetDescriptor(string operationName);
 }
