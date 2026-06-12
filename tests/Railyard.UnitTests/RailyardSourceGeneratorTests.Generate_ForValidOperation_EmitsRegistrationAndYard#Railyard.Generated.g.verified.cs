@@ -9,8 +9,8 @@ public static class RailyardServiceCollectionExtensions
     {
         global::System.ArgumentNullException.ThrowIfNull(services);
 
-        services.Add(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Transient(typeof(global::GreetOperation), typeof(global::GreetOperation)));
-        services.Add(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton(typeof(IYard), serviceProvider => new GeneratedYard((global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)(serviceProvider.GetService(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)) ?? throw new global::System.InvalidOperationException("Service 'global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory' is not registered.")))));
+        global::Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAdd(services, global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Transient(typeof(global::GreetOperation), typeof(global::GreetOperation)));
+        global::Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAdd(services, global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton(typeof(IYard), serviceProvider => new GeneratedYard((global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)(serviceProvider.GetService(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)) ?? throw new global::System.InvalidOperationException("Service 'global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory' is not registered.")))));
         return services;
     }
 }

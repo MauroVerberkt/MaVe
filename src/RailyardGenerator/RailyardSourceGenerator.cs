@@ -218,11 +218,11 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
         foreach (var candidate in candidates)
         {
             builder.AppendLine(
-                $"        services.Add(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Transient(typeof({candidate.FullyQualifiedTypeName}), typeof({candidate.FullyQualifiedTypeName})));");
+                $"        global::Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAdd(services, global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Transient(typeof({candidate.FullyQualifiedTypeName}), typeof({candidate.FullyQualifiedTypeName})));");
         }
 
         builder.AppendLine(
-            "        services.Add(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton(typeof(IYard), serviceProvider => new GeneratedYard((global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)(serviceProvider.GetService(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)) ?? throw new global::System.InvalidOperationException(\"Service 'global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory' is not registered.\")))));");
+            "        global::Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAdd(services, global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton(typeof(IYard), serviceProvider => new GeneratedYard((global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)(serviceProvider.GetService(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)) ?? throw new global::System.InvalidOperationException(\"Service 'global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory' is not registered.\")))));");
         builder.AppendLine("        return services;");
         builder.AppendLine("    }");
         builder.AppendLine("}");
