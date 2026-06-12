@@ -5,6 +5,13 @@ namespace MaVe.Railyard;
 
 public static class RailyardServiceCollectionExtensions
 {
+    /// <summary>
+    /// Registers all discovered Railyard operations and the generated <see cref="IYard"/> implementation.
+    /// </summary>
+    /// <remarks>
+    /// If <see cref="global::System.Text.Json.JsonSerializerOptions"/> is registered in the service provider,
+    /// it is used for operation payload serialization and deserialization; otherwise System.Text.Json defaults apply.
+    /// </remarks>
     public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddRailyard(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services)
     {
         global::System.ArgumentNullException.ThrowIfNull(services);

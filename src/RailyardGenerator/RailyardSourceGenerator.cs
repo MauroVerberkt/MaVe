@@ -209,6 +209,13 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
         builder.AppendLine();
         builder.AppendLine("public static class RailyardServiceCollectionExtensions");
         builder.AppendLine("{");
+        builder.AppendLine("    /// <summary>");
+        builder.AppendLine("    /// Registers all discovered Railyard operations and the generated <see cref=\"IYard\"/> implementation.");
+        builder.AppendLine("    /// </summary>");
+        builder.AppendLine("    /// <remarks>");
+        builder.AppendLine("    /// If <see cref=\"global::System.Text.Json.JsonSerializerOptions\"/> is registered in the service provider,");
+        builder.AppendLine("    /// it is used for operation payload serialization and deserialization; otherwise System.Text.Json defaults apply.");
+        builder.AppendLine("    /// </remarks>");
         builder.AppendLine(
             "    public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddRailyard(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services)");
         builder.AppendLine("    {");
