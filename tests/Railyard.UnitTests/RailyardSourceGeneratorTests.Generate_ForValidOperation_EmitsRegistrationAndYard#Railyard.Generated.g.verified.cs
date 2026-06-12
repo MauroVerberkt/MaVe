@@ -10,20 +10,20 @@ public static class RailyardServiceCollectionExtensions
         global::System.ArgumentNullException.ThrowIfNull(services);
 
         services.Add(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Transient(typeof(global::GreetOperation), typeof(global::GreetOperation)));
-        services.Add(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton(typeof(IYard), serviceProvider => new GeneratedYard(serviceProvider)));
+        services.Add(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton(typeof(IYard), serviceProvider => new GeneratedYard((global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)(serviceProvider.GetService(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)) ?? throw new global::System.InvalidOperationException("Service 'global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory' is not registered.")))));
         return services;
     }
 }
 
 internal sealed class GeneratedYard : IYard
 {
-    private readonly global::System.IServiceProvider _serviceProvider;
+    private readonly global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory _scopeFactory;
     private readonly global::System.Collections.Generic.Dictionary<string, global::System.Func<global::System.IServiceProvider, IOperation>> _factoryByName;
     private readonly global::System.Collections.Generic.Dictionary<string, OperationDescriptor> _descriptorByName;
 
-    public GeneratedYard(global::System.IServiceProvider serviceProvider)
+    public GeneratedYard(global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory scopeFactory)
     {
-        _serviceProvider = serviceProvider;
+        _scopeFactory = scopeFactory;
         _factoryByName = new global::System.Collections.Generic.Dictionary<string, global::System.Func<global::System.IServiceProvider, IOperation>>(global::System.StringComparer.Ordinal)
         {
             ["greet"] = sp => (IOperation)(sp.GetService(typeof(global::GreetOperation)) ?? throw new global::System.InvalidOperationException("Service 'global::GreetOperation' is not registered.")),
@@ -55,8 +55,10 @@ internal sealed class GeneratedYard : IYard
             return global::MaVe.Monads.Result.Failure<string>(RailyardErrors.OperationNotFound(operationName));
         }
 
-        var operation = factory(_serviceProvider);
-        var serializerOptions = _serviceProvider.GetService(typeof(global::System.Text.Json.JsonSerializerOptions)) as global::System.Text.Json.JsonSerializerOptions;
+        using var scope = _scopeFactory.CreateScope();
+        var scopedServiceProvider = scope.ServiceProvider;
+        var operation = factory(scopedServiceProvider);
+        var serializerOptions = scopedServiceProvider.GetService(typeof(global::System.Text.Json.JsonSerializerOptions)) as global::System.Text.Json.JsonSerializerOptions;
         var result = await operation.PerformAsync(jsonInput, serializerOptions, ct).ConfigureAwait(false);
         if (result.IsSuccess)
         {

@@ -180,22 +180,22 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
         }
 
         builder.AppendLine(
-            "        services.Add(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton(typeof(IYard), serviceProvider => new GeneratedYard(serviceProvider)));");
+            "        services.Add(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton(typeof(IYard), serviceProvider => new GeneratedYard((global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)(serviceProvider.GetService(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)) ?? throw new global::System.InvalidOperationException(\"Service 'global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory' is not registered.\")))));");
         builder.AppendLine("        return services;");
         builder.AppendLine("    }");
         builder.AppendLine("}");
         builder.AppendLine();
         builder.AppendLine("internal sealed class GeneratedYard : IYard");
         builder.AppendLine("{");
-        builder.AppendLine("    private readonly global::System.IServiceProvider _serviceProvider;");
+        builder.AppendLine("    private readonly global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory _scopeFactory;");
         builder.AppendLine(
             "    private readonly global::System.Collections.Generic.Dictionary<string, global::System.Func<global::System.IServiceProvider, IOperation>> _factoryByName;");
         builder.AppendLine(
             "    private readonly global::System.Collections.Generic.Dictionary<string, OperationDescriptor> _descriptorByName;");
         builder.AppendLine();
-        builder.AppendLine("    public GeneratedYard(global::System.IServiceProvider serviceProvider)");
+        builder.AppendLine("    public GeneratedYard(global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory scopeFactory)");
         builder.AppendLine("    {");
-        builder.AppendLine("        _serviceProvider = serviceProvider;");
+        builder.AppendLine("        _scopeFactory = scopeFactory;");
         builder.AppendLine(
             "        _factoryByName = new global::System.Collections.Generic.Dictionary<string, global::System.Func<global::System.IServiceProvider, IOperation>>(global::System.StringComparer.Ordinal)");
         builder.AppendLine("        {");
@@ -250,9 +250,11 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
             "            return global::MaVe.Monads.Result.Failure<string>(RailyardErrors.OperationNotFound(operationName));");
         builder.AppendLine("        }");
         builder.AppendLine();
-        builder.AppendLine("        var operation = factory(_serviceProvider);");
+        builder.AppendLine("        using var scope = _scopeFactory.CreateScope();");
+        builder.AppendLine("        var scopedServiceProvider = scope.ServiceProvider;");
+        builder.AppendLine("        var operation = factory(scopedServiceProvider);");
         builder.AppendLine(
-            "        var serializerOptions = _serviceProvider.GetService(typeof(global::System.Text.Json.JsonSerializerOptions)) as global::System.Text.Json.JsonSerializerOptions;");
+            "        var serializerOptions = scopedServiceProvider.GetService(typeof(global::System.Text.Json.JsonSerializerOptions)) as global::System.Text.Json.JsonSerializerOptions;");
         builder.AppendLine(
             "        var result = await operation.PerformAsync(jsonInput, serializerOptions, ct).ConfigureAwait(false);");
         builder.AppendLine("        if (result.IsSuccess)");
