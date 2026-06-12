@@ -1,0 +1,2 @@
+﻿[*.cs]
+resharper_auto_property_can_be_made_get_only_local_highlighting = none

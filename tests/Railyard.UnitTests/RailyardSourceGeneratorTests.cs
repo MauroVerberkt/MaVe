@@ -9,7 +9,7 @@ namespace MaVe.Railyard.UnitTests;
 [TestFixture]
 public class RailyardSourceGeneratorTests
 {
-    private static readonly MetadataReference[] References = CreateReferences();
+    private static readonly MetadataReference[] _references = CreateReferences();
 
     [Test]
     public Task Generate_ForValidOperation_EmitsRegistrationAndYard()
@@ -121,7 +121,7 @@ public class RailyardSourceGeneratorTests
         var compilation = CSharpCompilation.Create(
             "RailyardGeneratorTests",
             [CSharpSyntaxTree.ParseText(source)],
-            References,
+            _references,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
         GeneratorDriver driver = CSharpGeneratorDriver.Create(new RailyardSourceGenerator());
@@ -145,9 +145,8 @@ public class RailyardSourceGeneratorTests
         references.Add(MetadataReference.CreateFromFile(typeof(OperationAttribute).Assembly.Location));
         references.Add(MetadataReference.CreateFromFile(typeof(IServiceCollection).Assembly.Location));
 
-        return references
+        return [.. references
             .GroupBy(reference => reference.Display, StringComparer.OrdinalIgnoreCase)
-            .Select(group => group.First())
-            .ToArray();
+            .Select(group => group.First())];
     }
 }

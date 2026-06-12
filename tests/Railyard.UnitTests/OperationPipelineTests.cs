@@ -91,7 +91,7 @@ public class OperationPipelineTests
 
     private sealed class EchoInput
     {
-        public string Message { get; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
     }
 
     private sealed class EchoOutput
