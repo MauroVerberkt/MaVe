@@ -116,6 +116,34 @@ public class RailyardSourceGeneratorTests
         Assert.That(diagnostics.Any(diagnostic => diagnostic.Id == "RY1002"), Is.True);
     }
 
+    [Test]
+    public void Generate_ForInvalidName_ReportsRY1003()
+    {
+        const string source = """
+                              using System.Threading;
+                              using System.Threading.Tasks;
+                              using MaVe.Monads;
+                              using MaVe.Railyard;
+
+                              [Operation("bad name")]
+                              public sealed class InvalidNameOperation : Operation<InvalidNameInput, InvalidNameOutput>
+                              {
+                                  protected override Task<Result<InvalidNameOutput>> ExecuteAsync(InvalidNameInput input, CancellationToken ct)
+                                  {
+                                      return Task.FromResult(Result.Success(new InvalidNameOutput()));
+                                  }
+                              }
+
+                              public sealed class InvalidNameInput { }
+                              public sealed class InvalidNameOutput { }
+                              """;
+
+        var driver = CreateDriver(source);
+        var diagnostics = driver.GetRunResult().Results.SelectMany(result => result.Diagnostics);
+
+        Assert.That(diagnostics.Any(diagnostic => diagnostic.Id == "RY1003"), Is.True);
+    }
+
     private static GeneratorDriver CreateDriver(string source)
     {
         var compilation = CSharpCompilation.Create(

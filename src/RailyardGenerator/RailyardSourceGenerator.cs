@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Text.RegularExpressions;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -15,6 +16,7 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
     private const string OperationAttributeFullyQualifiedName = "MaVe.Railyard.OperationAttribute";
     private const string OperationBaseFullyQualifiedName = "MaVe.Railyard.Operation<TInput, TOutput>";
     private const string SyncOperationBaseFullyQualifiedName = "MaVe.Railyard.SyncOperation<TInput, TOutput>";
+    private static readonly Regex _validOperationNameRegex = new("^[A-Za-z][A-Za-z0-9_-]*$", RegexOptions.Compiled);
 
     private static readonly DiagnosticDescriptor _duplicateOperationNameDescriptor = new(
         "RY1001",
@@ -28,6 +30,14 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
         "RY1002",
         "Invalid operation base type",
         "Operation '{0}' must inherit from Operation<TInput, TOutput> or SyncOperation<TInput, TOutput>",
+        "Railyard",
+        DiagnosticSeverity.Error,
+        true);
+
+    private static readonly DiagnosticDescriptor _invalidOperationNameDescriptor = new(
+        "RY1003",
+        "Invalid operation name",
+        "Operation name '{0}' is invalid. Use pattern: ^[A-Za-z][A-Za-z0-9_-]*$.",
         "Railyard",
         DiagnosticSeverity.Error,
         true);
@@ -89,7 +99,13 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
             classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
             classSymbol.Name,
             classSymbol.Locations.FirstOrDefault(),
+            HasValidOperationName(operationName),
             HasValidOperationBase(classSymbol));
+    }
+
+    private static bool HasValidOperationName(string operationName)
+    {
+        return _validOperationNameRegex.IsMatch(operationName);
     }
 
     private static bool HasValidOperationBase(INamedTypeSymbol classSymbol)
@@ -127,7 +143,18 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
             }
         }
 
-        var validCandidates = candidates.Where(candidate => candidate.HasValidBase).ToList();
+        foreach (var invalidCandidate in candidates.Where(candidate => !candidate.HasValidName))
+        {
+            if (invalidCandidate.Location is not null)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(
+                    _invalidOperationNameDescriptor,
+                    invalidCandidate.Location,
+                    invalidCandidate.OperationName));
+            }
+        }
+
+        var validCandidates = candidates.Where(candidate => candidate is { HasValidBase: true, HasValidName: true }).ToList();
         var duplicateGroups = validCandidates
             .GroupBy(candidate => candidate.OperationName, StringComparer.Ordinal)
             .Where(group => group.Count() > 1)
@@ -273,9 +300,36 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
 
     private static string Escape(string value)
     {
-        return value
-            .Replace("\\", "\\\\")
-            .Replace("\"", "\\\"");
+        var builder = new StringBuilder(value.Length);
+        foreach (var ch in value)
+        {
+            switch (ch)
+            {
+                case '\\':
+                    builder.Append("\\\\");
+                    break;
+                case '"':
+                    builder.Append("\\\"");
+                    break;
+                case '\n':
+                    builder.Append("\\n");
+                    break;
+                case '\r':
+                    builder.Append("\\r");
+                    break;
+                case '\t':
+                    builder.Append("\\t");
+                    break;
+                case '\0':
+                    builder.Append("\\0");
+                    break;
+                default:
+                    builder.Append(ch);
+                    break;
+            }
+        }
+
+        return builder.ToString();
     }
 
     private sealed class OperationCandidate(
@@ -284,6 +338,7 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
         string fullyQualifiedTypeName,
         string className,
         Location? location,
+        bool hasValidName,
         bool hasValidBase)
     {
         public string OperationName { get; } = operationName;
@@ -295,6 +350,8 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
         public string ClassName { get; } = className;
 
         public Location? Location { get; } = location;
+
+        public bool HasValidName { get; } = hasValidName;
 
         public bool HasValidBase { get; } = hasValidBase;
     }
