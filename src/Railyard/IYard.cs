@@ -18,6 +18,10 @@ public interface IYard
     /// <param name="operationName">Operation dispatch name.</param>
     /// <param name="jsonInput">JSON input payload.</param>
     /// <param name="ct">Cancellation token.</param>
+    /// <remarks>
+    /// Each dispatch resolves operations from a dedicated dependency injection scope created by the generated yard.
+    /// Operation dependencies do not share the caller's ambient scope.
+    /// </remarks>
     /// <returns>
     /// Success with JSON-serialized output, or failure with dispatch/validation/execution error.
     /// </returns>
