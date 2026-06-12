@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.Text.RegularExpressions;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -16,7 +15,6 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
     private const string OperationAttributeFullyQualifiedName = "MaVe.Railyard.OperationAttribute";
     private const string OperationBaseFullyQualifiedName = "MaVe.Railyard.Operation<TInput, TOutput>";
     private const string SyncOperationBaseFullyQualifiedName = "MaVe.Railyard.SyncOperation<TInput, TOutput>";
-    private static readonly Regex _validOperationNameRegex = new("^[A-Za-z][A-Za-z0-9_-]*$", RegexOptions.Compiled);
 
     private static readonly DiagnosticDescriptor _duplicateOperationNameDescriptor = new(
         "RY1001",
@@ -47,7 +45,10 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
     {
         var operationCandidates = context.SyntaxProvider
             .CreateSyntaxProvider(
-                static (node, _) => node is ClassDeclarationSyntax { AttributeLists.Count: > 0 },
+                static (node, _) => node is ClassDeclarationSyntax classDeclaration &&
+                                    classDeclaration.AttributeLists.Any(attributeList =>
+                                        attributeList.Attributes.Any(attribute =>
+                                            attribute.Name.ToString().Contains("Operation", StringComparison.Ordinal))),
                 static (syntaxContext, _) => GetOperationCandidate(syntaxContext))
             .Where(static candidate => candidate is not null)
             .Select(static (candidate, _) => candidate!);
@@ -105,7 +106,21 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
 
     private static bool HasValidOperationName(string operationName)
     {
-        return _validOperationNameRegex.IsMatch(operationName);
+        if (operationName.Length == 0 || !char.IsLetter(operationName[0]))
+        {
+            return false;
+        }
+
+        for (var i = 1; i < operationName.Length; i++)
+        {
+            var character = operationName[i];
+            if (!char.IsLetterOrDigit(character) && character != '_' && character != '-')
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static bool HasValidOperationBase(INamedTypeSymbol classSymbol)
