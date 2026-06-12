@@ -2,13 +2,14 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp"/>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
     <PackageReference Include="Verify.NUnit"/>
     <PackageReference Include="Verify.SourceGenerators"/>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Railyard\Railyard.csproj"/>
-    <ProjectReference Include="..\..\src\RailyardGenerator\RailyardGenerator.csproj" ReferenceOutputAssembly="true"/>
+    <ProjectReference Include="..\..\src\RailyardGenerator\RailyardGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true"/>
   </ItemGroup>
 
 </Project>

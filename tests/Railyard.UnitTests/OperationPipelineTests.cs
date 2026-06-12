@@ -78,7 +78,20 @@ public class OperationPipelineTests
         });
     }
 
-    [Operation("echo")]
+    [Test]
+    public async Task PerformAsync_WhenSyncOperationIsValid_ReturnsSerializedOutput()
+    {
+        var operation = new SyncEchoOperation();
+
+        var result = await operation.PerformAsync("{\"Message\":\"hello\"}", null, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.IsSuccess, Is.True);
+            Assert.That(result.Data, Is.EqualTo("{\"Message\":\"hello\"}"));
+        });
+    }
+
     private sealed class EchoOperation : Operation<EchoInput, EchoOutput>
     {
         protected override Result<EchoInput> Validate(EchoInput input)
@@ -94,13 +107,20 @@ public class OperationPipelineTests
         }
     }
 
-    [Operation("non-serializable")]
     private sealed class NonSerializableOperation : Operation<NonSerializableInput, NonSerializableOutput>
     {
         protected override Task<Result<NonSerializableOutput>> ExecuteAsync(NonSerializableInput input,
             CancellationToken ct)
         {
             return Task.FromResult(Result.Success(new NonSerializableOutput()));
+        }
+    }
+
+    private sealed class SyncEchoOperation : SyncOperation<EchoInput, EchoOutput>
+    {
+        protected override Result<EchoOutput> Execute(EchoInput input)
+        {
+            return Result.Success(new EchoOutput(input.Message));
         }
     }
 
