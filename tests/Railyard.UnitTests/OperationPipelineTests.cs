@@ -10,7 +10,7 @@ public class OperationPipelineTests
     {
         var operation = new EchoOperation();
 
-        var result = await operation.PerformAsync("echo", "{\"Message\":\"hello\"}", null, CancellationToken.None);
+        var result = await operation.PerformAsync("{\"Message\":\"hello\"}", null, CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -24,13 +24,13 @@ public class OperationPipelineTests
     {
         var operation = new EchoOperation();
 
-        var result = await operation.PerformAsync("echo", "{invalid-json", null, CancellationToken.None);
+        var result = await operation.PerformAsync("{invalid-json", null, CancellationToken.None);
 
         Assert.Multiple(() =>
         {
             Assert.That(result.IsFailure, Is.True);
             Assert.That(result.Error?.Code, Is.EqualTo("RY001"));
-            Assert.That(result.Error?.Message, Does.Contain("echo"));
+            Assert.That(result.Error?.Message, Does.StartWith("Input could not be deserialized."));
         });
     }
 
@@ -39,7 +39,7 @@ public class OperationPipelineTests
     {
         var operation = new EchoOperation();
 
-        var result = await operation.PerformAsync("echo", "{\"Message\":\"\"}", null, CancellationToken.None);
+        var result = await operation.PerformAsync("{\"Message\":\"\"}", null, CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -54,7 +54,7 @@ public class OperationPipelineTests
         var operation = new NonSerializableOperation();
 
         var result =
-            await operation.PerformAsync("non-serializable", "{\"value\":\"x\"}", null, CancellationToken.None);
+            await operation.PerformAsync("{\"value\":\"x\"}", null, CancellationToken.None);
 
         Assert.Multiple(() =>
         {

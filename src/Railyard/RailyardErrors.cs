@@ -14,17 +14,14 @@ public static class RailyardErrors
     /// <summary>
     /// Creates an error indicating that the provided input could not be deserialized.
     /// </summary>
-    /// <param name="operationName">Operation dispatch name.</param>
     /// <param name="detail">Optional error detail.</param>
     /// <returns>
     /// An <see cref="Error" /> with code <c>RY001</c>.
     /// </returns>
-    public static Error InvalidInput(string operationName, string? detail = null)
+    public static Error InvalidInput(string? detail = null)
     {
         var detailSuffix = string.IsNullOrWhiteSpace(detail) ? string.Empty : $" {detail}";
-        return Error.Create(
-            $"Input for operation '{operationName}' could not be deserialized.{detailSuffix}",
-            InvalidInputCode);
+        return Error.Create($"Input could not be deserialized.{detailSuffix}", InvalidInputCode);
     }
 
     /// <summary>
@@ -40,14 +37,11 @@ public static class RailyardErrors
     /// <summary>
     /// Creates an error indicating that operation output could not be serialized.
     /// </summary>
-    /// <param name="operationName">Operation dispatch name.</param>
     /// <param name="detail">Optional error detail.</param>
     /// <returns>An <see cref="Error" /> with code <c>RY003</c>.</returns>
-    public static Error SerializationFailed(string operationName, string? detail = null)
+    public static Error SerializationFailed(string? detail = null)
     {
         var detailSuffix = string.IsNullOrWhiteSpace(detail) ? string.Empty : $" {detail}";
-        return Error.Create(
-            $"Output serialization failed for operation '{operationName}'.{detailSuffix}",
-            SerializationFailedCode);
+        return Error.Create($"Output serialization failed.{detailSuffix}", SerializationFailedCode);
     }
 }

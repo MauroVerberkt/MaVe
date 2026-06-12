@@ -57,6 +57,13 @@ internal sealed class GeneratedYard : IYard
 
         var operation = factory(_serviceProvider);
         var serializerOptions = _serviceProvider.GetService(typeof(global::System.Text.Json.JsonSerializerOptions)) as global::System.Text.Json.JsonSerializerOptions;
-        return await operation.PerformAsync(operationName, jsonInput, serializerOptions, ct).ConfigureAwait(false);
+        var result = await operation.PerformAsync(jsonInput, serializerOptions, ct).ConfigureAwait(false);
+        if (result.IsSuccess)
+        {
+            return result;
+        }
+
+        var contextualizedError = result.Error! with { Message = $"Operation '{operationName}': {result.Error.Message}" };
+        return global::MaVe.Monads.Result.Failure<string>(contextualizedError);
     }
 }

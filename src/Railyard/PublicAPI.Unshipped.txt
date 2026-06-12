@@ -4,7 +4,7 @@ MaVe.Railyard.IYard.DispatchAsync(string! operationName, string! jsonInput, Syst
 MaVe.Railyard.IYard.Manifest.get -> System.Collections.Generic.IReadOnlyList<MaVe.Railyard.OperationDescriptor!>!
 MaVe.Railyard.IYard.TryGetDescriptor(string! operationName) -> MaVe.Railyard.OperationDescriptor?
 MaVe.Railyard.IOperation
-MaVe.Railyard.IOperation.PerformAsync(string! operationName, string! jsonInput, System.Text.Json.JsonSerializerOptions? serializerOptions, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<MaVe.Monads.Result<string!>!>!
+MaVe.Railyard.IOperation.PerformAsync(string! jsonInput, System.Text.Json.JsonSerializerOptions? serializerOptions, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<MaVe.Monads.Result<string!>!>!
 MaVe.Railyard.OperationAttribute
 MaVe.Railyard.OperationAttribute.Description.get -> string?
 MaVe.Railyard.OperationAttribute.Description.init -> void
@@ -16,13 +16,13 @@ MaVe.Railyard.OperationDescriptor.Name.get -> string!
 MaVe.Railyard.OperationDescriptor.OperationDescriptor(string! name, string? description) -> void
 MaVe.Railyard.Operation<TInput, TOutput>
 MaVe.Railyard.Operation<TInput, TOutput>.Operation() -> void
-MaVe.Railyard.Operation<TInput, TOutput>.PerformAsync(string! operationName, string! jsonInput, System.Text.Json.JsonSerializerOptions? serializerOptions, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<MaVe.Monads.Result<string!>!>!
+MaVe.Railyard.Operation<TInput, TOutput>.PerformAsync(string! jsonInput, System.Text.Json.JsonSerializerOptions? serializerOptions, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<MaVe.Monads.Result<string!>!>!
 virtual MaVe.Railyard.Operation<TInput, TOutput>.Validate(TInput! input) -> MaVe.Monads.Result<TInput!>!
 abstract MaVe.Railyard.Operation<TInput, TOutput>.ExecuteAsync(TInput! input, System.Threading.CancellationToken ct) -> System.Threading.Tasks.Task<MaVe.Monads.Result<TOutput!>!>!
 MaVe.Railyard.RailyardErrors
-static MaVe.Railyard.RailyardErrors.InvalidInput(string! operationName, string? detail = null) -> MaVe.Monads.Error!
+static MaVe.Railyard.RailyardErrors.InvalidInput(string? detail = null) -> MaVe.Monads.Error!
 static MaVe.Railyard.RailyardErrors.OperationNotFound(string! operationName) -> MaVe.Monads.Error!
-static MaVe.Railyard.RailyardErrors.SerializationFailed(string! operationName, string? detail = null) -> MaVe.Monads.Error!
+static MaVe.Railyard.RailyardErrors.SerializationFailed(string? detail = null) -> MaVe.Monads.Error!
 MaVe.Railyard.SyncOperation<TInput, TOutput>
 MaVe.Railyard.SyncOperation<TInput, TOutput>.SyncOperation() -> void
 abstract MaVe.Railyard.SyncOperation<TInput, TOutput>.Execute(TInput! input) -> MaVe.Monads.Result<TOutput!>!

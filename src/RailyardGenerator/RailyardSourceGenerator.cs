@@ -254,7 +254,15 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
         builder.AppendLine(
             "        var serializerOptions = _serviceProvider.GetService(typeof(global::System.Text.Json.JsonSerializerOptions)) as global::System.Text.Json.JsonSerializerOptions;");
         builder.AppendLine(
-            "        return await operation.PerformAsync(operationName, jsonInput, serializerOptions, ct).ConfigureAwait(false);");
+            "        var result = await operation.PerformAsync(jsonInput, serializerOptions, ct).ConfigureAwait(false);");
+        builder.AppendLine("        if (result.IsSuccess)");
+        builder.AppendLine("        {");
+        builder.AppendLine("            return result;");
+        builder.AppendLine("        }");
+        builder.AppendLine();
+        builder.AppendLine(
+            "        var contextualizedError = result.Error! with { Message = $\"Operation '{operationName}': {result.Error.Message}\" };");
+        builder.AppendLine("        return global::MaVe.Monads.Result.Failure<string>(contextualizedError);");
         builder.AppendLine("    }");
         builder.AppendLine("}");
 

@@ -12,7 +12,6 @@ public abstract class Operation<TInput, TOutput> : IOperation where TInput : cla
 {
     /// <inheritdoc />
     public async Task<Result<string>> PerformAsync(
-        string operationName,
         string jsonInput,
         JsonSerializerOptions? serializerOptions,
         CancellationToken ct = default)
@@ -24,12 +23,12 @@ public abstract class Operation<TInput, TOutput> : IOperation where TInput : cla
         }
         catch (Exception exception)
         {
-            return Result.Failure<string>(RailyardErrors.InvalidInput(operationName, exception.Message));
+            return Result.Failure<string>(RailyardErrors.InvalidInput(exception.Message));
         }
 
         if (deserializedInput == null)
         {
-            return Result.Failure<string>(RailyardErrors.InvalidInput(operationName));
+            return Result.Failure<string>(RailyardErrors.InvalidInput());
         }
 
         var validationResult = Validate(deserializedInput);
@@ -51,7 +50,7 @@ public abstract class Operation<TInput, TOutput> : IOperation where TInput : cla
         }
         catch (Exception exception)
         {
-            return Result.Failure<string>(RailyardErrors.SerializationFailed(operationName, exception.Message));
+            return Result.Failure<string>(RailyardErrors.SerializationFailed(exception.Message));
         }
     }
 
