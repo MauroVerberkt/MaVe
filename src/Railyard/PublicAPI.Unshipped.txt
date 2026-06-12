@@ -3,8 +3,6 @@ MaVe.Railyard.IYard
 MaVe.Railyard.IYard.DispatchAsync(string! operationName, string! jsonInput, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<MaVe.Monads.Result<string!>!>!
 MaVe.Railyard.IYard.Manifest.get -> System.Collections.Generic.IReadOnlyList<MaVe.Railyard.OperationDescriptor!>!
 MaVe.Railyard.IYard.TryGetDescriptor(string! operationName) -> MaVe.Railyard.OperationDescriptor?
-MaVe.Railyard.IOperation
-MaVe.Railyard.IOperation.PerformAsync(string! jsonInput, System.Text.Json.JsonSerializerOptions? serializerOptions, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<MaVe.Monads.Result<string!>!>!
 MaVe.Railyard.OperationAttribute
 MaVe.Railyard.OperationAttribute.Description.get -> string?
 MaVe.Railyard.OperationAttribute.Description.init -> void

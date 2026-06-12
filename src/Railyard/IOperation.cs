@@ -6,7 +6,7 @@ namespace MaVe.Railyard;
 /// <summary>
 /// Represents a Railyard operation.
 /// </summary>
-public interface IOperation
+internal interface IOperation
 {
     /// <summary>
     /// Executes the operation using JSON input and returns JSON output.
