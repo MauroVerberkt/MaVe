@@ -15,13 +15,14 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC947}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		Monads.slnf = Monads.slnf
-		BusinessRules.slnf = BusinessRules.slnf
-		Unions.slnf = Unions.slnf
-		Railyard.slnf = Railyard.slnf
 		Directory.Build.props = Directory.Build.props
 		nuget.config = nuget.config
 		Directory.Packages.props = Directory.Packages.props
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.globalconfig = .globalconfig
+		opencode.jsonc = opencode.jsonc
+		version.json = version.json
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monads", "src\Monads\Monads.csproj", "{25C8842C-1CB9-FDDB-AF86-3E8C23BB97F4}"
@@ -41,6 +42,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{CEEF3B7E-EB26-452D-8298-1F6945A3FF83}"
 	ProjectSection(SolutionItems) = preProject
 		tests\Directory.Build.props = tests\Directory.Build.props
+		tests\.editorconfig = tests\.editorconfig
+		tests\.globalconfig = tests\.globalconfig
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessRules.UnitTests", "tests\BusinessRules.UnitTests\BusinessRules.UnitTests.csproj", "{DEACF125-433A-4842-A53F-E7A04C334DEE}"
@@ -66,7 +69,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{29D12269
 		tools\cleanup-branches.ps1 = tools\cleanup-branches.ps1
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentation", "{68805024-391A-4332-961F-02929F33E1A0}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{68805024-391A-4332-961F-02929F33E1A0}"
 	ProjectSection(SolutionItems) = preProject
 		CONTRIBUTING.md = CONTRIBUTING.md
 		design-system-style-guide.md = design-system-style-guide.md
@@ -101,6 +104,14 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Railyard", "Railyard", "{DD877209-5661-4CEF-A276-850E6A94897A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Railyard", "Railyard", "{15F8846D-9CC7-40C7-82D0-BDCD02DD4814}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Filters", "Solution Filters", "{FE20C27E-7EFD-4081-962F-7910F8CECDA2}"
+	ProjectSection(SolutionItems) = preProject
+		BusinessRules.slnf = BusinessRules.slnf
+		Monads.slnf = Monads.slnf
+		Railyard.slnf = Railyard.slnf
+		Unions.slnf = Unions.slnf
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -387,6 +398,7 @@ Global
 		{6F1B8C5D-2A8A-4EA9-9F33-5F2B0A8C1D77} = {DD877209-5661-4CEF-A276-850E6A94897A}
 		{15F8846D-9CC7-40C7-82D0-BDCD02DD4814} = {CEEF3B7E-EB26-452D-8298-1F6945A3FF83}
 		{D2B65E39-8F44-4A2F-B5A1-95F7B8B9D2A6} = {15F8846D-9CC7-40C7-82D0-BDCD02DD4814}
+		{FE20C27E-7EFD-4081-962F-7910F8CECDA2} = {8BC9CEB8-8B4A-11D0-8D11-00A0C91BC947}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D9A822D7-E111-4537-A03D-1650C5BF21BF}
