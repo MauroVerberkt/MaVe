@@ -6,7 +6,7 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>MaVe.Railyard</PackageId>
     <Title>MaVe Railyard</Title>
-    <Description>Railway-oriented programming utilities for C#</Description>
+    <Description>Compile-time generated operation dispatch for JSON payload boundaries.</Description>
     <PackageTags>railway;pipeline;operations;functional</PackageTags>
   </PropertyGroup>
 

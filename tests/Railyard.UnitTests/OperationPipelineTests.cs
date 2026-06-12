@@ -104,10 +104,7 @@ public class OperationPipelineTests
         }
     }
 
-    private sealed class EchoInput
-    {
-        public string Message { get; set; } = string.Empty;
-    }
+    private sealed record EchoInput(string Message);
 
     private sealed class EchoOutput
     {
@@ -119,10 +116,7 @@ public class OperationPipelineTests
         public string Message { get; }
     }
 
-    private sealed class NonSerializableInput
-    {
-        public string Value { get; set; } = string.Empty;
-    }
+    private sealed record NonSerializableInput(string Value);
 
     private sealed class NonSerializableOutput
     {

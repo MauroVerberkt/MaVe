@@ -3,7 +3,7 @@ namespace MaVe.Railyard;
 /// <summary>
 /// Metadata describing a registered operation.
 /// </summary>
-public sealed class OperationDescriptor
+public sealed record OperationDescriptor
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="OperationDescriptor" /> class.

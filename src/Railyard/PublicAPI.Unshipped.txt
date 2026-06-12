@@ -9,9 +9,16 @@ MaVe.Railyard.OperationAttribute.Description.init -> void
 MaVe.Railyard.OperationAttribute.Name.get -> string!
 MaVe.Railyard.OperationAttribute.OperationAttribute(string! name) -> void
 MaVe.Railyard.OperationDescriptor
+MaVe.Railyard.OperationDescriptor.<Clone>$() -> MaVe.Railyard.OperationDescriptor!
+override MaVe.Railyard.OperationDescriptor.Equals(object? obj) -> bool
+MaVe.Railyard.OperationDescriptor.Equals(MaVe.Railyard.OperationDescriptor? other) -> bool
+override MaVe.Railyard.OperationDescriptor.GetHashCode() -> int
 MaVe.Railyard.OperationDescriptor.Description.get -> string?
 MaVe.Railyard.OperationDescriptor.Name.get -> string!
+static MaVe.Railyard.OperationDescriptor.operator !=(MaVe.Railyard.OperationDescriptor? left, MaVe.Railyard.OperationDescriptor? right) -> bool
+static MaVe.Railyard.OperationDescriptor.operator ==(MaVe.Railyard.OperationDescriptor? left, MaVe.Railyard.OperationDescriptor? right) -> bool
 MaVe.Railyard.OperationDescriptor.OperationDescriptor(string! name, string? description) -> void
+override MaVe.Railyard.OperationDescriptor.ToString() -> string!
 MaVe.Railyard.Operation<TInput, TOutput>
 MaVe.Railyard.Operation<TInput, TOutput>.Operation() -> void
 MaVe.Railyard.Operation<TInput, TOutput>.PerformAsync(string! jsonInput, System.Text.Json.JsonSerializerOptions? serializerOptions, System.Threading.CancellationToken ct = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<MaVe.Monads.Result<string!>!>!
