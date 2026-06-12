@@ -144,6 +144,42 @@ public class RailyardSourceGeneratorTests
         Assert.That(diagnostics.Any(diagnostic => diagnostic.Id == "RY1003"), Is.True);
     }
 
+    [Test]
+    public void Generate_WithSpecialCharactersInDescription_EscapesGeneratedStringLiterals()
+    {
+        const string source = """
+                              using System.Threading;
+                              using System.Threading.Tasks;
+                              using MaVe.Monads;
+                              using MaVe.Railyard;
+
+                              [Operation("escape", Description = "Line1\nLine2\rTab\tQuote\"Slash\\Null\0Done")]
+                              public sealed class EscapeOperation : Operation<EscapeInput, EscapeOutput>
+                              {
+                                  protected override Task<Result<EscapeOutput>> ExecuteAsync(EscapeInput input, CancellationToken ct)
+                                  {
+                                      return Task.FromResult(Result.Success(new EscapeOutput()));
+                                  }
+                              }
+
+                              public sealed class EscapeInput { }
+                              public sealed class EscapeOutput { }
+                              """;
+
+        var driver = CreateDriver(source);
+        var runResult = driver.GetRunResult();
+        var diagnostics = runResult.Results.SelectMany(result => result.Diagnostics).ToArray();
+        var generatedSource = runResult.Results
+            .SelectMany(result => result.GeneratedSources)
+            .Single(generated => generated.HintName == "Railyard.Generated.g.cs")
+            .SourceText
+            .ToString();
+
+        Assert.That(diagnostics, Is.Empty);
+        Assert.That(generatedSource,
+            Does.Contain("new OperationDescriptor(\"escape\", \"Line1\\nLine2\\rTab\\tQuote\\\"Slash\\\\Null\\0Done\")"));
+    }
+
     private static GeneratorDriver CreateDriver(string source)
     {
         var compilation = CSharpCompilation.Create(
