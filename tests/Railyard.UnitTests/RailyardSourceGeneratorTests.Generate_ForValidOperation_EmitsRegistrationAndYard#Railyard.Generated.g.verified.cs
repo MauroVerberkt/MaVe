@@ -41,7 +41,10 @@ internal sealed class GeneratedYard : IYard
             ["greet"] = new OperationDescriptor("greet", "Greets a user"),
         };
 
-        Manifest = global::System.Array.AsReadOnly(global::System.Linq.Enumerable.ToArray(global::System.Linq.Enumerable.OrderBy(_descriptorByName.Values, descriptor => descriptor.Name, global::System.StringComparer.Ordinal)));
+        Manifest = global::System.Array.AsReadOnly(new OperationDescriptor[]
+        {
+            new OperationDescriptor("greet", "Greets a user"),
+        });
     }
 
     public global::System.Collections.Generic.IReadOnlyList<OperationDescriptor> Manifest { get; }

@@ -273,8 +273,21 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
 
         builder.AppendLine("        };");
         builder.AppendLine();
-        builder.AppendLine(
-            "        Manifest = global::System.Array.AsReadOnly(global::System.Linq.Enumerable.ToArray(global::System.Linq.Enumerable.OrderBy(_descriptorByName.Values, descriptor => descriptor.Name, global::System.StringComparer.Ordinal)));");
+        builder.AppendLine("        Manifest = global::System.Array.AsReadOnly(new OperationDescriptor[]");
+        builder.AppendLine("        {");
+
+        foreach (var candidate in candidates)
+        {
+            var manifestDescriptionLiteral = candidate.Description is null
+                ? "null"
+                : $"\"{Escape(candidate.Description)}\"";
+
+            builder.AppendLine(
+                $"            new OperationDescriptor(\"{Escape(candidate.OperationName)}\", {manifestDescriptionLiteral}),"
+            );
+        }
+
+        builder.AppendLine("        });");
         builder.AppendLine("    }");
         builder.AppendLine();
         builder.AppendLine(

@@ -19,6 +19,7 @@ virtual MaVe.Railyard.Operation<TInput, TOutput>.Validate(TInput! input) -> MaVe
 abstract MaVe.Railyard.Operation<TInput, TOutput>.ExecuteAsync(TInput! input, System.Threading.CancellationToken ct) -> System.Threading.Tasks.Task<MaVe.Monads.Result<TOutput!>!>!
 MaVe.Railyard.RailyardErrors
 static MaVe.Railyard.RailyardErrors.InvalidInput(string? detail = null) -> MaVe.Monads.Error!
+static MaVe.Railyard.RailyardErrors.InputMustNotBeNull() -> MaVe.Monads.Error!
 static MaVe.Railyard.RailyardErrors.OperationNotFound(string! operationName) -> MaVe.Monads.Error!
 static MaVe.Railyard.RailyardErrors.SerializationFailed(string? detail = null) -> MaVe.Monads.Error!
 MaVe.Railyard.SyncOperation<TInput, TOutput>

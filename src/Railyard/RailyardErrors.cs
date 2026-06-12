@@ -25,6 +25,15 @@ public static class RailyardErrors
     }
 
     /// <summary>
+    /// Creates an error indicating that deserialized input was null.
+    /// </summary>
+    /// <returns>An <see cref="Error" /> with code <c>RY001</c>.</returns>
+    public static Error InputMustNotBeNull()
+    {
+        return Error.Create("Input must not be null.", InvalidInputCode);
+    }
+
+    /// <summary>
     /// Creates an error indicating that no operation was found with the supplied name.
     /// </summary>
     /// <param name="operationName">Operation dispatch name.</param>

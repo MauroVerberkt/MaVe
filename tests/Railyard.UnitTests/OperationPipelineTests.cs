@@ -35,6 +35,21 @@ public class OperationPipelineTests
     }
 
     [Test]
+    public async Task PerformAsync_WhenInputIsNullJson_ReturnsInputMustNotBeNullError()
+    {
+        var operation = new EchoOperation();
+
+        var result = await operation.PerformAsync("null", null, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.IsFailure, Is.True);
+            Assert.That(result.Error?.Code, Is.EqualTo("RY001"));
+            Assert.That(result.Error?.Message, Is.EqualTo("Input must not be null."));
+        });
+    }
+
+    [Test]
     public async Task PerformAsync_WhenValidationFails_ReturnsValidationError()
     {
         var operation = new EchoOperation();

@@ -32,7 +32,7 @@ public abstract class Operation<TInput, TOutput> : IOperation where TInput : cla
 
         if (deserializedInput == null)
         {
-            return Result.Failure<string>(RailyardErrors.InvalidInput());
+            return Result.Failure<string>(RailyardErrors.InputMustNotBeNull());
         }
 
         var validationResult = Validate(deserializedInput);
