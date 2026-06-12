@@ -3,7 +3,7 @@ namespace MaVe.Railyard;
 /// <summary>
 /// Marks a class as a Railyard operation and assigns its dispatch name.
 /// </summary>
-[AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+[AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public sealed class OperationAttribute : Attribute
 {
     /// <summary>

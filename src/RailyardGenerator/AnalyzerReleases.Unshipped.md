@@ -1,6 +1,6 @@
 ### New Rules
 
-Rule ID | Category | Severity | Notes
---------|----------|----------|------
-RY1001 | Railyard | Error | Operation name is duplicated.
-RY1002 | Railyard | Error | Operation type does not inherit supported base class.
+ Rule ID | Category | Severity | Notes                                                 
+---------|----------|----------|-------------------------------------------------------
+ RY1001  | Railyard | Error    | Operation name is duplicated.                         
+ RY1002  | Railyard | Error    | Operation type does not inherit supported base class. 

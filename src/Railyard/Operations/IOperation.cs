@@ -1,3 +1,4 @@
+using System.Text.Json;
 using MaVe.Monads;
 
 namespace MaVe.Railyard;
@@ -15,9 +16,9 @@ public interface IOperation
     /// <param name="serializerOptions">Serialization options.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A result containing serialized output or an error.</returns>
-    Task<Result<string>> PerformAsync(
+    public Task<Result<string>> PerformAsync(
         string operationName,
         string jsonInput,
-        System.Text.Json.JsonSerializerOptions? serializerOptions,
+        JsonSerializerOptions? serializerOptions,
         CancellationToken ct = default);
 }

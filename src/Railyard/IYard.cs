@@ -8,6 +8,11 @@ namespace MaVe.Railyard;
 public interface IYard
 {
     /// <summary>
+    /// Gets all registered operation descriptors.
+    /// </summary>
+    public IReadOnlyList<OperationDescriptor> Manifest { get; }
+
+    /// <summary>
     /// Dispatches a named operation with a JSON payload.
     /// </summary>
     /// <param name="operationName">Operation dispatch name.</param>
@@ -17,11 +22,6 @@ public interface IYard
     /// Success with JSON-serialized output, or failure with dispatch/validation/execution error.
     /// </returns>
     public Task<Result<string>> DispatchAsync(string operationName, string jsonInput, CancellationToken ct = default);
-
-    /// <summary>
-    /// Gets all registered operation descriptors.
-    /// </summary>
-    public IReadOnlyList<OperationDescriptor> Manifest { get; }
 
     /// <summary>
     /// Looks up an operation descriptor by name.

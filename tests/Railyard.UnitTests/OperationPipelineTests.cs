@@ -1,6 +1,4 @@
-using System.Text.Json;
 using MaVe.Monads;
-using MaVe.Railyard;
 
 namespace MaVe.Railyard.UnitTests;
 
@@ -55,7 +53,8 @@ public class OperationPipelineTests
     {
         var operation = new NonSerializableOperation();
 
-        var result = await operation.PerformAsync("non-serializable", "{\"value\":\"x\"}", null, CancellationToken.None);
+        var result =
+            await operation.PerformAsync("non-serializable", "{\"value\":\"x\"}", null, CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -83,7 +82,8 @@ public class OperationPipelineTests
     [Operation("non-serializable")]
     private sealed class NonSerializableOperation : Operation<NonSerializableInput, NonSerializableOutput>
     {
-        protected override Task<Result<NonSerializableOutput>> ExecuteAsync(NonSerializableInput input, CancellationToken ct)
+        protected override Task<Result<NonSerializableOutput>> ExecuteAsync(NonSerializableInput input,
+            CancellationToken ct)
         {
             return Task.FromResult(Result.Success(new NonSerializableOutput()));
         }
@@ -91,7 +91,7 @@ public class OperationPipelineTests
 
     private sealed class EchoInput
     {
-        public string Message { get; set; } = string.Empty;
+        public string Message { get; } = string.Empty;
     }
 
     private sealed class EchoOutput

@@ -8,28 +8,8 @@ namespace MaVe.Railyard;
 /// </summary>
 /// <typeparam name="TInput">Input type.</typeparam>
 /// <typeparam name="TOutput">Output type.</typeparam>
-public abstract class Operation<TInput, TOutput> : IOperation
-    where TInput : class
-    where TOutput : class
+public abstract class Operation<TInput, TOutput> : IOperation where TInput : class where TOutput : class
 {
-    /// <summary>
-    /// Validates the deserialized input.
-    /// </summary>
-    /// <param name="input">The deserialized input.</param>
-    /// <returns>Success with input or failure with validation error.</returns>
-    protected virtual Result<TInput> Validate(TInput input)
-    {
-        return Result.Success(input);
-    }
-
-    /// <summary>
-    /// Executes operation logic.
-    /// </summary>
-    /// <param name="input">Validated input.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Success with output or failure with execution error.</returns>
-    protected abstract Task<Result<TOutput>> ExecuteAsync(TInput input, CancellationToken ct);
-
     /// <inheritdoc />
     public async Task<Result<string>> PerformAsync(
         string operationName,
@@ -74,6 +54,24 @@ public abstract class Operation<TInput, TOutput> : IOperation
             return Result.Failure<string>(RailyardErrors.SerializationFailed(operationName, exception.Message));
         }
     }
+
+    /// <summary>
+    /// Validates the deserialized input.
+    /// </summary>
+    /// <param name="input">The deserialized input.</param>
+    /// <returns>Success with input or failure with validation error.</returns>
+    protected virtual Result<TInput> Validate(TInput input)
+    {
+        return Result.Success(input);
+    }
+
+    /// <summary>
+    /// Executes operation logic.
+    /// </summary>
+    /// <param name="input">Validated input.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Success with output or failure with execution error.</returns>
+    protected abstract Task<Result<TOutput>> ExecuteAsync(TInput input, CancellationToken ct);
 }
 
 /// <summary>
@@ -82,8 +80,7 @@ public abstract class Operation<TInput, TOutput> : IOperation
 /// <typeparam name="TInput">Input type.</typeparam>
 /// <typeparam name="TOutput">Output type.</typeparam>
 public abstract class SyncOperation<TInput, TOutput> : Operation<TInput, TOutput>
-    where TInput : class
-    where TOutput : class
+    where TInput : class where TOutput : class
 {
     /// <inheritdoc />
     protected sealed override Task<Result<TOutput>> ExecuteAsync(TInput input, CancellationToken ct)

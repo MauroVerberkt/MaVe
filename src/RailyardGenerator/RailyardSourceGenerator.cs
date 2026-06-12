@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -18,21 +16,21 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
     private const string OperationBaseFullyQualifiedName = "MaVe.Railyard.Operation<TInput, TOutput>";
     private const string SyncOperationBaseFullyQualifiedName = "MaVe.Railyard.SyncOperation<TInput, TOutput>";
 
-    private static readonly DiagnosticDescriptor DuplicateOperationNameDescriptor = new(
-        id: "RY1001",
-        title: "Duplicate operation name",
-        messageFormat: "Operation name '{0}' is declared more than once",
-        category: "Railyard",
-        defaultSeverity: DiagnosticSeverity.Error,
-        isEnabledByDefault: true);
+    private static readonly DiagnosticDescriptor _duplicateOperationNameDescriptor = new(
+        "RY1001",
+        "Duplicate operation name",
+        "Operation name '{0}' is declared more than once",
+        "Railyard",
+        DiagnosticSeverity.Error,
+        true);
 
-    private static readonly DiagnosticDescriptor InvalidOperationBaseDescriptor = new(
-        id: "RY1002",
-        title: "Invalid operation base type",
-        messageFormat: "Operation '{0}' must inherit from Operation<TInput, TOutput> or SyncOperation<TInput, TOutput>",
-        category: "Railyard",
-        defaultSeverity: DiagnosticSeverity.Error,
-        isEnabledByDefault: true);
+    private static readonly DiagnosticDescriptor _invalidOperationBaseDescriptor = new(
+        "RY1002",
+        "Invalid operation base type",
+        "Operation '{0}' must inherit from Operation<TInput, TOutput> or SyncOperation<TInput, TOutput>",
+        "Railyard",
+        DiagnosticSeverity.Error,
+        true);
 
     /// <inheritdoc />
     public void Initialize(IncrementalGeneratorInitializationContext context)
@@ -44,10 +42,7 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
             .Where(static candidate => candidate is not null)
             .Select(static (candidate, _) => candidate!);
 
-        context.RegisterSourceOutput(operationCandidates.Collect(), static (productionContext, candidates) =>
-        {
-            Emit(productionContext, candidates);
-        });
+        context.RegisterSourceOutput(operationCandidates.Collect(), Emit);
     }
 
     private static OperationCandidate? GetOperationCandidate(GeneratorSyntaxContext syntaxContext)
@@ -126,7 +121,7 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
             if (invalidCandidate.Location is not null)
             {
                 context.ReportDiagnostic(Diagnostic.Create(
-                    InvalidOperationBaseDescriptor,
+                    _invalidOperationBaseDescriptor,
                     invalidCandidate.Location,
                     invalidCandidate.ClassName));
             }
@@ -145,7 +140,7 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
                 if (duplicate.Location is not null)
                 {
                     context.ReportDiagnostic(Diagnostic.Create(
-                        DuplicateOperationNameDescriptor,
+                        _duplicateOperationNameDescriptor,
                         duplicate.Location,
                         duplicate.OperationName));
                 }
@@ -172,7 +167,8 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
         builder.AppendLine();
         builder.AppendLine("public static class RailyardServiceCollectionExtensions");
         builder.AppendLine("{");
-        builder.AppendLine("    public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddRailyard(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services)");
+        builder.AppendLine(
+            "    public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddRailyard(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services)");
         builder.AppendLine("    {");
         builder.AppendLine("        global::System.ArgumentNullException.ThrowIfNull(services);");
         builder.AppendLine();
@@ -184,7 +180,7 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
         }
 
         builder.AppendLine(
-            "        services.Add(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton(typeof(IYard), serviceProvider => new GeneratedYard(serviceProvider)));" );
+            "        services.Add(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton(typeof(IYard), serviceProvider => new GeneratedYard(serviceProvider)));");
         builder.AppendLine("        return services;");
         builder.AppendLine("    }");
         builder.AppendLine("}");
@@ -229,15 +225,17 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
         builder.AppendLine("        };");
         builder.AppendLine();
         builder.AppendLine(
-            "        Manifest = global::System.Array.AsReadOnly(global::System.Linq.Enumerable.ToArray(global::System.Linq.Enumerable.OrderBy(_descriptorByName.Values, descriptor => descriptor.Name, global::System.StringComparer.Ordinal)));" );
+            "        Manifest = global::System.Array.AsReadOnly(global::System.Linq.Enumerable.ToArray(global::System.Linq.Enumerable.OrderBy(_descriptorByName.Values, descriptor => descriptor.Name, global::System.StringComparer.Ordinal)));");
         builder.AppendLine("    }");
         builder.AppendLine();
-        builder.AppendLine("    public global::System.Collections.Generic.IReadOnlyList<OperationDescriptor> Manifest { get; }");
+        builder.AppendLine(
+            "    public global::System.Collections.Generic.IReadOnlyList<OperationDescriptor> Manifest { get; }");
         builder.AppendLine();
         builder.AppendLine("    public OperationDescriptor? TryGetDescriptor(string operationName)");
         builder.AppendLine("    {");
         builder.AppendLine("        global::System.ArgumentNullException.ThrowIfNull(operationName);");
-        builder.AppendLine("        return _descriptorByName.TryGetValue(operationName, out var descriptor) ? descriptor : null;");
+        builder.AppendLine(
+            "        return _descriptorByName.TryGetValue(operationName, out var descriptor) ? descriptor : null;");
         builder.AppendLine("    }");
         builder.AppendLine();
         builder.AppendLine(
@@ -248,12 +246,15 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
         builder.AppendLine();
         builder.AppendLine("        if (!_factoryByName.TryGetValue(operationName, out var factory))");
         builder.AppendLine("        {");
-        builder.AppendLine("            return global::MaVe.Monads.Result.Failure<string>(RailyardErrors.OperationNotFound(operationName));");
+        builder.AppendLine(
+            "            return global::MaVe.Monads.Result.Failure<string>(RailyardErrors.OperationNotFound(operationName));");
         builder.AppendLine("        }");
         builder.AppendLine();
         builder.AppendLine("        var operation = factory(_serviceProvider);");
-        builder.AppendLine("        var serializerOptions = _serviceProvider.GetService(typeof(global::System.Text.Json.JsonSerializerOptions)) as global::System.Text.Json.JsonSerializerOptions;");
-        builder.AppendLine("        return await operation.PerformAsync(operationName, jsonInput, serializerOptions, ct).ConfigureAwait(false);");
+        builder.AppendLine(
+            "        var serializerOptions = _serviceProvider.GetService(typeof(global::System.Text.Json.JsonSerializerOptions)) as global::System.Text.Json.JsonSerializerOptions;");
+        builder.AppendLine(
+            "        return await operation.PerformAsync(operationName, jsonInput, serializerOptions, ct).ConfigureAwait(false);");
         builder.AppendLine("    }");
         builder.AppendLine("}");
 
@@ -267,34 +268,24 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
             .Replace("\"", "\\\"");
     }
 
-    private sealed class OperationCandidate
+    private sealed class OperationCandidate(
+        string operationName,
+        string? description,
+        string fullyQualifiedTypeName,
+        string className,
+        Location? location,
+        bool hasValidBase)
     {
-        public OperationCandidate(
-            string operationName,
-            string? description,
-            string fullyQualifiedTypeName,
-            string className,
-            Location? location,
-            bool hasValidBase)
-        {
-            OperationName = operationName;
-            Description = description;
-            FullyQualifiedTypeName = fullyQualifiedTypeName;
-            ClassName = className;
-            Location = location;
-            HasValidBase = hasValidBase;
-        }
+        public string OperationName { get; } = operationName;
 
-        public string OperationName { get; }
+        public string? Description { get; } = description;
 
-        public string? Description { get; }
+        public string FullyQualifiedTypeName { get; } = fullyQualifiedTypeName;
 
-        public string FullyQualifiedTypeName { get; }
+        public string ClassName { get; } = className;
 
-        public string ClassName { get; }
+        public Location? Location { get; } = location;
 
-        public Location? Location { get; }
-
-        public bool HasValidBase { get; }
+        public bool HasValidBase { get; } = hasValidBase;
     }
 }

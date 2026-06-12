@@ -1,6 +1,8 @@
+using MaVe.Monads;
 using MaVe.RailyardGenerator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MaVe.Railyard.UnitTests;
 
@@ -117,10 +119,10 @@ public class RailyardSourceGeneratorTests
     private static GeneratorDriver CreateDriver(string source)
     {
         var compilation = CSharpCompilation.Create(
-            assemblyName: "RailyardGeneratorTests",
-            syntaxTrees: [CSharpSyntaxTree.ParseText(source)],
-            references: References,
-            options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+            "RailyardGeneratorTests",
+            [CSharpSyntaxTree.ParseText(source)],
+            References,
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
         GeneratorDriver driver = CSharpGeneratorDriver.Create(new RailyardSourceGenerator());
         return driver.RunGenerators(compilation);
@@ -139,9 +141,9 @@ public class RailyardSourceGeneratorTests
             .Select(path => MetadataReference.CreateFromFile(path))
             .ToList();
 
-        references.Add(MetadataReference.CreateFromFile(typeof(MaVe.Monads.Result).Assembly.Location));
+        references.Add(MetadataReference.CreateFromFile(typeof(Result).Assembly.Location));
         references.Add(MetadataReference.CreateFromFile(typeof(OperationAttribute).Assembly.Location));
-        references.Add(MetadataReference.CreateFromFile(typeof(Microsoft.Extensions.DependencyInjection.IServiceCollection).Assembly.Location));
+        references.Add(MetadataReference.CreateFromFile(typeof(IServiceCollection).Assembly.Location));
 
         return references
             .GroupBy(reference => reference.Display, StringComparer.OrdinalIgnoreCase)
