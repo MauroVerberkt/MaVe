@@ -1,2 +1,4 @@
 ﻿[*.cs]
 resharper_auto_property_can_be_made_get_only_local_highlighting = none
+resharper_unused_member_local_highlighting = none
+resharper_unused_auto_property_accessor_local_highlighting = none
