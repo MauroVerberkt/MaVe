@@ -21,6 +21,10 @@ public abstract class Operation<TInput, TOutput> : IOperation where TInput : cla
         {
             deserializedInput = JsonSerializer.Deserialize<TInput>(jsonInput, serializerOptions);
         }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
         catch (Exception exception)
         {
             return Result.Failure<string>(RailyardErrors.InvalidInput(exception.Message));
@@ -47,6 +51,10 @@ public abstract class Operation<TInput, TOutput> : IOperation where TInput : cla
         {
             var serializedOutput = JsonSerializer.Serialize(executionResult.Data, serializerOptions);
             return Result.Success(serializedOutput);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
         }
         catch (Exception exception)
         {
