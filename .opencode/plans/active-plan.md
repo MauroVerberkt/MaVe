@@ -1,0 +1,3 @@
+- [x] Create chore branch for release tooling
+- [x] Add release script to bump package version and create matching tag
+- [x] Verify changes with build/tests and script syntax check
