@@ -5,7 +5,8 @@
     "^refs/heads/main$",
     "^refs/tags/monads/v",
     "^refs/tags/businessrules/v",
-    "^refs/tags/unions/v"
+    "^refs/tags/unions/v",
+    "^refs/tags/railyard/v"
   ],
   "cloudBuild": {
     "setVersionVariables": true,
