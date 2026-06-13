@@ -39,10 +39,8 @@ function AfterCode() {
   return (
     <pre className={styles.syntaxBlock}><code>
 <span className={styles.synKeyword}>return await</span> <span className={styles.synMethod}>GetUser</span><span className={styles.synPunct}>(</span><span className={styles.synVar}>id</span><span className={styles.synPunct}>)</span>{'\n'}
-{'    '}<span className={styles.synPunct}>.</span><span className={styles.synMethod}>BindAsync</span><span className={styles.synPunct}>(</span>{'\n'}
-{'        '}<span className={styles.synVar}>u</span> <span className={styles.synPunct}>=&gt;</span> <span className={styles.synMethod}>CreateOrder</span><span className={styles.synPunct}>(</span><span className={styles.synVar}>u</span><span className={styles.synPunct}>))</span>{'\n'}
-{'    '}<span className={styles.synPunct}>.</span><span className={styles.synMethod}>BindAsync</span><span className={styles.synPunct}>(</span>{'\n'}
-{'        '}<span className={styles.synVar}>o</span> <span className={styles.synPunct}>=&gt;</span> <span className={styles.synMethod}>ProcessPayment</span><span className={styles.synPunct}>(</span><span className={styles.synVar}>o</span><span className={styles.synPunct}>));</span>{'\n\n\n\n\n'}
+{'    '}<span className={styles.synPunct}>.</span><span className={styles.synMethod}>BindAsync</span><span className={styles.synPunct}>(</span><span className={styles.synVar}>u</span> <span className={styles.synPunct}>=&gt;</span> <span className={styles.synMethod}>CreateOrder</span><span className={styles.synPunct}>(</span><span className={styles.synVar}>u</span><span className={styles.synPunct}>))</span>{'\n'}
+{'    '}<span className={styles.synPunct}>.</span><span className={styles.synMethod}>BindAsync</span><span className={styles.synPunct}>(</span><span className={styles.synVar}>o</span> <span className={styles.synPunct}>=&gt;</span> <span className={styles.synMethod}>ProcessPayment</span><span className={styles.synPunct}>(</span><span className={styles.synVar}>o</span><span className={styles.synPunct}>));</span>{'\n\n\n\n\n\n\n'}
     </code></pre>
   );
 }
