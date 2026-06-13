@@ -6,7 +6,7 @@ tags: [Railyard]
 
 # PROP-007: Railyard — Compile-Time Operation Dispatch
 
-**Status:** exploring  
+**Status:** done  
 **Size:** new-project  
 **Created:** 2026-05-25  
 
@@ -73,10 +73,10 @@ public class GreetOperation : Operation<GreetInput, GreetOutput>
 {
     protected override Result<GreetInput> Validate(GreetInput input)
         => string.IsNullOrWhiteSpace(input.Name)
-            ? Result.Failure<GreetInput>(Errors.Required(nameof(input.Name)))
+            ? Result.Failure<GreetInput>(Error.Create("Name is required."))
             : Result.Success(input);
 
-    protected override async Task<Result<GreetOutput>> Execute(GreetInput input, CancellationToken ct)
+    protected override async Task<Result<GreetOutput>> ExecuteAsync(GreetInput input, CancellationToken ct)
         => Result.Success(new GreetOutput($"Hello, {input.Name}!"));
 }
 
@@ -97,7 +97,7 @@ services.AddRailyard(); // Generated extension method — registers all discover
 ```csharp
 var yard = serviceProvider.GetRequiredService<IYard>();
 
-Result<string> result = await yard.DispatchAsync("greet", """{"name": "World"}""", ct);
+Result<string> result = await yard.DispatchAsync("greet", """{"Name": "World"}""", ct);
 ```
 
 ### Getting the Manifest
@@ -153,16 +153,16 @@ public abstract class Operation<TInput, TOutput> : IOperation
     where TOutput : class
 {
     protected virtual Result<TInput> Validate(TInput input) => Result.Success(input);
-    protected abstract Task<Result<TOutput>> Execute(TInput input, CancellationToken ct);
+    protected abstract Task<Result<TOutput>> ExecuteAsync(TInput input, CancellationToken ct);
 }
 
 // Sync convenience
 public abstract class SyncOperation<TInput, TOutput> : Operation<TInput, TOutput>
 {
-    protected sealed override Task<Result<TOutput>> Execute(TInput input, CancellationToken ct)
-        => Task.FromResult(ExecuteSync(input));
+    protected sealed override Task<Result<TOutput>> ExecuteAsync(TInput input, CancellationToken ct)
+        => Task.FromResult(Execute(input));
 
-    protected abstract Result<TOutput> ExecuteSync(TInput input);
+    protected abstract Result<TOutput> Execute(TInput input);
 }
 ```
 
@@ -271,9 +271,9 @@ error-handling pipeline without requiring a full framework like Hangfire or Wolv
   is faster but less flexible.
 - **Error taxonomy** — Should Railyard define standard error codes/categories
   (validation, not-found, unauthorized, infrastructure) or leave that to consumers?
-- **Cancellation threading** — CancellationToken flows through Execute. Should it also
-  flow through behaviors? Through Validate? (Validate should be fast/synchronous, so
-  probably not.)
+- **Cancellation threading** — CancellationToken flows through ExecuteAsync. Should it
+  also flow through behaviors? Through Validate? (Validate should be fast/synchronous,
+  so probably not.)
 - **Streaming** — Some operations (especially tool orchestration) may want to stream
   output. Does that fit the Result model or need a separate path?
 
@@ -288,4 +288,12 @@ error-handling pipeline without requiring a full framework like Hangfire or Wolv
 
 ## Outcome
 
-_Exploring. Capturing the full vision before implementation begins._
+V1 shipped as `MaVe.Railyard`. The core dispatch model — compile-time generated table,
+fixed pipeline (Deserialize → Validate → Execute → Serialize), single-assembly discovery,
+`Result<T>`-based error propagation, and scoped DI per dispatch — was implemented exactly
+as designed. The `SyncOperation<TInput, TOutput>` convenience class was added for
+operations with no I/O.
+
+Key decisions captured in [ADR-014](../../decisions/014-railyard-compile-time-dispatch.md).
+
+Open questions remain open for V2 (behaviors, schema generation, streaming).

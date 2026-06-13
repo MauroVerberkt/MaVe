@@ -112,10 +112,43 @@ var name = party
     .Result();
 ```
 
+## Railyard
+
+Structure application logic as typed operations dispatched through a source-generated yard:
+
+```csharp title="ProcessOrderOperation.cs"
+using MaVe.Railyard;
+
+public record OrderRequest(int OrderId, string ProductCode);
+public record OrderResult(string ConfirmationNumber);
+
+public class ProcessOrderOperation : Operation<OrderRequest, OrderResult>
+{
+    protected override Task<Result<OrderResult>> ExecuteAsync(OrderRequest input, CancellationToken ct)
+    {
+        var confirmation = $"ORD-{input.OrderId:0000}";
+        return Task.FromResult(Result.Success(new OrderResult(confirmation)));
+    }
+}
+```
+
+Register with a single source-generated extension — no reflection, no manual wiring:
+
+```csharp title="Program.cs"
+builder.Services.AddRailyard(); // generated at compile time
+```
+
+Dispatch by type from any service:
+
+```csharp title="OrdersController.cs"
+var result = await _yard.DispatchAsync<OrderRequest, OrderResult>(request, ct);
+```
+
 :::info[Next Steps]
 
 - Learn more about the [Result monad](../monads/result/index.md)
 - Explore [Business Rules](../business-rules/overview.md) in depth
 - Model domain alternatives with [Unions](../unions/overview.md)
+- Build operation pipelines with [Railyard](../railyard/overview.md)
 
 :::

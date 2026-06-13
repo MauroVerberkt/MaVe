@@ -15,7 +15,8 @@ MaVe is composed of independent, composable libraries connected by optional inte
 
 ## Design Principles
 
-- **Independence**: Core libraries (Monads, BusinessRules) have zero dependencies on each other
+- **Independence**: Core libraries (Monads, BusinessRules, Unions) have zero dependencies on each other; Railyard depends on Monads by design
+- **Intentional layering**: Railyard builds on Monads by design — cross-package dependencies exist only where the design demands it
 - **Opt-in integration**: Glue libraries (ResultExtensions, Wcf) bridge concerns only when needed
 - **Compile-time safety**: Source generators and Roslyn analyzers catch errors before runtime
 - **Zero runtime cost**: Generated code, not reflection, for hot paths
@@ -35,6 +36,8 @@ graph TD
     HUG[UnionsGenerator<br/><i>netstandard2.0</i>]
     HUA[UnionsAnalyzer<br/><i>netstandard2.0</i>]
     HUF[UnionsFixProvider<br/><i>netstandard2.0</i>]
+    RY[Railyard<br/><i>net8.0;net9.0</i>]
+    RYG[RailyardGenerator<br/><i>netstandard2.0</i>]
 
     BR -->|packs as analyzer| BRG
     BR -->|packs as analyzer| BRA
@@ -46,10 +49,13 @@ graph TD
     HU -->|packs as analyzer| HUG
     HU -->|packs as analyzer| HUA
     HU -->|packs as analyzer| HUF
+    RY --> HM
+    RY -->|packs as analyzer| RYG
 
     style HM fill:#7c3aed,color:#fff
     style BR fill:#7c3aed,color:#fff
     style HU fill:#7c3aed,color:#fff
+    style RY fill:#7c3aed,color:#fff
     style BRRE fill:#a78bfa,color:#fff
     style BRW fill:#a78bfa,color:#fff
     style BRG fill:#c4b5fd,color:#333
@@ -58,6 +64,7 @@ graph TD
     style HUG fill:#c4b5fd,color:#333
     style HUA fill:#c4b5fd,color:#333
     style HUF fill:#c4b5fd,color:#333
+    style RYG fill:#c4b5fd,color:#333
 ```
 
 ## Package Summary
@@ -75,6 +82,8 @@ graph TD
 | **UnionsGenerator** | netstandard2.0 | Source generator: emits union base, inspection, and exhaustive builder chains |
 | **UnionsAnalyzer** | netstandard2.0 | Roslyn analyzers (DNHU0001, DNHU0003) for compile-time union validation |
 | **UnionsFixProvider** | netstandard2.0 | Code fix provider for DNHU0001 |
+| **Railyard** | net8.0;net9.0 | Compile-time generated operation dispatch for JSON payload boundaries |
+| **RailyardGenerator** | netstandard2.0 | Source generator: emits `AddRailyard()` extension and `IYard` dispatcher |
 
 ## Test Projects
 
@@ -86,6 +95,7 @@ graph TD
 | BusinessRules.ResultExtensions.UnitTests | Extension method behavior |
 | BusinessRules.Wcf.UnitTests | Fault exception creation |
 | Unions.UnitTests | Generator snapshot tests, analyzer diagnostics, code fix verification |
+| Railyard.UnitTests | Generator snapshot tests, operation pipeline behavior, dispatch integration |
 
 ## Key Architectural Decisions
 
@@ -96,6 +106,7 @@ See the [Decisions (ADRs)](./decisions/001-result-over-exceptions.md) section fo
 - Why WCF and ResultExtensions are separate packages
 - Why CRTP for business rule static factories
 - Why incremental generators over the legacy API
+- Why compile-time dispatch over runtime reflection (Railyard — ADR-014)
 
 ## Component Design
 
@@ -105,3 +116,4 @@ See the [Design](./design/helper-monads.md) section for detailed documentation o
 - [BusinessRules Runtime](./design/business-rules-runtime.md) - Base classes, attributes, resolver
 - [BusinessRules Tooling](./design/business-rules-tooling.md) - Generator pipeline, analyzers, fix provider
 - [Package Structure](./design/package-structure.md) - NuGet layout, analyzer packing strategy
+- [Railyard](./design/railyard.md) - Class hierarchy, dispatch pipeline, source generator, DI integration

@@ -19,6 +19,7 @@ Add MaVe to your .NET project via NuGet or project references.
 dotnet add package MaVe.Monads
 dotnet add package MaVe.BusinessRules
 dotnet add package MaVe.Unions
+dotnet add package MaVe.Railyard
 ```
 
 ## Requirements
@@ -35,6 +36,7 @@ If you're working directly with the source code:
   <ProjectReference Include="..\Monads\Monads.csproj" />
   <ProjectReference Include="..\BusinessRules\BusinessRules.csproj" />
   <ProjectReference Include="..\Unions\Unions.csproj" />
+  <ProjectReference Include="..\Railyard\Railyard.csproj" />
 </ItemGroup>
 ```
 
@@ -69,5 +71,11 @@ The BusinessRules package includes Roslyn analyzers and a source generator. You'
 :::tip
 
 The Unions package includes a source generator, Roslyn analyzers (DNHU0001, DNHU0003), and a code fix provider. You'll get exhaustive matching and compile-time union validation automatically.
+
+:::
+
+:::tip
+
+The Railyard package includes a source generator and compile-time diagnostics (RY1001–RY1003). You'll get a generated dispatch table, DI registration, and operation manifest automatically.
 
 :::

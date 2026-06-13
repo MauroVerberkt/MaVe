@@ -39,10 +39,8 @@ function AfterCode() {
   return (
     <pre className={styles.syntaxBlock}><code>
 <span className={styles.synKeyword}>return await</span> <span className={styles.synMethod}>GetUser</span><span className={styles.synPunct}>(</span><span className={styles.synVar}>id</span><span className={styles.synPunct}>)</span>{'\n'}
-{'    '}<span className={styles.synPunct}>.</span><span className={styles.synMethod}>BindAndTransformAsync</span><span className={styles.synPunct}>(</span>{'\n'}
-{'        '}<span className={styles.synVar}>u</span> <span className={styles.synPunct}>=&gt;</span> <span className={styles.synMethod}>CreateOrder</span><span className={styles.synPunct}>(</span><span className={styles.synVar}>u</span><span className={styles.synPunct}>))</span>{'\n'}
-{'    '}<span className={styles.synPunct}>.</span><span className={styles.synMethod}>BindAndTransformAsync</span><span className={styles.synPunct}>(</span>{'\n'}
-{'        '}<span className={styles.synVar}>o</span> <span className={styles.synPunct}>=&gt;</span> <span className={styles.synMethod}>ProcessPayment</span><span className={styles.synPunct}>(</span><span className={styles.synVar}>o</span><span className={styles.synPunct}>));</span>{'\n\n\n\n\n'}
+{'    '}<span className={styles.synPunct}>.</span><span className={styles.synMethod}>BindAsync</span><span className={styles.synPunct}>(</span><span className={styles.synVar}>u</span> <span className={styles.synPunct}>=&gt;</span> <span className={styles.synMethod}>CreateOrder</span><span className={styles.synPunct}>(</span><span className={styles.synVar}>u</span><span className={styles.synPunct}>))</span>{'\n'}
+{'    '}<span className={styles.synPunct}>.</span><span className={styles.synMethod}>BindAsync</span><span className={styles.synPunct}>(</span><span className={styles.synVar}>o</span> <span className={styles.synPunct}>=&gt;</span> <span className={styles.synMethod}>ProcessPayment</span><span className={styles.synPunct}>(</span><span className={styles.synVar}>o</span><span className={styles.synPunct}>));</span>{'\n\n\n\n\n\n\n'}
     </code></pre>
   );
 }
@@ -133,10 +131,11 @@ function Approach() {
           Operations return Result&lt;T&gt; instead of throwing. Values use Option&lt;T&gt; instead of null.
           Domain alternatives are modeled as source-generated discriminated unions with exhaustive matching.
           Business rules are defined in JSON and generated as strongly-typed C# classes at compile time.
+          Operation dispatch at JSON boundaries is generated from a single annotated class — no registration, no routing config.
           Roslyn analyzers catch violations before code runs. Source generators eliminate reflection.
         </p>
         <p className={styles.approachMuted}>
-          Every package is independently consumable. Zero cross-dependencies unless explicitly designed.
+          Packages depend on each other only where the design demands it — never by accident.
         </p>
       </div>
     </section>
@@ -159,6 +158,10 @@ function Packages() {
         <div className={styles.packageItem}>
           <Heading as="h3">Unions</Heading>
           <p>Source-generated discriminated unions with exhaustive Match/Switch builders and compile-time analyzer support</p>
+        </div>
+        <div className={styles.packageItem}>
+          <Heading as="h3">Railyard</Heading>
+          <p>Compile-time generated operation dispatch for JSON payload boundaries — one annotated class, zero registration boilerplate</p>
         </div>
       </div>
       <div className={styles.packagesSecondary}>

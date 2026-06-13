@@ -46,6 +46,16 @@ const sidebars: SidebarsConfig = {
         'unions/analyzers',
       ],
     },
+    {
+      type: 'category',
+      label: 'Railyard',
+      items: [
+        'railyard/overview',
+        'railyard/getting-started',
+        'railyard/pipeline',
+        'railyard/diagnostics',
+      ],
+    },
   ],
 };
 

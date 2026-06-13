@@ -23,6 +23,11 @@ const sidebars: SidebarsConfig = {
           id: 'by-project/helper-unions',
           label: 'Unions',
         },
+        {
+          type: 'doc',
+          id: 'by-project/railyard',
+          label: 'Railyard',
+        },
       ],
     },
     {
