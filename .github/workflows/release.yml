@@ -5,6 +5,7 @@ on:
     tags:
       - "monads/v*"
       - "businessrules/v*"
+      - "railyard/v*"
       - "unions/v*"
 
 env:
@@ -97,6 +98,9 @@ jobs:
                 "MaVe.BusinessRules.ResultExtensions"
                 "MaVe.BusinessRules.Wcf"
               )
+              ;;
+            railyard)
+              EXPECTED_PACKAGES=("MaVe.Railyard")
               ;;
             unions)
               EXPECTED_PACKAGES=("MaVe.Unions")
