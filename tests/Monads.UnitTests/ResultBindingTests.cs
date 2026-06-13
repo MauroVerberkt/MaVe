@@ -278,7 +278,7 @@ public class ResultBindingTests
         cancellationTokenSource.Cancel();
 
         // Act & Assert
-        Assert.ThrowsAsync<TaskCanceledException>(async () =>
+        Assert.ThrowsAsync<OperationCanceledException>(async () =>
             _ = await result.BindAsync(ProcessDataWithCancellation, cancellationTokenSource.Token));
         return;
 
@@ -440,7 +440,7 @@ public class ResultBindingTests
         cancellationTokenSource.Cancel();
 
         // Act & Assert
-        Assert.ThrowsAsync<TaskCanceledException>(async () =>
+        Assert.ThrowsAsync<OperationCanceledException>(async () =>
             _ = await result.ThenAsync(ProcessDataWithCancellationAsync, cancellationTokenSource.Token));
         return;
 
@@ -473,13 +473,46 @@ public class ResultBindingTests
         using var cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Cancel();
 
-        Assert.ThrowsAsync<TaskCanceledException>(async () =>
+        Assert.ThrowsAsync<OperationCanceledException>(async () =>
             _ = await result.ThenAsync(async ct =>
             {
                 await Task.Delay(100, ct);
                 ct.ThrowIfCancellationRequested();
                 return Result<int>.Success(1);
             }, cancellationTokenSource.Token));
+    }
+
+    [Test]
+    public void BindAsync_ShouldThrowOperationCanceledException_WhenTokenIsCancelled_AndResultIsFailure_WithCancellationToken()
+    {
+        var result = Result<string>.Failure(TestError);
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            _ = await result.BindAsync((_, _) => Task.FromResult(Result<int>.Success(1)), cancellationTokenSource.Token));
+    }
+
+    [Test]
+    public void ThenAsync_ShouldThrowOperationCanceledException_WhenTokenIsCancelled_AndResultIsFailure_WithCancellationToken()
+    {
+        var result = Result<string>.Failure(TestError);
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            _ = await result.ThenAsync(_ => Task.FromResult(Result<string>.Success(NextMessage)), cancellationTokenSource.Token));
+    }
+
+    [Test]
+    public void ThenAsync_Generic_ShouldThrowOperationCanceledException_WhenTokenIsCancelled_AndResultIsFailure_WithCancellationToken()
+    {
+        var result = Result<string>.Failure(TestError);
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            _ = await result.ThenAsync(_ => Task.FromResult(Result<int>.Success(1)), cancellationTokenSource.Token));
     }
 
     [Test]
@@ -693,7 +726,7 @@ public class ResultBindingTests
         cancellationTokenSource.Cancel();
 
         // Act & Assert
-        Assert.ThrowsAsync<TaskCanceledException>(async () =>
+        Assert.ThrowsAsync<OperationCanceledException>(async () =>
             _ = await result.BindAsync(ProcessDataWithCancellation, cancellationTokenSource.Token));
         return;
 

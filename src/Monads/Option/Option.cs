@@ -96,6 +96,8 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
         Func<TValue, CancellationToken, Task<TResult>> some, Func<CancellationToken, Task<TResult>> none,
         CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         return this switch
         {
             Some<TValue> someOption => await some(someOption.Value, cancellationToken).ConfigureAwait(false),
@@ -139,6 +141,8 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
         CancellationToken cancellationToken)
         where TNewValue : notnull
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         return this switch
         {
             Some<TValue> someOption =>
@@ -183,6 +187,8 @@ public abstract class Option<TValue> : IEquatable<Option<TValue>> where TValue :
         CancellationToken cancellationToken)
         where TNewValue : notnull
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         return this switch
         {
             Some<TValue> someOption => await function(someOption.Value, cancellationToken).ConfigureAwait(false),

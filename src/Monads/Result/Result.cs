@@ -121,6 +121,8 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
         Func<TData, CancellationToken, Task<Result<TNewData>>> function, CancellationToken cancellationToken)
         where TNewData : notnull
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         return IsSuccess
             ? await function(Data, cancellationToken).ConfigureAwait(false)
             : Result<TNewData>.Failure(Error);
@@ -161,6 +163,8 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
         Func<TData, CancellationToken, Task<TNewData>> transform, CancellationToken cancellationToken)
         where TNewData : notnull
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         if (IsFailure)
         {
             return Result<TNewData>.Failure(Error);
@@ -289,6 +293,8 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
         Func<Error, CancellationToken, Task<TResult>> onFailure,
         CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         return IsSuccess
             ? await onSuccess(Data, cancellationToken).ConfigureAwait(false)
             : await onFailure(Error, cancellationToken).ConfigureAwait(false);
@@ -304,6 +310,8 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
     public async Task<Result<TData>> ThenAsync(
         Func<CancellationToken, Task<Result<TData>>> function, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         return IsSuccess ? await function(cancellationToken).ConfigureAwait(false) : this;
     }
 
@@ -321,6 +329,8 @@ public sealed class Result<TData> : IEquatable<Result<TData>> where TData : notn
         Func<CancellationToken, Task<Result<TNewData>>> function, CancellationToken cancellationToken)
         where TNewData : notnull
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         return IsSuccess ? await function(cancellationToken).ConfigureAwait(false) : Result<TNewData>.Failure(Error);
     }
 

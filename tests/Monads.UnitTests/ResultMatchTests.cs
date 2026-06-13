@@ -50,18 +50,45 @@ public class ResultMatchTests
     {
         var result = Result.Success("hello");
         using var tokenSource = new CancellationTokenSource();
-        await tokenSource.CancelAsync();
-        var tokenObserved = false;
+        var tokenObserved = CancellationToken.None;
 
         _ = await result.MatchAsync(
             (_, ct) =>
             {
-                tokenObserved = ct.IsCancellationRequested;
+                tokenObserved = ct;
                 return Task.FromResult(1);
             },
             (_, _) => Task.FromResult(-1),
             tokenSource.Token);
 
-        Assert.That(tokenObserved, Is.True);
+        Assert.That(tokenObserved, Is.EqualTo(tokenSource.Token));
+    }
+
+    [Test]
+    public void MatchAsync_WithCancellationToken_ShouldThrowOperationCanceledException_WhenTokenIsCancelled()
+    {
+        var result = Result.Success("hello");
+        using var tokenSource = new CancellationTokenSource();
+        tokenSource.Cancel();
+
+        Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            _ = await result.MatchAsync(
+                (_, _) => Task.FromResult(1),
+                (_, _) => Task.FromResult(-1),
+                tokenSource.Token));
+    }
+
+    [Test]
+    public void MatchAsync_WithCancellationToken_ShouldThrowOperationCanceledException_WhenTokenIsCancelled_AndResultIsFailure()
+    {
+        var result = Result.Failure<string>(TestError);
+        using var tokenSource = new CancellationTokenSource();
+        tokenSource.Cancel();
+
+        Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            _ = await result.MatchAsync(
+                (_, _) => Task.FromResult(1),
+                (_, _) => Task.FromResult(-1),
+                tokenSource.Token));
     }
 }

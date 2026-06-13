@@ -175,6 +175,28 @@ public class OptionTests
     }
 
     [Test]
+    public void MatchAsync_WithCancellation_ShouldThrowOperationCanceledException_WhenTokenIsCancelled_AndOptionIsSome()
+    {
+        var option = Option<string>.Some(ValidValue);
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            _ = await option.MatchAsync(AsyncSomeFunc, AsyncNoneFunc, cancellationTokenSource.Token));
+    }
+
+    [Test]
+    public void MatchAsync_WithCancellation_ShouldThrowOperationCanceledException_WhenTokenIsCancelled_AndOptionIsNone()
+    {
+        var option = Option<string>.None;
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            _ = await option.MatchAsync(AsyncSomeFunc, AsyncNoneFunc, cancellationTokenSource.Token));
+    }
+
+    [Test]
     public void Map_ShouldTransformValue_WhenSome()
     {
         var option = Option<string>.Some(ValidValue);
@@ -244,6 +266,28 @@ public class OptionTests
         var mapped = await option.MapAsync((value, _) => Task.FromResult(value.Length), CancellationToken.None);
 
         Assert.That(mapped.HasValue, Is.False);
+    }
+
+    [Test]
+    public void MapAsync_ShouldThrowOperationCanceledException_WhenTokenIsCancelled_AndOptionIsSome_WithCancellationToken()
+    {
+        var option = Option<string>.Some(ValidValue);
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            _ = await option.MapAsync((value, _) => Task.FromResult(value.Length), cancellationTokenSource.Token));
+    }
+
+    [Test]
+    public void MapAsync_ShouldThrowOperationCanceledException_WhenTokenIsCancelled_AndOptionIsNone_WithCancellationToken()
+    {
+        var option = Option<string>.None;
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            _ = await option.MapAsync((value, _) => Task.FromResult(value.Length), cancellationTokenSource.Token));
     }
 
     [Test]
@@ -318,6 +362,30 @@ public class OptionTests
             CancellationToken.None);
 
         Assert.That(bound.HasValue, Is.False);
+    }
+
+    [Test]
+    public void BindAsync_ShouldThrowOperationCanceledException_WhenTokenIsCancelled_AndOptionIsSome_WithCancellationToken()
+    {
+        var option = Option<string>.Some(ValidValue);
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            _ = await option.BindAsync((value, _) => Task.FromResult(Option<int>.Some(value.Length)),
+                cancellationTokenSource.Token));
+    }
+
+    [Test]
+    public void BindAsync_ShouldThrowOperationCanceledException_WhenTokenIsCancelled_AndOptionIsNone_WithCancellationToken()
+    {
+        var option = Option<string>.None;
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            _ = await option.BindAsync((value, _) => Task.FromResult(Option<int>.Some(value.Length)),
+                cancellationTokenSource.Token));
     }
 
     [Test]

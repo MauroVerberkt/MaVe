@@ -335,10 +335,21 @@ public class ResultTests
         };
 
         // Act & Assert
-        Assert.ThrowsAsync<TaskCanceledException>(async () =>
+        Assert.ThrowsAsync<OperationCanceledException>(async () =>
         {
             _ = await successResult.MapAsync(transform, cancellationTokenSource.Token);
         });
+    }
+
+    [Test]
+    public void MapAsync_ShouldThrowOperationCanceledException_WhenTokenIsCancelled_AndResultIsFailure()
+    {
+        var failureResult = Result<string>.Failure(TestError);
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            _ = await failureResult.MapAsync((_, _) => Task.FromResult(1), cancellationTokenSource.Token));
     }
 
     /// <summary>
