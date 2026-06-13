@@ -116,3 +116,4 @@ See the [Design](./design/helper-monads.md) section for detailed documentation o
 - [BusinessRules Runtime](./design/business-rules-runtime.md) - Base classes, attributes, resolver
 - [BusinessRules Tooling](./design/business-rules-tooling.md) - Generator pipeline, analyzers, fix provider
 - [Package Structure](./design/package-structure.md) - NuGet layout, analyzer packing strategy
+- [Railyard](./design/railyard.md) - Class hierarchy, dispatch pipeline, source generator, DI integration
