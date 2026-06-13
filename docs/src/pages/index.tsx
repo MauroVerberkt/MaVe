@@ -137,7 +137,7 @@ function Approach() {
           Roslyn analyzers catch violations before code runs. Source generators eliminate reflection.
         </p>
         <p className={styles.approachMuted}>
-          Every package is independently consumable. Zero cross-dependencies unless explicitly designed.
+          Packages depend on each other only where the design demands it — never by accident.
         </p>
       </div>
     </section>
