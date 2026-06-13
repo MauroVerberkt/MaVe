@@ -2,7 +2,7 @@
 sidebar_position: 4
 title: Package Structure
 description: NuGet package composition, analyzer packing strategy, and build configuration
-tags: [Monads, BusinessRules]
+tags: [Monads, BusinessRules, Unions, Railyard]
 keywords:
   - nuget
   - package
@@ -16,7 +16,7 @@ keywords:
 
 ## Overview
 
-MaVe ships as three primary NuGet packages, each with specific internal layouts to support runtime code, analyzers, and build integration.
+MaVe ships as four primary NuGet packages, each with specific internal layouts to support runtime code, analyzers, and build integration.
 
 ## Monads Package
 
@@ -115,7 +115,11 @@ The generator needs `System.Text.Json` to parse the JSON files, but targets `net
 ```mermaid
 graph LR
     subgraph "net8.0"
-        RT[BusinessRules<br/>Monads<br/>ResultExtensions<br/>Wcf]
+        RT[BusinessRules<br/>Monads<br/>ResultExtensions<br/>Wcf<br/>Unions]
+    end
+
+    subgraph "net8.0;net9.0"
+        RY[Railyard]
     end
 
     subgraph "netstandard2.0"
@@ -123,12 +127,14 @@ graph LR
     end
 
     RT -.->|"consumed at runtime"| App[Consumer App]
+    RY -.->|"consumed at runtime"| App
     TL -.->|"loaded by compiler"| Compiler[Roslyn Compiler]
 ```
 
 | Target | Used By | Reason |
 |--------|---------|--------|
 | `net8.0` | Runtime libraries | Access to latest C# features, nullable annotations |
+| `net8.0;net9.0` | Railyard | Ships on both LTS and current .NET to support both ecosystems |
 | `netstandard2.0` | Tooling (analyzers, generators) | Required for compatibility with all Roslyn hosts (VS, Rider, CLI on any .NET version) |
 
 ## Build Configuration
@@ -232,3 +238,52 @@ graph TD
 | `ReferenceOutputAssembly="false"` | Ensures tooling projects build before packing, without adding a compile reference to `Unions.dll` |
 | `Pack="true" PackagePath="analyzers/dotnet/cs"` | Copies the built DLL directly into the correct analyzer slot in the package |
 | `Visible="false"` | Hides the item from Solution Explorer |
+
+## Railyard Package
+
+Single package combining the runtime library (multi-targeted) and the source generator. No private dependencies are bundled — the generator does not need `System.Text.Json`.
+
+Railyard is the only package that ships on **two TFMs** (`net8.0` and `net9.0`), so the `lib/` folder contains both:
+
+```mermaid
+graph TD
+    subgraph "MaVe.Railyard.nupkg"
+        subgraph "lib/"
+            L1[net8.0/Railyard.dll]
+            L2[net9.0/Railyard.dll]
+        end
+        subgraph "analyzers/dotnet/cs/"
+            A1[MaVe.RailyardGenerator.dll]
+        end
+    end
+
+    style L1 fill:#7c3aed,color:#fff
+    style L2 fill:#7c3aed,color:#fff
+    style A1 fill:#c4b5fd,color:#333
+```
+
+### Layout Explanation
+
+| Path | Content | Purpose |
+|------|---------|---------|
+| `lib/net8.0/` | Railyard.dll | Runtime library for .NET 8 consumers |
+| `lib/net9.0/` | Railyard.dll | Runtime library for .NET 9 consumers |
+| `analyzers/dotnet/cs/` | MaVe.RailyardGenerator.dll | Emits `AddRailyard()` DI extension and `IYard` dispatcher at compile time |
+
+### Packing Strategy
+
+Railyard uses the same explicit `None Include` strategy as Unions:
+
+```xml
+<ItemGroup>
+  <ProjectReference Include="..\RailyardGenerator\RailyardGenerator.csproj"
+                    ReferenceOutputAssembly="false" />
+</ItemGroup>
+
+<ItemGroup>
+  <None Include="..\RailyardGenerator\bin\$(Configuration)\netstandard2.0\MaVe.RailyardGenerator.dll"
+        Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+</ItemGroup>
+```
+
+The `ProjectReference` with `ReferenceOutputAssembly="false"` ensures the generator builds before packing without leaking a compile-time reference into `Railyard.dll`. The `None Include` item places the generator DLL in the correct analyzer slot.
