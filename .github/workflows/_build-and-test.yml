@@ -59,6 +59,7 @@ jobs:
           dotnet pack ./src/BusinessRules/BusinessRules.csproj --configuration Release --no-build --output ./artifacts
           dotnet pack ./src/BusinessRules.ResultExtensions/BusinessRules.ResultExtensions.csproj --configuration Release --no-build --output ./artifacts
           dotnet pack ./src/BusinessRules.Wcf/BusinessRules.Wcf.csproj --configuration Release --no-build --output ./artifacts
+          dotnet pack ./src/Railyard/Railyard.csproj --configuration Release --no-build --output ./artifacts
           dotnet pack ./src/Unions/Unions.csproj --configuration Release --no-build --output ./artifacts
 
       - name: Upload package artifacts
