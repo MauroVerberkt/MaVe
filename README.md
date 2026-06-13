@@ -5,8 +5,7 @@
 
 # MaVe
 
-Functional building blocks for .NET: explicit error handling with **Result\<T\>**, null-safe optionals with **Option\<T\>**, compile-time validated **Business Rules** powered by source generators and Roslyn analyzers, and
-source-generated **discriminated unions** with exhaustive matching.
+Functional building blocks for .NET: explicit error handling with **Result\<T\>**, null-safe optionals with **Option\<T\>**, compile-time validated **Business Rules** powered by source generators and Roslyn analyzers, source-generated **discriminated unions** with exhaustive matching, and compile-time generated **operation dispatch** for JSON payload boundaries.
 
 No runtime reflection. No exceptions for control flow. Strong typing all the way down.
 
@@ -17,6 +16,7 @@ No runtime reflection. No exceptions for control flow. Strong typing all the way
 | **MaVe.Monads**                         | `Result<T>` and `Option<T>` monadic types — Map, Bind, Match with full async and CancellationToken support |
 | **MaVe.BusinessRules**                  | Define business rules in JSON, get strongly-typed classes at compile time via source generation            |
 | **MaVe.Unions**                         | Source-generated discriminated unions with exhaustive Match/Switch builders and Roslyn analyzer support    |
+| **MaVe.Railyard**                       | Compile-time generated operation dispatch for JSON payload boundaries — one class, no plumbing             |
 | **MaVe.BusinessRules.ResultExtensions** | Bridge between BusinessRules validation and the Result pattern                                             |
 | **MaVe.BusinessRules.Wcf**              | WCF `FaultException` support for business rule violations                                                  |
 
