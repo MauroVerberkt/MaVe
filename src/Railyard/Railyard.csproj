@@ -5,10 +5,15 @@
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>MaVe.Railyard</PackageId>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <Title>MaVe Railyard</Title>
     <Description>Compile-time generated operation dispatch for JSON payload boundaries.</Description>
     <PackageTags>railway;pipeline;operations;functional</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath=""/>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Text.Json"/>
@@ -17,7 +22,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Monads\Monads.csproj"/>
-    <ProjectReference Include="..\RailyardGenerator\RailyardGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+    <ProjectReference Include="..\RailyardGenerator\RailyardGenerator.csproj" ReferenceOutputAssembly="false"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\RailyardGenerator\bin\$(Configuration)\netstandard2.0\MaVe.RailyardGenerator.dll"
+          Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
   </ItemGroup>
 
 </Project>
