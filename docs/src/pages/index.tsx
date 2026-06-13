@@ -133,6 +133,7 @@ function Approach() {
           Operations return Result&lt;T&gt; instead of throwing. Values use Option&lt;T&gt; instead of null.
           Domain alternatives are modeled as source-generated discriminated unions with exhaustive matching.
           Business rules are defined in JSON and generated as strongly-typed C# classes at compile time.
+          Operation dispatch at JSON boundaries is generated from a single annotated class — no registration, no routing config.
           Roslyn analyzers catch violations before code runs. Source generators eliminate reflection.
         </p>
         <p className={styles.approachMuted}>
@@ -159,6 +160,10 @@ function Packages() {
         <div className={styles.packageItem}>
           <Heading as="h3">Unions</Heading>
           <p>Source-generated discriminated unions with exhaustive Match/Switch builders and compile-time analyzer support</p>
+        </div>
+        <div className={styles.packageItem}>
+          <Heading as="h3">Railyard</Heading>
+          <p>Compile-time generated operation dispatch for JSON payload boundaries — one annotated class, zero registration boilerplate</p>
         </div>
       </div>
       <div className={styles.packagesSecondary}>
