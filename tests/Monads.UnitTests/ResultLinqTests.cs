@@ -3,8 +3,6 @@ namespace MaVe.Monads.UnitTests;
 [TestFixture]
 public class ResultLinqTests
 {
-    private static Error TestError => Error.Create("Failed");
-
     [Test]
     public void Select_ShouldMapData_WhenSuccess()
     {

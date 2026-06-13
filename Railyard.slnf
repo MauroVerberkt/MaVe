@@ -1,0 +1,10 @@
+{
+  "solution": {
+    "path": "MaVe.sln",
+    "projects": [
+      "src\\Railyard\\Railyard.csproj",
+      "src\\RailyardGenerator\\RailyardGenerator.csproj",
+      "tests\\Railyard.UnitTests\\Railyard.UnitTests.csproj"
+    ]
+  }
+}

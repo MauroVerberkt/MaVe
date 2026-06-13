@@ -533,7 +533,7 @@ public class OptionTests
 
         void TestDelegate()
         {
-            mockOption.Object.Match(SomeFunc, NoneFunc);
+            _ = mockOption.Object.Match(SomeFunc, NoneFunc);
         }
     }
 
