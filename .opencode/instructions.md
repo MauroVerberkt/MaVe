@@ -23,16 +23,26 @@ MaVe/
 │   ├── BusinessRulesFixProvider/ # Code fix provider
 │   ├── BusinessRules.ResultExtensions/ # Bridge: BusinessRules ↔ Result
 │   ├── BusinessRules.Wcf/      # WCF fault exception support
-│   └── Railyard/               # (Railway-oriented programming utilities)
+│   ├── Railyard/               # Railway-oriented programming utilities
+│   ├── Unions/                 # Discriminated union types
+│   ├── UnionsAnalyzer/         # Roslyn analyzer for unions
+│   ├── UnionsGenerator/        # Roslyn source generator for unions
+│   └── UnionsFixProvider/      # Code fix provider for unions
 ├── tests/                      # Test projects (unit + integration)
 │   ├── Monads.UnitTests/
 │   ├── BusinessRules.UnitTests/
 │   ├── BusinessRules.IntegrationTests/
 │   ├── BusinessRules.ResultExtensions.UnitTests/
-│   └── BusinessRules.Wcf.UnitTests/
+│   ├── BusinessRules.Wcf.UnitTests/
+│   ├── Unions.UnitTests/
+│   └── Railyard.UnitTests/
 ├── tools/                      # Build scripts & NuGet packaging projects
 │   ├── build-businessrules.ps1
 │   ├── build-monads.ps1
+│   ├── build-unions.ps1
+│   ├── build-railyard.ps1
+│   ├── release.ps1
+│   ├── docs-push.ps1
 │   ├── BusinessRules.Analyzers.Package/
 │   └── Monads.Package/
 ├── docs/                       # Docusaurus documentation site
@@ -49,6 +59,8 @@ MaVe/
 ├── MaVe.sln           # Full solution
 ├── BusinessRules.slnf          # Solution filter: business rules only
 ├── Monads.slnf                 # Solution filter: monads only
+├── Unions.slnf                 # Solution filter: unions only
+├── Railyard.slnf               # Solution filter: railyard only
 └── Directory.Build.props       # Shared build properties
 ```
 
@@ -128,3 +140,20 @@ revised freely until they reach "done" status.
 - Don't add runtime reflection where a source generator can solve the problem
 - Don't create cross-package dependencies unless explicitly designed (that's
   what the Extensions packages are for)
+
+## Testing
+
+- **Framework:** NUnit 3 (via `tests/Directory.Build.props` — applies to all test projects)
+- **Mocking:** Moq
+- **Snapshot testing:** Verify.NUnit + Verify.SourceGenerators (used for source generator output verification)
+- **Targets:** `net8.0` and `net9.0` (multi-targeted in all test projects)
+- **Coverage:** coverlet.collector
+- **CI reporting:** JunitXml.TestLogger
+
+### Patterns
+
+- Roslyn analyzer tests use `Microsoft.CodeAnalysis.CSharp.Analyzer.Testing.NUnit`
+  and `Microsoft.CodeAnalysis.CSharp.CodeFix.Testing.NUnit`
+- Source generator output is verified via `Verify.NUnit` snapshots (`.verified.` files
+  committed to source control — do not delete them)
+- Test project names follow `<Package>.UnitTests` convention
