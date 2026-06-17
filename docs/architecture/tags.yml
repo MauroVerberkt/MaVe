@@ -37,3 +37,7 @@ Unions:
 Railyard:
   label: Railyard
   description: Relates to the Railyard compile-time operation dispatch framework
+
+Specifications:
+  label: Specifications
+  description: Relates to the Specifications library (ISpecification, combinators, BusinessRules bridge)
