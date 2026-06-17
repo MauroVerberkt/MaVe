@@ -55,3 +55,6 @@ docs/.docusaurus/
 
 # Temporary working files
 .temp/
+
+# OpenCode
+.opencode/plans/
