@@ -265,4 +265,140 @@ public class ThrowWithoutValidationCodeFixProviderTests
         await CSharpCodeFixVerifier<ThrowWithoutValidationAnalyzer, ThrowWithoutValidationCodeFixProvider>
             .VerifyCodeFixWithGeneratedCodeAsync(source, fixedSource, expected);
     }
+
+    [Test]
+    public async Task CodeFix_ThrowInConstructor_AddsAttributeToConstructor()
+    {
+        const string source = """
+                              using MaVe.BusinessRules;
+                              using MaVe.BusinessRules.Rules.Authentication;
+
+                              public class TestClass
+                              {
+                                  public TestClass()
+                                  {
+                                      {|#0:throw UserMustBeAuthenticated.ToException();|}
+                                  }
+                              }
+                              """;
+
+        const string fixedSource = """
+                                   using MaVe.BusinessRules;
+                                   using MaVe.BusinessRules.Rules.Authentication;
+                                   using MaVe.BusinessRules.Attributes;
+
+                                   [ImplementsBusinessRule(UserMustBeAuthenticated.Key)]
+
+                                   public class TestClass
+                                   {
+                                       public TestClass()
+                                       {
+                                           throw UserMustBeAuthenticated.ToException();
+                                       }
+                                   }
+                                   """;
+
+        var expected = CSharpCodeFixVerifier<ThrowWithoutValidationAnalyzer, ThrowWithoutValidationCodeFixProvider>
+            .Diagnostic("BR004")
+            .WithLocation(0)
+            .WithArguments("TestClass")
+            .WithSeverity(DiagnosticSeverity.Warning);
+
+        await CSharpCodeFixVerifier<ThrowWithoutValidationAnalyzer, ThrowWithoutValidationCodeFixProvider>
+            .VerifyCodeFixWithGeneratedCodeAsync(source, fixedSource, expected);
+    }
+
+    [Test]
+    public async Task CodeFix_OverloadedMethods_FixesOnlyTargetedOverload()
+    {
+        const string source = """
+                              using MaVe.BusinessRules;
+                              using MaVe.BusinessRules.Rules.Authentication;
+
+                              public class TestClass
+                              {
+                                  public void Validate(int value)
+                                  {
+                                  }
+
+                                  public void Validate(string value)
+                                  {
+                                      {|#0:throw UserMustBeAuthenticated.ToException();|}
+                                  }
+                              }
+                              """;
+
+        const string fixedSource = """
+                                   using MaVe.BusinessRules;
+                                   using MaVe.BusinessRules.Rules.Authentication;
+                                   using MaVe.BusinessRules.Attributes;
+
+                                   public class TestClass
+                                   {
+                                       public void Validate(int value)
+                                       {
+                                       }
+                                       [ImplementsBusinessRule(UserMustBeAuthenticated.Key)]
+
+                                       public void Validate(string value)
+                                       {
+                                           throw UserMustBeAuthenticated.ToException();
+                                       }
+                                   }
+                                   """;
+
+        var expected = CSharpCodeFixVerifier<ThrowWithoutValidationAnalyzer, ThrowWithoutValidationCodeFixProvider>
+            .Diagnostic("BR004")
+            .WithLocation(0)
+            .WithArguments("Validate")
+            .WithSeverity(DiagnosticSeverity.Warning);
+
+        await CSharpCodeFixVerifier<ThrowWithoutValidationAnalyzer, ThrowWithoutValidationCodeFixProvider>
+            .VerifyCodeFixWithGeneratedCodeAsync(source, fixedSource, expected);
+    }
+
+    [Test]
+    public async Task CodeFix_ThrowInPropertyAccessor_NoFixOffered()
+    {
+        const string source = """
+                              using MaVe.BusinessRules;
+                              using MaVe.BusinessRules.Rules.Authentication;
+
+                              public class TestClass
+                              {
+                                  public string Value
+                                  {
+                                      get
+                                      {
+                                          {|#0:throw UserMustBeAuthenticated.ToException();|}
+                                      }
+                                  }
+                              }
+                              """;
+
+        var test = new CSharpCodeFixVerifier<ThrowWithoutValidationAnalyzer, ThrowWithoutValidationCodeFixProvider>.Test
+        {
+            TestCode = source.Replace("\r\n", "\n"),
+            FixedCode = source.Replace("\r\n", "\n"),
+            CodeFixTestBehaviors = CodeFixTestBehaviors.SkipFixAllCheck
+        };
+        test.TestState.Sources.Add(GeneratedBusinessRules.GetAllGeneratedSources());
+        test.FixedState.Sources.Add(GeneratedBusinessRules.GetAllGeneratedSources());
+        test.ExpectedDiagnostics.Add(
+            CSharpCodeFixVerifier<ThrowWithoutValidationAnalyzer, ThrowWithoutValidationCodeFixProvider>
+                .Diagnostic("BR004")
+                .WithLocation(0)
+                .WithArguments("Value")
+                .WithSeverity(DiagnosticSeverity.Warning));
+        test.FixedState.ExpectedDiagnostics.Add(
+            CSharpCodeFixVerifier<ThrowWithoutValidationAnalyzer, ThrowWithoutValidationCodeFixProvider>
+                .Diagnostic("BR004")
+                .WithLocation(0)
+                .WithArguments("Value")
+                .WithSeverity(DiagnosticSeverity.Warning));
+        test.NumberOfIncrementalIterations = 0;
+        test.NumberOfFixAllIterations = 0;
+
+        await test.RunAsync();
+    }
 }

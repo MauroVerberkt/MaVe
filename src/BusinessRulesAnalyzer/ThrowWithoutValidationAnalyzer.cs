@@ -114,6 +114,8 @@ public class ThrowWithoutValidationAnalyzer : DiagnosticAnalyzer
 
                 // Check if symbol or containing type has ImplementsBusinessRule attribute
                 var hasValidatesAttribute = HasImplementsBusinessRuleAttribute(containingSymbol, validatesAttrSymbol) ||
+                                            HasImplementsBusinessRuleAttribute((containingSymbol as IMethodSymbol)
+                                                ?.AssociatedSymbol, validatesAttrSymbol) ||
                                             HasImplementsBusinessRuleAttribute(containingSymbol.ContainingType,
                                                 validatesAttrSymbol);
 

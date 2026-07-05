@@ -39,15 +39,15 @@ public class ThrowWithoutValidationCodeFixProvider : CodeFixProvider
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-        var throwStatement = root.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf()
-            .OfType<ThrowStatementSyntax>().FirstOrDefault();
-        if (throwStatement == null)
+        var throwNode = root.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf()
+            .FirstOrDefault(node => node is ThrowStatementSyntax or ThrowExpressionSyntax);
+        if (throwNode == null)
         {
             return;
         }
 
-        var methodDeclaration = throwStatement.FirstAncestorOrSelf<MethodDeclarationSyntax>();
-        if (methodDeclaration == null)
+        var declarationNode = FindTargetDeclaration(throwNode);
+        if (declarationNode == null)
         {
             return;
         }
@@ -59,7 +59,13 @@ public class ThrowWithoutValidationCodeFixProvider : CodeFixProvider
             return;
         }
 
-        var (ruleKey, className) = TryExtractRuleInfo(throwStatement, semanticModel);
+        var thrownExpression = GetThrownExpression(throwNode);
+        if (thrownExpression == null)
+        {
+            return;
+        }
+
+        var (ruleKey, className) = TryExtractRuleInfo(thrownExpression, semanticModel);
 
         // Only offer the fix if we can extract enough info to produce a valid attribute
         if (ruleKey == null && className == null)
@@ -72,16 +78,42 @@ public class ThrowWithoutValidationCodeFixProvider : CodeFixProvider
                 className != null
                     ? $"Add [ImplementsBusinessRule({className}.Key)]"
                     : $"Add [ImplementsBusinessRule(\"{ruleKey}\")]",
-                c => AddValidatesAttributeAsync(context.Document, methodDeclaration, ruleKey, className, c),
+                c => AddValidatesAttributeAsync(context.Document, declarationNode, ruleKey, className, c),
                 Title),
             diagnostic);
     }
 
-    private static (string? ruleKey, string? className) TryExtractRuleInfo(ThrowStatementSyntax throwStatement,
+    private static ExpressionSyntax? GetThrownExpression(SyntaxNode throwNode)
+    {
+        return throwNode switch
+        {
+            ThrowStatementSyntax throwStatement => throwStatement.Expression,
+            ThrowExpressionSyntax throwExpression => throwExpression.Expression,
+            _ => null
+        };
+    }
+
+    private static SyntaxNode? FindTargetDeclaration(SyntaxNode throwNode)
+    {
+        for (var current = throwNode.Parent; current != null; current = current.Parent)
+        {
+            switch (current)
+            {
+                case MethodDeclarationSyntax:
+                    return current;
+                case ConstructorDeclarationSyntax constructorDeclaration:
+                    return constructorDeclaration.Parent as ClassDeclarationSyntax;
+            }
+        }
+
+        return null;
+    }
+
+    private static (string? ruleKey, string? className) TryExtractRuleInfo(ExpressionSyntax throwExpression,
         SemanticModel semanticModel)
     {
         // Handle: throw SomeRule.ToException() or throw SomeRule.ToFaultException()
-        if (throwStatement.Expression is InvocationExpressionSyntax invocation &&
+        if (throwExpression is InvocationExpressionSyntax invocation &&
             invocation.Expression is MemberAccessExpressionSyntax
             {
                 Name.Identifier.Text: "ToException" or "ToFaultException"
@@ -103,7 +135,7 @@ public class ThrowWithoutValidationCodeFixProvider : CodeFixProvider
 
     private async Task<Document> AddValidatesAttributeAsync(
         Document document,
-        MethodDeclarationSyntax methodDeclaration,
+        SyntaxNode declarationNode,
         string? ruleKey,
         string? className,
         CancellationToken cancellationToken)
@@ -114,6 +146,9 @@ public class ThrowWithoutValidationCodeFixProvider : CodeFixProvider
             return document;
         }
 
+        var annotation = new SyntaxAnnotation("TargetDeclaration");
+        root = root.ReplaceNode(declarationNode, declarationNode.WithAdditionalAnnotations(annotation));
+
         // Add using statement if not present
         if (root is CompilationUnitSyntax compilationUnit)
         {
@@ -123,14 +158,23 @@ public class ThrowWithoutValidationCodeFixProvider : CodeFixProvider
                 var usingDirective = SyntaxFactory.UsingDirective(
                     SyntaxFactory.ParseName("MaVe.BusinessRules.Attributes"));
                 root = compilationUnit.AddUsings(usingDirective);
-                // Re-find the method declaration in the new root
-                methodDeclaration = root.DescendantNodes().OfType<MethodDeclarationSyntax>()
-                    .First(m => m.Identifier.Text == methodDeclaration.Identifier.Text);
             }
         }
 
+        declarationNode = root.GetAnnotatedNodes(annotation).FirstOrDefault();
+        if (declarationNode == null)
+        {
+            return document;
+        }
+
+        var attributeLists = GetAttributeLists(declarationNode);
+        if (attributeLists == null)
+        {
+            return document;
+        }
+
         // 1️⃣ Check if attribute already exists
-        var alreadyHasAttribute = methodDeclaration.AttributeLists
+        var alreadyHasAttribute = attributeLists.Value
             .SelectMany(a => a.Attributes)
             .Any(a =>
             {
@@ -192,10 +236,10 @@ public class ThrowWithoutValidationCodeFixProvider : CodeFixProvider
                                         SyntaxFactory.Literal(ruleKey!))))))));
         }
 
-        var leadingTrivia = methodDeclaration.GetLeadingTrivia();
+        var leadingTrivia = declarationNode.GetLeadingTrivia();
 
         // Copy the end-of-line trivia from the class declaration to match existing style
-        var classDecl = methodDeclaration.FirstAncestorOrSelf<ClassDeclarationSyntax>();
+        var classDecl = declarationNode.FirstAncestorOrSelf<ClassDeclarationSyntax>();
         var eolTrivia =
             classDecl?.OpenBraceToken.TrailingTrivia.FirstOrDefault(t => t.IsKind(SyntaxKind.EndOfLineTrivia))
             ?? SyntaxFactory.ElasticMarker;
@@ -204,15 +248,44 @@ public class ThrowWithoutValidationCodeFixProvider : CodeFixProvider
             .WithLeadingTrivia(leadingTrivia)
             .WithTrailingTrivia(eolTrivia);
 
-        var existingAttributes = methodDeclaration.AttributeLists.ToList();
+        var existingAttributes = attributeLists.Value.ToList();
         existingAttributes.Insert(0, attributeWithTrivia);
 
-        var newMethodDeclaration = methodDeclaration
-            .WithLeadingTrivia(SyntaxFactory.TriviaList())
-            .WithAttributeLists(SyntaxFactory.List(existingAttributes));
+        var newDeclarationNode = WithAttributeLists(
+            declarationNode,
+            SyntaxFactory.List(existingAttributes));
+        if (newDeclarationNode == null)
+        {
+            return document;
+        }
 
-        var newRoot = root.ReplaceNode(methodDeclaration, newMethodDeclaration);
+        newDeclarationNode = newDeclarationNode
+            .WithLeadingTrivia(SyntaxFactory.TriviaList())
+            .WithoutAnnotations(annotation);
+
+        var newRoot = root.ReplaceNode(declarationNode, newDeclarationNode);
 
         return document.WithSyntaxRoot(newRoot);
+    }
+
+    private static SyntaxList<AttributeListSyntax>? GetAttributeLists(SyntaxNode declarationNode)
+    {
+        return declarationNode switch
+        {
+            MethodDeclarationSyntax methodDeclaration => methodDeclaration.AttributeLists,
+            ClassDeclarationSyntax classDeclaration => classDeclaration.AttributeLists,
+            _ => null
+        };
+    }
+
+    private static SyntaxNode? WithAttributeLists(SyntaxNode declarationNode,
+        SyntaxList<AttributeListSyntax> attributeLists)
+    {
+        return declarationNode switch
+        {
+            MethodDeclarationSyntax methodDeclaration => methodDeclaration.WithAttributeLists(attributeLists),
+            ClassDeclarationSyntax classDeclaration => classDeclaration.WithAttributeLists(attributeLists),
+            _ => null
+        };
     }
 }
