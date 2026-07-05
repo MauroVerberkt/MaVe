@@ -157,4 +157,90 @@ public class ThrowWithoutValidationAnalyzerTests
 
         await CSharpAnalyzerVerifier<ThrowWithoutValidationAnalyzer>.VerifyAnalyzerWithGeneratedCodeAsync(test);
     }
+
+    [Test]
+    public async Task ThrowBusinessRuleException_InConstructor_WithoutAttribute_ReportsWarning()
+    {
+        const string test = """
+                            using MaVe.BusinessRules;
+                            using MaVe.BusinessRules.Rules.Authentication;
+
+                            public class TestClass
+                            {
+                                public TestClass()
+                                {
+                                    {|#0:throw UserMustBeAuthenticated.ToException();|}
+                                }
+                            }
+                            """;
+
+        var expected = CSharpAnalyzerVerifier<ThrowWithoutValidationAnalyzer>
+            .Diagnostic("BR004")
+            .WithLocation(0)
+            .WithArguments("TestClass")
+            .WithSeverity(DiagnosticSeverity.Warning);
+
+        await CSharpAnalyzerVerifier<ThrowWithoutValidationAnalyzer>.VerifyAnalyzerWithGeneratedCodeAsync(test,
+            expected);
+    }
+
+    [Test]
+    public async Task ThrowBusinessRuleException_InPropertyAccessor_WithoutAttribute_ReportsWarning()
+    {
+        const string test = """
+                            using MaVe.BusinessRules;
+                            using MaVe.BusinessRules.Rules.Authentication;
+
+                            public class TestClass
+                            {
+                                public string Value
+                                {
+                                    get
+                                    {
+                                        {|#0:throw UserMustBeAuthenticated.ToException();|}
+                                    }
+                                }
+                            }
+                            """;
+
+        var expected = CSharpAnalyzerVerifier<ThrowWithoutValidationAnalyzer>
+            .Diagnostic("BR004")
+            .WithLocation(0)
+            .WithArguments("Value")
+            .WithSeverity(DiagnosticSeverity.Warning);
+
+        await CSharpAnalyzerVerifier<ThrowWithoutValidationAnalyzer>.VerifyAnalyzerWithGeneratedCodeAsync(test,
+            expected);
+    }
+
+    [Test]
+    public async Task ThrowBusinessRuleException_InLocalFunction_WithoutAttribute_ReportsWarning()
+    {
+        const string test = """
+                            using MaVe.BusinessRules;
+                            using MaVe.BusinessRules.Rules.Authentication;
+
+                            public class TestClass
+                            {
+                                public void OuterMethod()
+                                {
+                                    void ValidateLocal()
+                                    {
+                                        {|#0:throw UserMustBeAuthenticated.ToException();|}
+                                    }
+
+                                    ValidateLocal();
+                                }
+                            }
+                            """;
+
+        var expected = CSharpAnalyzerVerifier<ThrowWithoutValidationAnalyzer>
+            .Diagnostic("BR004")
+            .WithLocation(0)
+            .WithArguments("ValidateLocal")
+            .WithSeverity(DiagnosticSeverity.Warning);
+
+        await CSharpAnalyzerVerifier<ThrowWithoutValidationAnalyzer>.VerifyAnalyzerWithGeneratedCodeAsync(test,
+            expected);
+    }
 }

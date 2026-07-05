@@ -106,31 +106,71 @@ public class ThrowWithoutValidationAnalyzer : DiagnosticAnalyzer
                     return;
                 }
 
-                // Find the containing method
-                var methodDeclaration = nodeContext.Node.FirstAncestorOrSelf<MethodDeclarationSyntax>();
-                if (methodDeclaration == null)
+                var containingSymbol = GetContainingSymbol(nodeContext.Node, nodeContext.SemanticModel);
+                if (containingSymbol == null)
                 {
                     return;
                 }
 
-                var methodSymbol = nodeContext.SemanticModel.GetDeclaredSymbol(methodDeclaration);
-                if (methodSymbol == null)
-                {
-                    return;
-                }
-
-                // Check if method has ImplementsBusinessRule attribute
-                var hasValidatesAttribute = methodSymbol.GetAttributes()
-                    .Any(attr => SymbolEqualityComparer.Default.Equals(attr.AttributeClass, validatesAttrSymbol));
+                // Check if symbol or containing type has ImplementsBusinessRule attribute
+                var hasValidatesAttribute = HasImplementsBusinessRuleAttribute(containingSymbol, validatesAttrSymbol) ||
+                                            HasImplementsBusinessRuleAttribute(containingSymbol.ContainingType,
+                                                validatesAttrSymbol);
 
                 if (!hasValidatesAttribute)
                 {
                     nodeContext.ReportDiagnostic(Diagnostic.Create(
                         _rule,
                         nodeContext.Node.GetLocation(),
-                        methodSymbol.Name));
+                        GetDisplayName(containingSymbol)));
                 }
             }, SyntaxKind.ThrowStatement, SyntaxKind.ThrowExpression);
         });
+    }
+
+    private static ISymbol? GetContainingSymbol(SyntaxNode node, SemanticModel semanticModel)
+    {
+        for (var current = node; current != null; current = current.Parent)
+        {
+            switch (current)
+            {
+                case MethodDeclarationSyntax methodDeclaration:
+                    return semanticModel.GetDeclaredSymbol(methodDeclaration);
+                case ConstructorDeclarationSyntax constructorDeclaration:
+                    return semanticModel.GetDeclaredSymbol(constructorDeclaration);
+                case AccessorDeclarationSyntax accessorDeclaration:
+                    return semanticModel.GetDeclaredSymbol(accessorDeclaration);
+                case LocalFunctionStatementSyntax localFunctionDeclaration:
+                    return semanticModel.GetDeclaredSymbol(localFunctionDeclaration);
+            }
+        }
+
+        return null;
+    }
+
+    private static bool HasImplementsBusinessRuleAttribute(ISymbol? symbol, INamedTypeSymbol validatesAttrSymbol)
+    {
+        if (symbol == null)
+        {
+            return false;
+        }
+
+        return symbol.GetAttributes()
+            .Any(attr => SymbolEqualityComparer.Default.Equals(attr.AttributeClass, validatesAttrSymbol));
+    }
+
+    private static string GetDisplayName(ISymbol symbol)
+    {
+        if (symbol is not IMethodSymbol methodSymbol)
+        {
+            return symbol.Name;
+        }
+
+        return methodSymbol.MethodKind switch
+        {
+            MethodKind.Constructor => methodSymbol.ContainingType.Name,
+            MethodKind.PropertyGet or MethodKind.PropertySet => methodSymbol.AssociatedSymbol?.Name ?? methodSymbol.Name,
+            _ => methodSymbol.Name
+        };
     }
 }
