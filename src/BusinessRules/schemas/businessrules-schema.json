@@ -7,7 +7,7 @@
     "$schema": {
       "type": "string"
     },
-    "businessRules": {
+    "MaVe.BusinessRules": {
       "type": "array",
       "description": "List of business rule definitions",
       "items": {
@@ -50,7 +50,7 @@
     }
   },
   "required": [
-    "businessRules"
+    "MaVe.BusinessRules"
   ],
   "additionalProperties": false
 }
