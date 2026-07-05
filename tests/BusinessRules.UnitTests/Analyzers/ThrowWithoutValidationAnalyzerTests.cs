@@ -110,4 +110,51 @@ public class ThrowWithoutValidationAnalyzerTests
         await CSharpAnalyzerVerifier<ThrowWithoutValidationAnalyzer>.VerifyAnalyzerWithGeneratedCodeAsync(test,
             expected);
     }
+
+    [Test]
+    public async Task ThrowExpressionBusinessRuleException_WithoutAttribute_ReportsWarning()
+    {
+        const string test = """
+                            using MaVe.BusinessRules;
+                            using MaVe.BusinessRules.Rules.Authentication;
+
+                            public class TestClass
+                            {
+                                public string SomeMethod(string? input)
+                                {
+                                    return input ?? {|#0:throw UserMustBeAuthenticated.ToException()|};
+                                }
+                            }
+                            """;
+
+        var expected = CSharpAnalyzerVerifier<ThrowWithoutValidationAnalyzer>
+            .Diagnostic("BR004")
+            .WithLocation(0)
+            .WithArguments("SomeMethod")
+            .WithSeverity(DiagnosticSeverity.Warning);
+
+        await CSharpAnalyzerVerifier<ThrowWithoutValidationAnalyzer>.VerifyAnalyzerWithGeneratedCodeAsync(test,
+            expected);
+    }
+
+    [Test]
+    public async Task ThrowExpressionBusinessRuleException_WithAttribute_NoDiagnostic()
+    {
+        const string test = """
+                            using MaVe.BusinessRules;
+                            using MaVe.BusinessRules.Attributes;
+                            using MaVe.BusinessRules.Rules.Authentication;
+
+                            public class TestClass
+                            {
+                                [ImplementsBusinessRule(UserMustBeAuthenticated.Key)]
+                                public string ValidateInput(string? input)
+                                {
+                                    return input ?? throw UserMustBeAuthenticated.ToException();
+                                }
+                            }
+                            """;
+
+        await CSharpAnalyzerVerifier<ThrowWithoutValidationAnalyzer>.VerifyAnalyzerWithGeneratedCodeAsync(test);
+    }
 }

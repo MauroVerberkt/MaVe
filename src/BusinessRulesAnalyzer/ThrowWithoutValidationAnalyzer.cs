@@ -52,15 +52,20 @@ public class ThrowWithoutValidationAnalyzer : DiagnosticAnalyzer
 
             compilationContext.RegisterSyntaxNodeAction(nodeContext =>
             {
-                var throwStatement = (ThrowStatementSyntax)nodeContext.Node;
+                var thrownExpression = nodeContext.Node switch
+                {
+                    ThrowStatementSyntax throwStatement => throwStatement.Expression,
+                    ThrowExpressionSyntax throwExpression => throwExpression.Expression,
+                    _ => null
+                };
 
                 // Check if we're throwing a BusinessRuleFault or derived type
-                if (throwStatement.Expression == null)
+                if (thrownExpression == null)
                 {
                     return;
                 }
 
-                var typeInfo = nodeContext.SemanticModel.GetTypeInfo(throwStatement.Expression);
+                var typeInfo = nodeContext.SemanticModel.GetTypeInfo(thrownExpression);
                 if (typeInfo.Type == null)
                 {
                     return;
@@ -102,7 +107,7 @@ public class ThrowWithoutValidationAnalyzer : DiagnosticAnalyzer
                 }
 
                 // Find the containing method
-                var methodDeclaration = throwStatement.FirstAncestorOrSelf<MethodDeclarationSyntax>();
+                var methodDeclaration = nodeContext.Node.FirstAncestorOrSelf<MethodDeclarationSyntax>();
                 if (methodDeclaration == null)
                 {
                     return;
@@ -122,10 +127,10 @@ public class ThrowWithoutValidationAnalyzer : DiagnosticAnalyzer
                 {
                     nodeContext.ReportDiagnostic(Diagnostic.Create(
                         _rule,
-                        throwStatement.GetLocation(),
+                        nodeContext.Node.GetLocation(),
                         methodSymbol.Name));
                 }
-            }, SyntaxKind.ThrowStatement);
+            }, SyntaxKind.ThrowStatement, SyntaxKind.ThrowExpression);
         });
     }
 }
