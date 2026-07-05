@@ -3,7 +3,7 @@
   "instructions": [".opencode/instructions.md"],
   "formatter": true,
   "command": {
-    "build": { "command": "dotnet build" },
-    "test": { "command": "dotnet test" }
+    "build": { "template": "dotnet build" },
+    "test": { "template": "dotnet test" }
   }
 }
