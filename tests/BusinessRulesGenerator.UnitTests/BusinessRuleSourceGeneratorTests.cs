@@ -211,6 +211,32 @@ public class BusinessRuleSourceGeneratorTests
     }
 
     [Test]
+    public void DigitLeadingCategory_PrefixedWithUnderscore()
+    {
+        const string json = """
+                            {
+                              "MaVe.BusinessRules": [
+                                {
+                                  "className": "DigitCategoryRule",
+                                  "key": "DIGIT_CAT",
+                                  "requirement": "Category starts with digit",
+                                  "description": "Tests namespace sanitization for leading digits",
+                                  "category": "1Orders"
+                                }
+                              ]
+                            }
+                            """;
+
+        var driver = CreateDriver("MaVe.BusinessRules.json", json)
+            .RunGenerators(CreateCompilation());
+
+        var generated = driver.GetRunResult().GeneratedTrees.Single().GetText().ToString();
+
+        Assert.That(generated, Does.Contain("namespace TestAssembly.BusinessRules.Rules._1Orders;"));
+        Assert.That(generated, Does.Contain("public const string Category = \"1Orders\";"));
+    }
+
+    [Test]
     public Task AssemblyName_UsedInNamespace()
     {
         const string json = """

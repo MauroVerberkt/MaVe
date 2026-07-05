@@ -101,7 +101,12 @@ public class BusinessRuleSourceGenerator : IIncrementalGenerator
         }
 
         var result = sb.ToString();
-        return string.IsNullOrEmpty(result) ? "General" : result;
+        if (string.IsNullOrEmpty(result))
+        {
+            return "General";
+        }
+
+        return char.IsDigit(result[0]) ? $"_{result}" : result;
     }
 
     private static string EscapeString(string value)
