@@ -48,7 +48,7 @@ public sealed class RailyardSourceGenerator : IIncrementalGenerator
                 static (node, _) => node is ClassDeclarationSyntax classDeclaration &&
                                     classDeclaration.AttributeLists.Any(attributeList =>
                                         attributeList.Attributes.Any(attribute =>
-                                            attribute.Name.ToString().Contains("Operation", StringComparison.Ordinal))),
+                                            attribute.Name.ToString().IndexOf("Operation", StringComparison.Ordinal) >= 0)),
                 static (syntaxContext, _) => GetOperationCandidate(syntaxContext))
             .Where(static candidate => candidate is not null)
             .Select(static (candidate, _) => candidate!);
